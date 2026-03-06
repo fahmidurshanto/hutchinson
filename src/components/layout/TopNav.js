@@ -1,0 +1,58 @@
+"use client";
+import React from 'react';
+import { useAppContext } from '../../context/AppContext';
+
+export default function TopNav() {
+    const { user, activeTab, setActiveTab } = useAppContext();
+    const tabs = ['DASHBOARD', 'REPORTS', 'SERVICES', 'GLOBAL NETWORK', 'ADMIN'];
+
+    return (
+        <header className="fixed top-0 left-0 w-full h-20 bg-white shadow-sm flex items-center z-50 px-4 md:px-8 border-b border-gray-200"
+            style={{ paddingLeft: 'calc(4rem + 2rem)' }}> {/* 4rem for sidebar + 2rem padding */}
+
+            {/* Brand Area */}
+            <div className="absolute left-0 top-0 h-full w-48 md:w-64 bg-white shadow-md flex items-center justify-center rounded-br-3xl border-b-2 border-r-2" style={{ borderColor: '#e0cd86' }}>
+                <div className="flex flex-col items-center justify-center text-yellow-700 font-bold" style={{ color: '#b89b5e' }}>
+                    <span className="tracking-widest text-[8px] md:text-xs">HUTCHINSON</span>
+                    <span className="text-xl md:text-3xl my-0.5">🦁</span>
+                    <span className="tracking-widest text-[6px] md:text-[10px]">APAC LTD.</span>
+                </div>
+            </div>
+
+            {/* Navigation Tabs */}
+            <nav className="hidden md:flex flex-1 ml-48 lg:ml-64 space-x-1 lg:space-x-8 h-full items-end">
+                {tabs.map((tab) => (
+                    <button
+                        key={tab}
+                        onClick={() => setActiveTab(tab)}
+                        className={`cursor-pointer pb-4 px-2 font-semibold text-xs lg:text-sm tracking-wide transition-colors border-b-4 relative ${activeTab === tab
+                            ? 'text-gray-900 border-yellow-600'
+                            : 'text-gray-500 border-transparent hover:text-gray-700'
+                            }`}
+                        style={{ borderColor: activeTab === tab ? '#b89b5e' : 'transparent' }}
+                    >
+                        {tab}
+                    </button>
+                ))}
+            </nav>
+
+            {/* Right side: User Profile */}
+            <div className="ml-auto flex items-center space-x-4">
+                <div className="hidden sm:flex items-center space-x-2 text-gray-700 font-medium">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-yellow-600" style={{ color: '#b89b5e' }}>
+                        <path fillRule="evenodd" d="M12.516 2.17a.75.75 0 00-1.032 0 11.209 11.209 0 01-7.877 3.08.75.75 0 00-.722.515A12.74 12.74 0 002.25 9.75c0 5.942 4.064 10.933 9.563 12.348a.749.749 0 00.374 0c5.499-1.415 9.563-6.406 9.563-12.348 0-1.39-.223-2.73-.635-3.985a.75.75 0 00-.722-.516l-.143.001c-2.996 0-5.717-1.17-7.734-3.08zm3.094 8.016a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clipRule="evenodd" />
+                    </svg>
+                    <span>{user.name}</span>
+                </div>
+
+                <div className="w-10 h-10 rounded-full flex items-center justify-center text-white" style={{ background: 'linear-gradient(to right, #a0814c, #e0cd86)' }}>
+                    {/* Placeholder user icon */}
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+                        <path fillRule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clipRule="evenodd" />
+                    </svg>
+                </div>
+            </div>
+
+        </header>
+    );
+}
