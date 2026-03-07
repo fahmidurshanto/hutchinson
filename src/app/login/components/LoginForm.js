@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Input from '../../../components/ui/Input';
 import Button from '../../../components/ui/Button';
+import Link from 'next/link';
 
 export default function LoginForm() {
     const [showPassword, setShowPassword] = useState(false);
@@ -41,6 +42,13 @@ export default function LoginForm() {
                     <path fillRule="evenodd" d="M12 1.5a5.25 5.25 0 00-5.25 5.25v3a3 3 0 00-3 3v6.75a3 3 0 003 3h10.5a3 3 0 003-3v-6.75a3 3 0 00-3-3v-3c0-2.9-2.35-5.25-5.25-5.25zm3.75 8.25v-3a3.75 3.75 0 10-7.5 0v3h7.5z" clipRule="evenodd" />
                 </svg>
             </Button>
+
+            <p className="text-center text-sm text-gray-600 mt-5">
+                Don&apos;t have an account?{' '}
+                <Link href="/signup" className="font-bold text-gradient-gold hover:underline">
+                    Create Account
+                </Link>
+            </p>
         </form>
     )
 }
