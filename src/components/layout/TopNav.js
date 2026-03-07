@@ -20,16 +20,26 @@ export default function TopNav() {
             {/* Navigation Tabs */}
             <nav className="hidden md:flex flex-1 ml-48 lg:ml-64 space-x-1 lg:space-x-8 h-full items-end">
                 {tabs.map((tab) => (
-                    <button
-                        key={tab}
-                        onClick={() => setActiveTab(tab)}
-                        className={`cursor-pointer h-full px-6 flex items-center justify-center font-bold text-xs lg:text-sm tracking-wide transition-colors border-b-4 ${activeTab === tab
-                            ? 'bg-[#2a303c] text-white border-gradient-gold'
-                            : 'text-gray-700 border-transparent hover:bg-gray-200/50'
-                            }`}
-                    >
-                        {tab}
-                    </button>
+                    tab === 'ADMIN' ? (
+                        <Link
+                            key={tab}
+                            href="/admin"
+                            className="cursor-pointer h-full px-6 flex items-center justify-center font-bold text-xs lg:text-sm tracking-wide transition-colors border-b-4 text-gray-700 border-transparent hover:bg-gray-200/50"
+                        >
+                            {tab}
+                        </Link>
+                    ) : (
+                        <button
+                            key={tab}
+                            onClick={() => setActiveTab(tab)}
+                            className={`cursor-pointer h-full px-6 flex items-center justify-center font-bold text-xs lg:text-sm tracking-wide transition-colors border-b-4 ${activeTab === tab
+                                ? 'bg-[#2a303c] text-white border-gradient-gold'
+                                : 'text-gray-700 border-transparent hover:bg-gray-200/50'
+                                }`}
+                        >
+                            {tab}
+                        </button>
+                    )
                 ))}
             </nav>
 
