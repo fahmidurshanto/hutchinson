@@ -12,7 +12,7 @@ export default function AdminTopNav() {
             style={{ paddingLeft: 'calc(4rem + 2rem)' }}>
 
             {/* Brand Area */}
-            <div className="absolute left-0 top-0 h-[120%] w-48 md:w-64 bg-gray-950 shadow-lg flex items-center justify-center rounded-br-[3rem] border-b-4 border-r-4 border-transparent z-50"
+            <div className="absolute left-0 top-0 h-[120%] w-48 md:w-64 bg-gray-950 shadow-lg flex items-center justify-center shadow-white/20 rounded-br-[3rem]  border-transparent z-50"
                 style={{ borderImage: 'var(--gradient-gold) 1', borderImageSlice: '1' }}>
                 <div className="flex flex-col items-center justify-center mt-2">
                     <img src="/hutchinson-logo.png" alt="Hutchinson APAC Ltd." className="w-20 h-20 md:w-28 md:h-28 object-contain drop-shadow-md" />
