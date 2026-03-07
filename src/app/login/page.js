@@ -1,8 +1,19 @@
 import LoginCard from './components/LoginCard';
+import Link from 'next/link';
 
 export default function Page() {
   return (
     <div className="min-h-screen flex flex-col lg:flex-row bg-gray-50">
+
+      {/* Auth Toggle - Top Right */}
+      <div className="fixed top-4 right-4 z-50 flex items-center gap-2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg border border-gray-200 p-1">
+        <span className="px-4 py-2 rounded-full bg-gradient-gold text-gray-900 text-sm font-bold shadow-sm">
+          Login
+        </span>
+        <Link href="/signup" className="px-4 py-2 rounded-full text-sm font-semibold text-gray-500 hover:text-gray-800 transition-colors">
+          Sign Up
+        </Link>
+      </div>
 
       {/* Left side: Branding (Hidden on mobile/tablet, Visible on desktop) */}
       <div className="hidden lg:flex lg:w-1/2 xl:w-7/12 relative bg-black items-center justify-center p-12 overflow-hidden shadow-2xl z-20">
