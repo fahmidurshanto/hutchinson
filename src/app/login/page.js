@@ -5,25 +5,23 @@ export default function Page() {
     <div className="min-h-screen flex flex-col lg:flex-row bg-gray-50">
 
       {/* Left side: Branding (Hidden on mobile/tablet, Visible on desktop) */}
-      <div className="hidden lg:flex lg:w-1/2 xl:w-7/12 relative bg-gray-900 items-center justify-center p-12 overflow-hidden shadow-2xl z-20">
+      <div className="hidden lg:flex lg:w-1/2 xl:w-7/12 relative bg-black items-center justify-center p-12 overflow-hidden shadow-2xl z-20">
         {/* Background gradient/decoration for desktop */}
-        <div className="absolute inset-0 z-0 bg-gradient-to-br from-gray-900 via-gray-800 to-yellow-900 opacity-90"></div>
+        <div className="absolute inset-0 z-0 bg-gradient-to-br from-black via-gray-900 to-black opacity-90"></div>
         <div className="absolute right-0 bottom-0 opacity-10 pointer-events-none w-full h-full flex items-end justify-end">
-          <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="w-[80%] h-[80%] translate-x-1/4 translate-y-1/4" fill="#c5af72">
+          <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="w-[80%] h-[80%] translate-x-1/4 translate-y-1/4" fill="#ffffff">
             <path d="M42.7,-74.6C54.1,-67.2,61.3,-53.4,69.5,-40.4C77.7,-27.4,86.9,-15.1,87.6,-2.4C88.3,10.3,80.5,23.3,71.7,35.4C62.9,47.5,53,58.7,40.9,65.3C28.8,71.9,14.4,73.9,0.7,72.7C-13,71.5,-26,67.1,-38.4,60.3C-50.8,53.5,-62.6,44.3,-71.4,32.3C-80.2,20.3,-86,5.6,-84.9,-8.5C-83.8,-22.6,-75.8,-36,-65.4,-47.5C-55,-59,-42.2,-68.6,-29.3,-74.8C-16.4,-81,-2.9,-83.8,10.6,-81.9C24.1,-80,31.3,-82,42.7,-74.6Z" transform="translate(100 100)" />
           </svg>
         </div>
 
         {/* Desktop Brand Content */}
-        <div className="relative z-10 text-white max-w-lg text-center animate__animated animate__fadeInLeft animate__slow">
-          <div className="w-32 h-32 mx-auto mb-8 rounded-full border-2 border-yellow-600 text-yellow-500 flex flex-col justify-center items-center font-bold bg-gray-900 shadow-xl" style={{ borderColor: '#c5af72', color: '#e0cd86' }}>
-            <span className="tracking-widest text-xs">HUTCHINSON</span>
-            <span className="text-4xl my-1 drop-shadow-lg">🦁</span>
-            <span className="tracking-widest text-[10px]">APAC LTD.</span>
+        <div className="relative z-10 text-gray-300 max-w-lg text-center animate__animated animate__fadeInLeft animate__slow">
+          <div className="w-48 h-48 mx-auto mb-8 flex items-center justify-center">
+            <img src="/hutchinson-logo.png" alt="Hutchinson APAC Ltd." className="w-full h-full object-contain drop-shadow-2xl" />
           </div>
-          <h2 className="text-4xl lg:text-5xl font-bold mb-6 mt-4 text-transparent bg-clip-text bg-gradient-to-r" style={{ backgroundImage: 'linear-gradient(to right, #a0814c, #e0cd86, #ffffff)' }}>Enterprise Partnership Portal</h2>
-          <p className="text-gray-300 text-lg lg:text-xl leading-relaxed font-light">
-            Access exclusive resources, manage your corporate accounts, and collaborate with <span className="font-semibold text-yellow-500">Hutchinson APAC</span> seamlessly.
+          <h2 className="text-4xl lg:text-5xl font-bold mb-6 mt-4 text-gradient-silver">Enterprise Partnership Portal</h2>
+          <p className="text-gray-400 text-lg lg:text-xl leading-relaxed font-medium">
+            Access exclusive resources, manage your corporate accounts, and collaborate with <span className="font-bold text-gradient-gold">Hutchinson APAC</span> seamlessly.
           </p>
         </div>
       </div>
@@ -33,8 +31,8 @@ export default function Page() {
         style={{ background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)' }}>
 
         {/* Mobile/Tablet structural background ornament (hidden on large screens) */}
-        <div className="absolute right-0 bottom-0 opacity-10 pointer-events-none w-3/4 h-3/4 max-w-3xl overflow-hidden flex justify-end items-end lg:hidden">
-          <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="w-[120%] h-[120%] translate-x-1/4 translate-y-1/4" fill="#b89b5e">
+        <div className="absolute right-0 bottom-0 opacity-5 pointer-events-none w-3/4 h-3/4 max-w-3xl overflow-hidden flex justify-end items-end lg:hidden">
+          <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="w-[120%] h-[120%] translate-x-1/4 translate-y-1/4" fill="#000000">
             <path d="M42.7,-74.6C54.1,-67.2,61.3,-53.4,69.5,-40.4C77.7,-27.4,86.9,-15.1,87.6,-2.4C88.3,10.3,80.5,23.3,71.7,35.4C62.9,47.5,53,58.7,40.9,65.3C28.8,71.9,14.4,73.9,0.7,72.7C-13,71.5,-26,67.1,-38.4,60.3C-50.8,53.5,-62.6,44.3,-71.4,32.3C-80.2,20.3,-86,5.6,-84.9,-8.5C-83.8,-22.6,-75.8,-36,-65.4,-47.5C-55,-59,-42.2,-68.6,-29.3,-74.8C-16.4,-81,-2.9,-83.8,10.6,-81.9C24.1,-80,31.3,-82,42.7,-74.6Z" transform="translate(100 100)" />
           </svg>
         </div>

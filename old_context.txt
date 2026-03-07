@@ -1,0 +1,38 @@
+﻿commit 931523cde874b7063decf94e58b5a137fce91782
+Author: Fahmidur Rahaman Shanto <fahmidurrahamanshanto@gmail.com>
+Date:   Sat Mar 7 05:16:26 2026 +0600
+
+    added dashboard page and navbar
+
+diff --git a/src/context/AppContext.js b/src/context/AppContext.js
+new file mode 100644
+index 0000000..d3c30cf
+--- /dev/null
++++ b/src/context/AppContext.js
+@@ -0,0 +1,26 @@
++"use client";
++
++import { createContext, useContext, useState } from 'react';
++
++const AppContext = createContext();
++
++export function AppProvider({ children }) {
++    // Centralized state
++    const [user, setUser] = useState({
++        name: 'Alexander Reed',
++        role: 'Admin',
++        avatar: null // Will use a placeholder or icon
++    });
++
++    const [activeTab, setActiveTab] = useState('DASHBOARD');
++
++    return (
++        <AppContext.Provider value={{ user, setUser, activeTab, setActiveTab }}>
++            {children}
++        </AppContext.Provider>
++    );
++}
++
++export function useAppContext() {
++    return useContext(AppContext);
++}

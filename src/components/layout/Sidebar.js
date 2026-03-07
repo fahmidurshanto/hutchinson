@@ -38,7 +38,7 @@ export default function Sidebar() {
         <aside className="w-16 md:w-20 bg-white border-r border-gray-200 h-full flex flex-col items-center py-6 fixed left-0 top-0 z-40">
             <div className="flex-1 w-full space-y-6 flex flex-col items-center mt-20"> {/* Margin top to clear possible top nav logo overlap depending on layout */}
                 {menuItems.map((item, idx) => (
-                    <button key={item.id} className={`cursor-pointer w-12 h-12 flex items-center justify-center rounded-r-md transition-colors ${idx === 0 ? 'bg-gradient-to-b from-[#e0cd86] to-[#a0814c] text-white shadow-md' : 'text-gray-400 hover:bg-gray-100 hover:text-gray-700'}`}>
+                    <button key={item.id} className={`cursor-pointer w-12 h-12 flex items-center justify-center rounded-r-md transition-colors ${idx === 0 ? 'bg-gradient-gold text-black shadow-md' : 'text-gray-400 hover:bg-gray-100 hover:text-gray-700'}`}>
                         {item.icon}
                     </button>
                 ))}

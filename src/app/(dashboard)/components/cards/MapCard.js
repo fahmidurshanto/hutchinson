@@ -2,9 +2,9 @@ import React from 'react';
 
 export default function MapCard() {
     return (
-        <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100 animate__animated animate__fadeInUp animate__delay-1s flex flex-col h-full w-full" style={{ borderColor: 'rgba(184, 155, 94, 0.2)' }}>
+        <div className="bg-white rounded-xl p-6 shadow-md border border-gray-200 animate__animated animate__fadeInUp animate__delay-1s flex flex-col h-full w-full">
             <h3 className="text-lg font-bold text-gray-800 mb-4">Global Reach Map</h3>
-            <div className="flex-1 relative flex items-center justify-center w-full min-h-[12rem] bg-indigo-50/30 rounded-lg overflow-hidden">
+            <div className="flex-1 relative flex items-center justify-center w-full min-h-[12rem] bg-gray-50 rounded-lg overflow-hidden border border-gray-100">
                 {/* SVG Map mock */}
                 <svg viewBox="0 0 1000 500" className="w-[120%] h-[120%] opacity-20 absolute" fill="currentColor" style={{ color: '#4b5563' }}>
                     {/* Abstract map shapes to represent continents */}
@@ -15,26 +15,26 @@ export default function MapCard() {
                 </svg>
 
                 {/* Map Pins */}
-                <div className="absolute top-1/4 left-1/4 transform -translate-x-1/2 -translate-y-1/2 text-yellow-600 animate-pulse">
-                    <PinIcon color="#b89b5e" />
+                <div className="absolute top-1/4 left-1/4 transform -translate-x-1/2 -translate-y-1/2 text-gray-400 animate-pulse">
+                    <PinIcon color="#6b7280" />
                 </div>
 
-                <div className="absolute top-1/3 right-1/2 transform -translate-x-1/2 -translate-y-1/2 text-blue-900">
-                    <PinIcon color="#1e3a8a" />
+                <div className="absolute top-1/3 right-1/2 transform -translate-x-1/2 -translate-y-1/2 text-gradient-gold">
+                    <PinIcon color="#D4AF37" />
                 </div>
 
-                <div className="absolute top-1/2 right-1/3 transform -translate-x-1/2 -translate-y-1/2 text-blue-900 z-10">
-                    <PinIcon color="#1e3a8a" />
-                    <div className="absolute top-0 right-0 transform translate-x-full -translate-y-1/2 bg-white px-2 py-0.5 rounded shadow text-xs font-bold whitespace-nowrap">APAC</div>
+                <div className="absolute top-1/2 right-1/3 transform -translate-x-1/2 -translate-y-1/2 z-10 flex items-center">
+                    <PinIcon color="#D4AF37" />
+                    <div className="ml-1 text-black text-xs font-bold whitespace-nowrap">APAC</div>
                 </div>
 
-                <div className="absolute bottom-1/3 right-1/4 transform -translate-x-1/2 -translate-y-1/2 text-blue-900 z-10">
+                <div className="absolute bottom-1/3 right-1/4 transform -translate-x-1/2 -translate-y-1/2 z-10 flex items-center">
                     <PinIcon color="#1e3a8a" />
-                    <div className="absolute top-0 right-0 transform translate-x-full -translate-y-1/2 bg-white px-2 py-0.5 rounded shadow text-xs font-bold whitespace-nowrap">Global</div>
+                    <div className="ml-1 text-black text-xs font-bold whitespace-nowrap">Global</div>
                 </div>
 
                 {/* APAC highlight circle */}
-                <div className="absolute top-1/2 right-1/3 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-yellow-500/20 rounded-full animate-ping"></div>
+                <div className="absolute top-1/2 right-1/3 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-gray-900/10 rounded-full animate-ping"></div>
             </div>
         </div>
     )
