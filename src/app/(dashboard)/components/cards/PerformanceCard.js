@@ -2,15 +2,17 @@ import React from 'react';
 
 export default function PerformanceCard() {
     return (
-        <div className="bg-white rounded-xl p-6 shadow-md border border-gray-200 animate__animated animate__fadeInUp flex flex-col h-full w-full">
-            <div className="flex justify-between items-start mb-6">
-                <div className="w-8 h-8 flex-shrink-0">
-                    <img src="/hutchinson-logo.png" alt="" className="w-full h-full object-contain drop-shadow-md" />
-                </div>
+        <div className="bg-white rounded-xl p-6 shadow-md border border-gray-200 animate__animated animate__fadeInUp flex flex-col h-full w-full group cursor-pointer relative">
+            {/* Lion logo overlay - shown on hover over entire card */}
+            <div className="absolute inset-0 bg-black hover:bg-opacity-25 rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
+                <img src="/lion.png" alt="" className="w-64 h-64 object-contain" />
+            </div>
+            <div className="flex justify-between items-start mb-6 relative z-20">
+                <h3 className="text-lg font-bold text-gray-800 group-hover:text-white duration-200">Performance Analytics</h3>
             </div>
 
             {/* Pseudo Chart Box */}
-            <div className="flex-1 relative mt-4 h-48 w-full border-b border-l border-gray-200">
+            <div className="flex-1 relative mt-4 h-48 w-full border-b border-l border-gray-200 group-hover:opacity-0 transition-opacity duration-200">
                 {/* Grid lines */}
                 <div className="absolute inset-0 flex flex-col justify-between">
                     {[1000, 900, 600, 200, 0].map(val => (
