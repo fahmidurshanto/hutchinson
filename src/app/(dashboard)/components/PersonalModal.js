@@ -1,15 +1,8 @@
 "use client";
+import React, { useState } from 'react';
 import DashboardModal from '../../../components/ui/DashboardModal';
 
-const personalData = [
-    { label: 'First Name',   value: 'Saad' },
-    { label: 'Last Name',    value: 'Salman' },
-    { label: 'Phone Number', value: '8423525' },
-    { label: 'Email',        value: 'saad@gmail.com' },
-    { label: 'NRIC',         value: 'S12345678N' },
-    { label: 'Address',      value: '96 Northumberland Road, Singapore 938221' },
-    { label: 'Nationality',  value: 'Singaporean' },
-];
+
 
 const PersonIcon = (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
@@ -18,20 +11,89 @@ const PersonIcon = (
 );
 
 export default function PersonalModal({ isOpen, onClose }) {
+    const [isEditing, setIsEditing] = useState(false);
+    const [isPending, setIsPending] = useState(false);
+    const [formData, setFormData] = useState({
+        "First Name": "Saad",
+        "Last Name": "Salman",
+        "Phone Number": "8423525",
+        "Email": "saad@gmail.com",
+        "NRIC": "S12345678N",
+        "Address": "96 Northumberland Road, Singapore 938221",
+        "Nationality": "Singaporean"
+    });
+
+    const handleInputChange = (key, value) => {
+        setFormData(prev => ({ ...prev, [key]: value }));
+    };
+
+    const handleSubmit = () => {
+        setIsPending(true);
+        setIsEditing(false);
+    };
+
+    const secondaryAction = !isPending && (
+        <button
+            onClick={() => setIsEditing(!isEditing)}
+            className="px-6 cursor-pointer py-2 border-2 border-black text-black text-sm font-bold rounded-lg hover:bg-black hover:text-white transition-all duration-200"
+        >
+            {isEditing ? 'Cancel' : 'Request Edit'}
+        </button>
+    );
+
+    const footerAction = isEditing ? (
+        <button
+            onClick={handleSubmit}
+            className="px-6 cursor-pointer py-2 bg-gradient-gold text-black text-sm font-bold rounded-lg shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-200"
+        >
+            Submit Request
+        </button>
+    ) : null;
+
     return (
         <DashboardModal
             isOpen={isOpen}
-            onClose={onClose}
+            onClose={() => {
+                onClose();
+                if (!isPending) setIsEditing(false);
+            }}
             title="Personal Information"
             icon={PersonIcon}
+            secondaryAction={secondaryAction}
+            footer={footerAction}
         >
-            <div className="divide-y divide-gray-100">
-                {personalData.map(({ label, value }) => (
-                    <div key={label} className="flex items-center justify-between py-3">
-                        <span className="text-sm text-gray-500 font-medium w-36 shrink-0">{label}</span>
-                        <span className="text-sm text-gray-900 font-semibold text-right">{value}</span>
+            <div className="space-y-4 py-2">
+                {isPending && (
+                    <div className="bg-amber-50 border border-amber-200 p-3 rounded-lg flex items-center gap-3 mb-4 animate__animated animate__fadeIn">
+                        <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center text-amber-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                                <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z" clipRule="evenodd" />
+                            </svg>
+                        </div>
+                        <p className="text-[11px] font-bold text-amber-800">Edit Request Pending Approval</p>
                     </div>
-                ))}
+                )}
+
+                <div className="divide-y divide-gray-100">
+                    {Object.entries(formData).map(([key, value]) => (
+                        <div key={key} className="flex flex-col sm:flex-row sm:items-center justify-between py-3 gap-1">
+                            <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">{key}</span>
+                            <div className="flex items-center gap-2 flex-1 sm:justify-end">
+                                <span className="hidden sm:inline text-gray-300 font-medium">:</span>
+                                {isEditing ? (
+                                    <input
+                                        type="text"
+                                        value={value}
+                                        onChange={(e) => handleInputChange(key, e.target.value)}
+                                        className="w-full sm:w-auto text-sm font-bold text-gray-900 border-b border-gray-200 focus:border-[#D4AF37] outline-none bg-transparent py-1 px-2 text-right"
+                                    />
+                                ) : (
+                                    <span className="text-sm font-bold text-gray-900 text-right">{value}</span>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
         </DashboardModal>
     );

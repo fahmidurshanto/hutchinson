@@ -13,7 +13,7 @@ import { Fragment } from 'react';
  *  - children  {ReactNode}  Modal body content
  *  - footer    {ReactNode}  Optional custom footer (defaults to a Close button)
  */
-export default function DashboardModal({ isOpen, onClose, title, icon, children, footer }) {
+export default function DashboardModal({ isOpen, onClose, title, icon, children, footer, secondaryAction }) {
     return (
         <Transition appear show={isOpen} as={Fragment}>
             <Dialog as="div" className="relative z-50" onClose={onClose}>
@@ -22,7 +22,7 @@ export default function DashboardModal({ isOpen, onClose, title, icon, children,
                 <TransitionChild
                     as={Fragment}
                     enter="ease-out duration-200" enterFrom="opacity-0" enterTo="opacity-100"
-                    leave="ease-in duration-150"  leaveFrom="opacity-100" leaveTo="opacity-0"
+                    leave="ease-in duration-150" leaveFrom="opacity-100" leaveTo="opacity-0"
                 >
                     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" />
                 </TransitionChild>
@@ -32,7 +32,7 @@ export default function DashboardModal({ isOpen, onClose, title, icon, children,
                     <TransitionChild
                         as={Fragment}
                         enter="ease-out duration-200" enterFrom="opacity-0 scale-95" enterTo="opacity-100 scale-100"
-                        leave="ease-in duration-150"  leaveFrom="opacity-100 scale-100" leaveTo="opacity-0 scale-95"
+                        leave="ease-in duration-150" leaveFrom="opacity-100 scale-100" leaveTo="opacity-0 scale-95"
                     >
                         <DialogPanel className="w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden">
 
@@ -48,7 +48,7 @@ export default function DashboardModal({ isOpen, onClose, title, icon, children,
                                 </div>
                                 <button
                                     onClick={onClose}
-                                    className="text-black/70 hover:text-black transition-colors duration-150"
+                                    className="cursor-pointer text-black/70 hover:text-black transition-colors duration-150"
                                     aria-label="Close modal"
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
@@ -63,11 +63,12 @@ export default function DashboardModal({ isOpen, onClose, title, icon, children,
                             </div>
 
                             {/* Footer */}
-                            <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end">
+                            <div className="px-6 cursor-pointer py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
+                                {secondaryAction}
                                 {footer ?? (
                                     <button
                                         onClick={onClose}
-                                        className="px-6 py-2 bg-gradient-gold text-black text-sm font-bold rounded-lg shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-200"
+                                        className="px-6 cursor-pointer py-2 bg-gradient-gold text-black text-sm font-bold rounded-lg shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-200"
                                     >
                                         Close
                                     </button>

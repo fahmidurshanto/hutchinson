@@ -28,10 +28,6 @@ export default function DocumentsModal({ isOpen, onClose }) {
         event.target.value = null;
     };
 
-    const removeDocument = (id) => {
-        setDocuments(documents.filter(doc => doc.id !== id));
-    };
-
     return (
         <DashboardModal
             isOpen={isOpen}
@@ -89,14 +85,6 @@ export default function DocumentsModal({ isOpen, onClose }) {
                                             <p className="text-[10px] text-gray-400">{doc.size} • {doc.date}</p>
                                         </div>
                                     </div>
-                                    <button
-                                        onClick={() => removeDocument(doc.id)}
-                                        className="text-gray-300 hover:text-red-500 transition-colors p-1"
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                    </button>
                                 </div>
                             ))}
                         </div>
