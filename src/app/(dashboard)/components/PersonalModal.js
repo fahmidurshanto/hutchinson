@@ -17,6 +17,7 @@ export default function PersonalModal({ isOpen, onClose }) {
         "First Name": "Saad",
         "Last Name": "Salman",
         "Phone Number": "8423525",
+        "Gender": "MALE",
         "Email": "saad@gmail.com",
         "NRIC": "S12345678N",
         "Address": "96 Northumberland Road, Singapore 938221",
