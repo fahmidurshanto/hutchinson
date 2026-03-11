@@ -1,5 +1,6 @@
 "use client";
 import React from 'react';
+import { useAppContext } from '../../context/AppContext';
 
 export default function Sidebar() {
     const menuItems = [
@@ -31,14 +32,27 @@ export default function Sidebar() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
             )
+        },
+        {
+            id: 'CALENDAR', icon: (
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z" />
+                </svg>
+            )
         }
     ];
+
+    const { activeTab, setActiveTab } = useAppContext();
 
     return (
         <aside className="w-16 md:w-20 bg-white border-r border-gray-200 h-full flex flex-col items-center py-6 fixed left-0 top-0 z-40">
             <div className="flex-1 w-full space-y-6 flex flex-col items-center mt-20"> {/* Margin top to clear possible top nav logo overlap depending on layout */}
-                {menuItems.map((item, idx) => (
-                    <button key={item.id} className={`cursor-pointer w-12 h-12 flex items-center justify-center rounded-r-md transition-colors ${idx === 0 ? 'bg-gradient-gold text-black shadow-md' : 'text-gray-400 hover:bg-gray-100 hover:text-gray-700'}`}>
+                {menuItems.map((item) => (
+                    <button 
+                        key={item.id} 
+                        onClick={() => setActiveTab(item.id)}
+                        className={`cursor-pointer w-12 h-12 flex items-center justify-center rounded-r-md transition-colors ${activeTab === item.id ? 'bg-gradient-gold text-black shadow-md' : 'text-gray-400 hover:bg-gray-100 hover:text-gray-700'}`}
+                    >
                         {item.icon}
                     </button>
                 ))}
