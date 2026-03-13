@@ -2,6 +2,7 @@
 import { useAppContext } from '../../context/AppContext';
 import DashboardHero from './components/DashboardHero';
 import ServiceApplicationsPage from './components/ServiceApplicationsPage';
+import ReportsPage from './components/ReportsPage';
 import CalendarPage from './components/CalendarPage';
 import UserDashboardCards from './components/cards/UserDashboardCards';
 
@@ -16,6 +17,10 @@ export default function DashboardHomePage() {
 
     if (activeTab === 'SERVICE APPLICATIONS') {
         return <ServiceApplicationsPage />;
+    }
+
+    if (activeTab === 'REPORTS') {
+        return <ReportsPage />;
     }
 
     // Default: Dashboard view
