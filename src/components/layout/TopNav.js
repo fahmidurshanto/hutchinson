@@ -60,7 +60,7 @@ export default function TopNav() {
                 CONTAINER 2 — Navigation Links
                 Silver bar, tabs start after the logo width.
             ══════════════════════════════════════════════════════ */}
-            <nav className="flex items-stretch h-11 ml-[180px] md:ml-[20%] bg-gradient-to-r from-[#939391] via-[#b7b8b2] to-[#a4a39f]">
+            <nav className="flex items-stretch h-11 ml-[180px] md:ml-[12%] bg-gradient-to-r from-[#939391] via-[#b7b8b2] to-[#a4a39f]">
                 {tabs.map((tab) => {
                     const isActive = activeTab === tab;
                     const isAdmin = tab === 'ADMIN';
