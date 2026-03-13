@@ -1,20 +1,22 @@
 "use client";
 import React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useAppContext } from '../../context/AppContext';
 
 export default function TopNav() {
+    const pathname = usePathname();
     const { user, activeTab, setActiveTab } = useAppContext();
-    const tabs = ['DASHBOARD', 'REPORTS', 'SERVICE APPLICATIONS', 'ADMIN'];
+    const tabs = ['DASHBOARD', 'REPORTS', 'SERVICES', 'ADMIN'];
 
     return (
-        <header className="fixed top-0 left-0 w-full z-50 flex flex-col bg-gradient-silver-horizontal">
+        <header className="fixed top-0 left-0 w-full z-50 flex flex-col bg-gradient-silver-horizontal shadow-xl">
 
             {/* ══════════════════════════════════════════════════════
                 CONTAINER 1 — Branding (logo) + User Info
                 White curved band. Logo is absolute inside, overflows below.
             ══════════════════════════════════════════════════════ */}
-            <div className="relative w-full flex items-center h-12 bg-white shadow-lg overflow-visible">
+            <div className="relative w-full flex items-center h-12 bg-white shadow-lg border overflow-visible">
 
                 {/* Logo Panel — overflows below Container 1 into Container 2 */}
                 <div className="absolute left-0 top-0 w-[180px] h-[102px] bg-white rounded-br-[2.5rem] flex items-center justify-center shadow-lg z-50">
@@ -27,6 +29,8 @@ export default function TopNav() {
 
                 {/* User Info — pushed right of logo */}
                 <div className="ml-[180px] flex-1 flex items-center justify-end pr-6 gap-3 h-full">
+
+
 
                     {/* Shield icon + name */}
                     <div className="flex items-center gap-2">
@@ -43,6 +47,11 @@ export default function TopNav() {
                         </svg>
                     </div>
 
+
+                    {/* Login Button */}
+                    <Link href="/login" className="px-5 py-1.5 rounded-full bg-gradient-gold text-gray-900 text-xs font-bold shadow-md hover:shadow-lg hover:scale-105 transition-all mr-2">
+                        Login
+                    </Link>
                     {/* Logout */}
                     <Link
                         href="/login"
@@ -62,8 +71,22 @@ export default function TopNav() {
             ══════════════════════════════════════════════════════ */}
             <nav className="flex items-stretch h-11 ml-[180px] md:ml-[12%] bg-gradient-to-r from-[#939391] via-[#b7b8b2] to-[#a4a39f]">
                 {tabs.map((tab) => {
-                    const isActive = activeTab === tab;
-                    const isAdmin = tab === 'ADMIN';
+                    const isReportRoute = tab === 'REPORTS';
+                    const isAdminRoute = tab === 'ADMIN';
+                    const isServicesRoute = tab === 'SERVICES';
+                    const isRoute = isReportRoute || isAdminRoute || isServicesRoute;
+
+                    let href = '/';
+                    if (isReportRoute) href = '/reports';
+                    if (isAdminRoute) href = '/admin';
+                    if (isServicesRoute) href = '/services';
+
+                    // Active logic: 
+                    // 1. If it's a dedicated route, check pathname
+                    // 2. If it's a home tab (only DASHBOARD now), check if we are on home AND activeTab matches
+                    const isActive = isRoute
+                        ? pathname.startsWith(href)
+                        : (pathname === '/' && activeTab === tab);
 
                     const tabContent = (
                         <span className={`flex items-center h-full px-6 font-bold text-xs tracking-[0.08em] whitespace-nowrap border-b-[3px] transition-colors cursor-pointer select-none
@@ -76,23 +99,17 @@ export default function TopNav() {
                         </span>
                     );
 
-                    return isAdmin ? (
+                    return (
                         <Link
                             key={tab}
-                            href="/admin"
+                            href={href}
                             className="flex items-stretch"
-                            onClick={() => setActiveTab(tab)}
+                            onClick={() => {
+                                if (!isRoute) setActiveTab(tab);
+                            }}
                         >
                             {tabContent}
                         </Link>
-                    ) : (
-                        <button
-                            key={tab}
-                            onClick={() => setActiveTab(tab)}
-                            className="flex items-stretch"
-                        >
-                            {tabContent}
-                        </button>
                     );
                 })}
             </nav>

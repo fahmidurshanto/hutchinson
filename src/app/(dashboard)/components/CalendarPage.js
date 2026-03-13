@@ -75,7 +75,7 @@ export default function CalendarPage() {
 
                 {/* Right Panel: Upcoming Sched & Summaries */}
                 <div className="lg:col-span-4 space-y-6 flex flex-col">
-                    
+
                     {/* Instructions/Reminders Card */}
                     <div className="bg-gradient-gold p-6 rounded-2xl shadow-lg border border-[#b38b22]/30 relative overflow-hidden group hover:scale-[1.02] transition-all duration-300">
                         <div className="absolute right-[-10%] top-[-10%] opacity-10 group-hover:rotate-12 transition-transform duration-700">
@@ -84,8 +84,8 @@ export default function CalendarPage() {
                             </svg>
                         </div>
                         <h3 className="text-black font-black text-xs uppercase tracking-widest mb-3 flex items-center gap-2">
-                             <span className="w-1.5 h-1.5 bg-black rounded-full"></span>
-                             Instructions/Reminders
+                            <span className="w-1.5 h-1.5 bg-black rounded-full"></span>
+                            Instructions/Reminders
                         </h3>
                         <p className="text-black/80 text-sm font-bold leading-relaxed mb-4">
                             Please remember to bring your updated **NRIC/Passport** and **Proof of Address** for the "Document Verification" meeting on Mar 18.
@@ -98,7 +98,7 @@ export default function CalendarPage() {
                     {/* Upcoming Schedules Section */}
                     <div className="bg-white rounded-2xl shadow-lg border border-gray-100 flex-1 flex flex-col overflow-hidden">
                         <div className="px-6 py-4 bg-gray-50 border-b border-gray-100">
-                             <h3 className="text-gray-900 font-bold text-xs uppercase tracking-widest">Upcoming Schedules</h3>
+                            <h3 className="text-gray-900 font-bold text-xs uppercase tracking-widest">Upcoming Schedules</h3>
                         </div>
                         <div className="p-4 space-y-3 overflow-y-auto max-h-[300px] custom-scrollbar">
                             {upcomingSchedules.map(item => (
@@ -108,7 +108,7 @@ export default function CalendarPage() {
                                         <span className="text-[10px] text-[#D4AF37] font-black">{item.time}</span>
                                     </div>
                                     <h4 className="text-sm font-bold text-gray-900 group-hover:text-[#D4AF37] transition-colors line-clamp-1">{item.title}</h4>
-                                    <p className="text-[10px] text-gray-400 font-medium mt-0.5">{item.date}</p>
+                                    <p className="text-[10px] text-gray-800 font-medium mt-0.5">{item.date}</p>
                                 </div>
                             ))}
                         </div>
@@ -123,7 +123,7 @@ export default function CalendarPage() {
                         <div className="space-y-6">
                             {meetingSummaries.map(item => (
                                 <div key={item.id} className="relative pl-6 before:absolute before:left-0 before:top-1 before:w-2 before:h-2 before:bg-[#D4AF37] before:rounded-full before:shadow-[0_0_10px_#D4AF37]">
-                                    <h4 className="text-white font-bold text-sm mb-1">{item.title}</h4>
+                                    <h4 className="font-bold text-sm mb-1">{item.title}</h4>
                                     <p className="text-[10px] text-gray-500 mb-2">{item.date}</p>
                                     <p className="text-xs text-gray-400 leading-relaxed font-medium bg-white/5 p-3 rounded-lg">{item.summary}</p>
                                 </div>
@@ -147,6 +147,7 @@ export default function CalendarPage() {
                     font-weight: 800 !important;
                     text-transform: uppercase;
                     letter-spacing: 0.05em;
+                    color: black;
                 }
                 .calendar-container .fc-button-primary {
                     background-color: transparent !important;

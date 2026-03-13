@@ -59,9 +59,9 @@ const years = Object.keys(dummyData);
 const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
         return (
-            <div className="bg-white/90 backdrop-blur-sm p-3 border-2 border-brand-primary rounded-lg shadow-xl">
+            <div className="bg-white/90 backdrop-blur-sm p-3 border-2 border-[#D4AF37] rounded-lg shadow-xl">
                 <p className="font-bold text-gray-800">{label}</p>
-                <p className="text-brand-primary font-bold">
+                <p className="text-[#D4AF37] font-bold">
                     ${payload[0].value.toLocaleString()}
                 </p>
             </div>
@@ -79,7 +79,7 @@ export default function ReportsPage() {
                 
                 {/* Left Column: Year Selection */}
                 <div className="w-full md:w-48 flex flex-col gap-3">
-                    <h3 className="text-lg font-bold text-gray-800 mb-2 border-b-2 border-brand-primary/20 pb-2">
+                    <h3 className="text-lg font-bold text-gray-800 mb-2 border-b-2 border-[#D4AF37]/20 pb-2">
                         Select Year
                     </h3>
                     {years.map((year) => (
@@ -88,9 +88,12 @@ export default function ReportsPage() {
                             onClick={() => setSelectedYear(year)}
                             className={`px-6 py-4 rounded-xl font-bold text-sm tracking-widest transition-all duration-300 shadow-sm
                                 ${selectedYear === year 
-                                    ? 'bg-gradient-gold text-white scale-105 shadow-gold-glow' 
-                                    : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-100 hover:border-brand-primary/30'
+                                    ? 'bg-gradient-gold text-white scale-105' 
+                                    : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-100 hover:border-[#D4AF37]/30'
                                 }`}
+                                style={{
+                                    background: selectedYear === year ? 'linear-gradient(135deg, #e6c875 0%, #d4af37 50%, #b38b22 100%)' : ''
+                                }}
                         >
                             {year}
                         </button>
@@ -100,13 +103,13 @@ export default function ReportsPage() {
                 {/* Right Column: Chart */}
                 <div className="flex-1 bg-white rounded-3xl p-6 md:p-10 shadow-xl border border-gray-100 relative overflow-hidden">
                     {/* Subtle Background Pattern */}
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-brand-primary/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-[#D4AF37]/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
                     
                     <div className="relative z-10 h-full flex flex-col">
                         <div className="flex justify-between items-center mb-10">
                             <div>
                                 <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
-                                    Investment Analysis <span className="text-brand-primary">{selectedYear}</span>
+                                    Investment Analysis <span className="text-[#D4AF37]">{selectedYear}</span>
                                 </h2>
                                 <p className="text-gray-500 mt-1">Monthly performance and capital allocation</p>
                             </div>

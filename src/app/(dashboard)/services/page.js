@@ -13,7 +13,7 @@ const activeApplications = [
     { id: 'APAC-003', type: 'Advisory Services', date: '15 Jun', status: 'Completed', statusColor: '#9ca3af' },
 ];
 
-export default function ServiceApplicationsPage() {
+export default function ServicesPage() {
     const [selectedCategory, setSelectedCategory] = useState('global');
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [details, setDetails] = useState('');

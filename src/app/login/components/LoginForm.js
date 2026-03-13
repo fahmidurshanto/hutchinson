@@ -1,29 +1,44 @@
 "use client";
 
 import React, { useState } from 'react';
-import Input from '../../../components/ui/Input';
-import Button from '../../../components/ui/Button';
 import Link from 'next/link';
 
 export default function LoginForm() {
     const [showPassword, setShowPassword] = useState(false);
 
     return (
-        <form className="w-full mt-6" onSubmit={(e) => e.preventDefault()}>
-            <Input
-                id="email"
-                type="email"
-                placeholder="your.name@hutchinson.apac"
-                label="Username or Email Address"
-            />
-            <Input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                placeholder="[brushed silver text]"
-                label="Password"
-                icon={
-                    <button type="button" onClick={() => setShowPassword(!showPassword)} title="Toggle Password Visibility">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 cursor-pointer">
+        <form className="w-full mt-5" onSubmit={(e) => e.preventDefault()}>
+            {/* Username Input */}
+            <div className="w-full mb-4">
+                <div className="relative">
+                    <input
+                        id="email"
+                        type="email"
+                        placeholder="your.name@hutchinson.apac"
+                        className="w-full px-3 py-2.5 border-[1.5px] border-gray-300 rounded-md focus:outline-none focus:border-[#c6a267] focus:ring-1 focus:ring-[#c6a267] transition-colors text-black placeholder-black bg-white text-[14px]"
+                    />
+                </div>
+                <label htmlFor="email" className="block mt-1 text-[13px] font-medium text-[#9a804a]">
+                    Username or Email Address
+                </label>
+            </div>
+
+            {/* Password Input */}
+            <div className="w-full mb-5 relative">
+                <div className="relative">
+                    <input
+                        id="password"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="[brushed silver text]"
+                        className="w-full px-3 py-2.5 border-[1.5px] border-gray-300 rounded-md focus:outline-none focus:border-[#c6a267] focus:ring-1 focus:ring-[#c6a267] transition-colors text-black placeholder-gray-500 bg-white text-[14px]"
+                    />
+                    <button 
+                        type="button" 
+                        onClick={() => setShowPassword(!showPassword)} 
+                        title="Toggle Password Visibility"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-[18px] h-[18px] cursor-pointer">
                             {showPassword ? (
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
                             ) : (
@@ -34,21 +49,26 @@ export default function LoginForm() {
                             )}
                         </svg>
                     </button>
-                }
-            />
-            <Button type="submit">
-                LOGIN
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-gray-800">
+                </div>
+                <label htmlFor="password" className="block mt-1 text-[13px] font-medium text-[#9a804a]">
+                    Password
+                </label>
+            </div>
+
+            {/* Login Button */}
+            <button 
+                type="submit"
+                className="w-full py-2 px-4 rounded-[4px] shadow-[0_4px_8px_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(255,255,255,0.4)] transition-all flex items-center justify-center gap-1.5 mt-2 hover:brightness-105 active:scale-[0.98]"
+                style={{
+                    background: 'linear-gradient(to bottom, #d5b573 0%, #a87e35 50%, #c19c50 100%)',
+                    border: '1px solid #725721'
+                }}
+            >
+                <span className="text-[16px] font-medium text-black tracking-normal">LOGIN</span>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-[14px] h-[14px] text-black">
                     <path fillRule="evenodd" d="M12 1.5a5.25 5.25 0 00-5.25 5.25v3a3 3 0 00-3 3v6.75a3 3 0 003 3h10.5a3 3 0 003-3v-6.75a3 3 0 00-3-3v-3c0-2.9-2.35-5.25-5.25-5.25zm3.75 8.25v-3a3.75 3.75 0 10-7.5 0v3h7.5z" clipRule="evenodd" />
                 </svg>
-            </Button>
-
-            <p className="text-center text-sm text-gray-600 mt-5">
-                Don&apos;t have an account?{' '}
-                <Link href="/signup" className="font-bold text-gradient-gold hover:underline">
-                    Create Account
-                </Link>
-            </p>
+            </button>
         </form>
     )
 }
