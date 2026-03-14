@@ -5,11 +5,10 @@ import { useAppContext } from '../../context/AppContext';
 
 export default function AdminTopNav() {
     const { user, adminTab, setAdminTab } = useAppContext();
-    const tabs = ['OVERVIEW', 'USER MANAGEMENT', 'SETTINGS'];
+    const tabs = ['OVERVIEW', 'USER MANAGEMENT', 'SCHEDULE', 'SETTINGS'];
 
     return (
-        <header className="fixed top-0 left-0 w-full h-20 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 flex items-center z-50 px-4 md:px-8 shadow-lg"
-            style={{ paddingLeft: 'calc(4rem + 2rem)' }}>
+        <header className="fixed top-0 left-0 w-full h-20 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 flex items-center z-50 px-4 md:px-8 shadow-lg">
 
             {/* Brand Area */}
             <div className="absolute left-0 top-0 h-[120%] w-48 md:w-64 bg-gray-950 shadow-lg flex items-center justify-center shadow-white/20 rounded-br-[3rem]  border-transparent z-50"
@@ -20,19 +19,40 @@ export default function AdminTopNav() {
             </div>
 
             {/* Navigation Tabs */}
-            <nav className="hidden md:flex flex-1 ml-48 lg:ml-64 space-x-1 lg:space-x-6 h-full items-end">
-                {tabs.map((tab) => (
-                    <button
-                        key={tab}
-                        onClick={() => setAdminTab(tab)}
-                        className={`cursor-pointer h-full px-6 flex items-center justify-center font-bold text-xs lg:text-sm tracking-wide transition-colors border-b-4 ${adminTab === tab
-                            ? 'bg-gradient-gold text-gray-900 border-transparent'
-                            : 'text-gray-400 border-transparent hover:text-white hover:bg-white/5'
-                            }`}
-                    >
-                        {tab}
-                    </button>
-                ))}
+            <nav className="hidden md:flex flex-1 ml-48 lg:ml-64 space-x-1 lg:space-x-4 h-full items-end">
+                {tabs.map((tab) => {
+                    const isSchedule = tab === 'SCHEDULE';
+                    const href = isSchedule ? '/admin/schedule' : null;
+
+                    const content = (
+                        <div
+                            className={`cursor-pointer h-full px-6 flex items-center justify-center font-bold text-xs lg:text-sm tracking-wide transition-colors border-b-4 ${adminTab === tab
+                                ? 'bg-gradient-gold text-gray-900 border-transparent'
+                                : 'text-gray-400 border-transparent hover:text-white hover:bg-white/5'
+                                }`}
+                        >
+                            {tab}
+                        </div>
+                    );
+
+                    if (isSchedule) {
+                        return (
+                            <Link key={tab} href="/admin/schedule" className="h-full">
+                                {content}
+                            </Link>
+                        );
+                    }
+
+                    return (
+                        <button
+                            key={tab}
+                            onClick={() => setAdminTab(tab)}
+                            className="h-full contents"
+                        >
+                            {content}
+                        </button>
+                    );
+                })}
             </nav>
 
             {/* Right side: Admin Badge + User + Logout */}

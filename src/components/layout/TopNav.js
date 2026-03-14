@@ -7,7 +7,7 @@ import { useAppContext } from '../../context/AppContext';
 export default function TopNav() {
     const pathname = usePathname();
     const { user, activeTab, setActiveTab } = useAppContext();
-    const tabs = ['DASHBOARD', 'REPORTS', 'SERVICES', 'ADMIN'];
+    const tabs = ['DASHBOARD', 'REPORTS', 'SERVICES', 'SCHEDULE', 'ADMIN'];
 
     return (
         <header className="fixed top-0 left-0 w-full z-50 flex flex-col bg-gradient-silver-horizontal shadow-xl">
@@ -81,6 +81,7 @@ export default function TopNav() {
                         if (isReportRoute) href = '/reports';
                         if (isAdminRoute) href = '/admin';
                         if (isServicesRoute) href = '/services';
+                        if (tab === 'SCHEDULE') href = '/schedule';
 
                         // Active logic: 
                         // 1. If it's a dedicated route, check pathname

@@ -18,9 +18,9 @@ const meetingSummaries = [
 
 export default function CalendarPage() {
     const [events] = useState([
-        { title: 'Review Meeting', start: '2026-03-15T10:30:00', backgroundColor: '#D4AF37', borderColor: '#D4AF37' },
-        { title: 'Doc Check', start: '2026-03-18T14:00:00', backgroundColor: '#000000', borderColor: '#000000' },
-        { title: 'Strategy Session', start: '2026-03-22T11:00:00', backgroundColor: '#D4AF37', borderColor: '#D4AF37' },
+        { title: 'Review Meeting', start: '2026-03-15T10:30:00', backgroundColor: '#10b981', borderColor: '#10b981' },
+        { title: 'Doc Check', start: '2026-03-18T14:00:00', backgroundColor: 'transparent', borderColor: '#000000' },
+        { title: 'Strategy Session', start: '2026-03-22T11:00:00', backgroundColor: '#10b981', borderColor: '#10b981' },
     ]);
 
     return (
@@ -32,7 +32,7 @@ export default function CalendarPage() {
                 </div>
                 <div className="relative z-10 w-full">
                     <h1 className="text-3xl md:text-4xl font-bold mb-2 tracking-wide text-gradient-gold bg-clip-text">
-                        SCHEDULES & CALENDAR
+                        SCHEDULES
                     </h1>
                     <p className="text-gray-500 text-sm font-medium">
                         Manage your appointments, meeting summaries, and upcoming schedules.
@@ -42,17 +42,17 @@ export default function CalendarPage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* Left: Calendar Component */}
-                <div className="lg:col-span-8 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                    <div className="bg-black px-6 py-4 flex items-center justify-between border-b border-[#D4AF37]">
-                        <h2 className="text-white font-bold text-sm tracking-widest uppercase">Monthly Calendar</h2>
+                <div className="lg:col-span-8 bg-white rounded-2xl shadow-2xl border-2 border-[#D4AF37]/30 overflow-hidden">
+                    <div className="bg-gradient-gold px-6 py-4 flex items-center justify-between border-b border-[#b38b22]/30">
+                        <h2 className="text-black font-black text-sm tracking-widest uppercase">Monthly Schedule</h2>
                         <div className="flex items-center gap-4">
                             <div className="flex items-center gap-1.5">
-                                <span className="w-2.5 h-2.5 rounded-full bg-[#D4AF37]"></span>
-                                <span className="text-[10px] text-gray-400 font-bold uppercase">Meetings</span>
+                                <span className="w-2.5 h-2.5 rounded-full bg-[#10b981]"></span>
+                                <span className="text-[10px] text-black font-bold uppercase">Meetings</span>
                             </div>
                             <div className="flex items-center gap-1.5">
                                 <span className="w-2.5 h-2.5 rounded-full bg-black"></span>
-                                <span className="text-[10px] text-gray-400 font-bold uppercase">Tasks</span>
+                                <span className="text-[10px] text-black font-bold uppercase">Tasks</span>
                             </div>
                         </div>
                     </div>
@@ -67,7 +67,7 @@ export default function CalendarPage() {
                             }}
                             events={events}
                             height="550px"
-                            eventTextColor="#ffffff"
+                            eventTextColor="#000000"
                             dayMaxEvents={true}
                         />
                     </div>
@@ -107,7 +107,7 @@ export default function CalendarPage() {
                                         <span className="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded font-bold uppercase tracking-tighter">{item.type}</span>
                                         <span className="text-[10px] text-[#D4AF37] font-black">{item.time}</span>
                                     </div>
-                                    <h4 className="text-sm font-bold text-gray-900 group-hover:text-[#D4AF37] transition-colors line-clamp-1">{item.title}</h4>
+                                    <h4 className="text-sm font-bold text-black group-hover:text-[#D4AF37] transition-colors line-clamp-1">{item.title}</h4>
                                     <p className="text-[10px] text-gray-800 font-medium mt-0.5">{item.date}</p>
                                 </div>
                             ))}
@@ -118,14 +118,19 @@ export default function CalendarPage() {
                     </div>
 
                     {/* Meeting Summary Section */}
-                    <div className="bg-gray-950 rounded-2xl shadow-2xl border border-gray-800 p-6">
-                        <h3 className="text-white font-bold text-xs uppercase tracking-widest mb-5 border-b border-gray-800 pb-3">Recent Meeting Summaries</h3>
-                        <div className="space-y-6">
+                    <div className="bg-gradient-gold rounded-2xl shadow-2xl border border-[#b38b22]/30 p-6 relative overflow-hidden group">
+                        <div className="absolute right-[-5%] top-[-5%] opacity-[0.03] group-hover:scale-110 transition-transform duration-1000">
+                            <svg className="w-40 h-40 text-black" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14h-7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
+                            </svg>
+                        </div>
+                        <h3 className="text-black font-black text-xs uppercase tracking-widest mb-5 border-b border-black/10 pb-3">Recent Meeting Summaries</h3>
+                        <div className="space-y-6 relative z-10">
                             {meetingSummaries.map(item => (
-                                <div key={item.id} className="relative pl-6 before:absolute before:left-0 before:top-1 before:w-2 before:h-2 before:bg-[#D4AF37] before:rounded-full before:shadow-[0_0_10px_#D4AF37]">
-                                    <h4 className="font-bold text-sm mb-1">{item.title}</h4>
-                                    <p className="text-[10px] text-gray-500 mb-2">{item.date}</p>
-                                    <p className="text-xs text-gray-400 leading-relaxed font-medium bg-white/5 p-3 rounded-lg">{item.summary}</p>
+                                <div key={item.id} className="relative pl-6 before:absolute before:left-0 before:top-1 before:w-2 before:h-2 before:bg-black before:rounded-full">
+                                    <h4 className="font-black text-sm mb-1 text-black">{item.title}</h4>
+                                    <p className="text-[10px] text-black/60 mb-2 font-bold">{item.date}</p>
+                                    <p className="text-xs text-black/80 leading-relaxed font-bold bg-white/20 p-3 rounded-xl border border-white/30">{item.summary}</p>
                                 </div>
                             ))}
                         </div>
@@ -139,7 +144,7 @@ export default function CalendarPage() {
                 .calendar-container .fc {
                     --fc-border-color: #f1f1f1;
                     --fc-daygrid-event-dot-width: 8px;
-                    --fc-today-bg-color: #fcfcfc;
+                    --fc-today-bg-color: #fffbeb;
                     font-family: inherit;
                 }
                 .calendar-container .fc-toolbar-title {
@@ -147,12 +152,12 @@ export default function CalendarPage() {
                     font-weight: 800 !important;
                     text-transform: uppercase;
                     letter-spacing: 0.05em;
-                    color: black;
+                    color: #A67C00;
                 }
                 .calendar-container .fc-button-primary {
-                    background-color: transparent !important;
-                    border-color: #e5e7eb !important;
-                    color: #4b5563 !important;
+                    background-color: #ffffff !important;
+                    border-color: #D4AF37 !important;
+                    color: #A67C00 !important;
                     text-transform: uppercase !important;
                     font-size: 0.7rem !important;
                     font-weight: 700 !important;
@@ -160,28 +165,28 @@ export default function CalendarPage() {
                     transition: all 0.2s;
                 }
                 .calendar-container .fc-button-primary:hover {
-                    background-color: #f9fafb !important;
-                    border-color: #D4AF37 !important;
-                    color: #000 !important;
+                    background-color: #D4AF37 !important;
+                    color: #fff !important;
                 }
                 .calendar-container .fc-button-active {
-                    background-color: #000 !important;
-                    border-color: #000 !important;
+                    background-color: #A67C00 !important;
+                    border-color: #A67C00 !important;
                     color: #fff !important;
                 }
                 .calendar-container .fc-col-header-cell {
-                    background-color: #fafbfc;
+                    background-color: #fffbeb;
                     padding: 10px 0 !important;
                     text-transform: uppercase;
                     font-size: 0.65rem;
                     font-weight: 800;
                     letter-spacing: 0.05em;
-                    color: #6b7280;
+                    color: #A67C00;
+                    border-color: #f3e5ab !important;
                 }
                 .calendar-container .fc-daygrid-day-number {
                     font-size: 0.8rem;
                     font-weight: 600;
-                    color: #9ca3af;
+                    color: #b38b22;
                     padding: 10px !important;
                 }
                 .calendar-container .fc-event {
@@ -190,6 +195,19 @@ export default function CalendarPage() {
                     font-size: 0.7rem;
                     font-weight: 700;
                     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+                    color: #000000 !important;
+                }
+                .calendar-container .fc-event-main,
+                .calendar-container .fc-event-title,
+                .calendar-container .fc-event-time {
+                    color: #000000 !important;
+                }
+                .calendar-container .fc-daygrid-day.fc-day-today {
+                    background-color: #fff9e6 !important;
+                }
+                .calendar-container .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
+                    color: #000;
+                    font-weight: 800;
                 }
             `}</style>
         </div>
