@@ -22,10 +22,10 @@ export default function AdminOverview() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold text-white">Admin Dashboard</h1>
-                    <p className="text-gray-400 mt-1">Welcome back, here&apos;s what&apos;s happening today.</p>
+                    <h1 className="text-3xl font-bold text-gray-900 uppercase tracking-tight">Admin Dashboard</h1>
+                    <p className="text-gray-500 font-medium mt-1">Welcome back, here&apos;s what&apos;s happening today.</p>
                 </div>
-                <div className="hidden sm:flex items-center gap-2 text-sm text-gray-400">
+                <div className="hidden sm:flex items-center gap-2 text-sm text-gray-500 font-bold bg-white px-4 py-2 rounded-full shadow-sm border border-gray-100">
                     <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
                     System Online
                 </div>
@@ -34,15 +34,15 @@ export default function AdminOverview() {
             {/* Stats Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                 {stats.map((stat) => (
-                    <div key={stat.label} className="bg-gray-900 rounded-xl p-6 border border-gray-800 hover:border-gray-700 transition-colors group">
+                    <div key={stat.label} className="bg-white rounded-2xl p-6 border border-gray-100 shadow-xl hover:border-[#D4AF37]/30 transition-all group hover:scale-[1.02]">
                         <div className="flex items-center justify-between mb-4">
                             <span className="text-2xl">{stat.icon}</span>
-                            <span className={`text-xs font-bold px-2 py-1 rounded-full ${stat.change.startsWith('+') ? 'bg-green-900/50 text-green-400' : 'bg-red-900/50 text-red-400'}`}>
+                            <span className={`text-[10px] font-black uppercase px-3 py-1 rounded-full ${stat.change.startsWith('+') ? 'bg-green-50 text-green-600 border border-green-100' : 'bg-red-50 text-red-600 border border-red-100'}`}>
                                 {stat.change}
                             </span>
                         </div>
-                        <p className="text-3xl font-bold text-white mb-1">{stat.value}</p>
-                        <p className="text-sm text-gray-400">{stat.label}</p>
+                        <p className="text-3xl font-black text-gray-900 mb-1">{stat.value}</p>
+                        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">{stat.label}</p>
                     </div>
                 ))}
             </div>
@@ -50,19 +50,21 @@ export default function AdminOverview() {
             {/* Recent Activity & Quick Actions */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Recent Activity */}
-                <div className="lg:col-span-2 bg-gray-900 rounded-xl border border-gray-800 overflow-hidden">
-                    <div className="p-6 border-b border-gray-800">
-                        <h2 className="text-lg font-bold text-white">Recent Activity</h2>
+                <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-xl overflow-hidden">
+                    <div className="px-6 py-5 bg-gray-50/50 border-b border-gray-100">
+                        <h2 className="text-xs font-black text-gray-900 uppercase tracking-widest">Recent Activity</h2>
                     </div>
-                    <div className="divide-y divide-gray-800">
+                    <div className="divide-y divide-gray-50">
                         {recentActivity.map((item, idx) => (
-                            <div key={idx} className="px-6 py-4 flex items-center gap-4 hover:bg-gray-800/50 transition-colors">
-                                <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gradient-gold font-bold text-sm flex-shrink-0">
+                            <div key={idx} className="px-6 py-5 flex items-center gap-4 hover:bg-gray-50/80 transition-colors">
+                                <div className="w-11 h-11 rounded-full bg-gradient-gold flex items-center justify-center text-white font-black text-sm flex-shrink-0 shadow-md">
                                     {item.user.split(' ').map(n => n[0]).join('')}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-sm text-white font-medium truncate"><span className="text-gradient-gold">{item.user}</span> — {item.action}</p>
-                                    <p className="text-xs text-gray-500">{item.time}</p>
+                                    <p className="text-sm text-gray-950 font-bold truncate">
+                                        <span className="text-[#A67C00]">{item.user}</span> <span className="text-gray-400 mx-1">—</span> {item.action}
+                                    </p>
+                                    <p className="text-[10px] text-gray-400 font-black uppercase tracking-wider mt-0.5">{item.time}</p>
                                 </div>
                             </div>
                         ))}
@@ -70,8 +72,8 @@ export default function AdminOverview() {
                 </div>
 
                 {/* Quick Actions */}
-                <div className="bg-gray-900 rounded-xl border border-gray-800 p-6 flex flex-col">
-                    <h2 className="text-lg font-bold text-white mb-5">Quick Actions</h2>
+                <div className="bg-white rounded-2xl border border-gray-100 shadow-xl p-6 flex flex-col">
+                    <h2 className="text-xs font-black text-gray-900 uppercase tracking-widest mb-6 border-b border-gray-50 pb-4">Quick Actions</h2>
                     <div className="space-y-3 flex-1">
                         {[
                             { label: 'Add New User', icon: '➕' },
@@ -79,8 +81,8 @@ export default function AdminOverview() {
                             { label: 'Generate Report', icon: '📊' },
                             { label: 'System Logs', icon: '🔍' },
                         ].map((action) => (
-                            <button key={action.label} className="cursor-pointer w-full flex items-center gap-3 px-4 py-3 rounded-lg bg-gray-800 text-sm text-gray-300 font-medium hover:bg-gray-700 hover:text-white transition-colors">
-                                <span>{action.icon}</span>
+                            <button key={action.label} className="cursor-pointer w-full flex items-center gap-3 px-5 py-4 rounded-xl bg-gray-50 text-xs text-gray-600 font-black uppercase tracking-widest hover:bg-gradient-gold hover:text-black transition-all hover:scale-[1.02] border border-gray-100 shadow-sm">
+                                <span className="text-lg">{action.icon}</span>
                                 {action.label}
                             </button>
                         ))}

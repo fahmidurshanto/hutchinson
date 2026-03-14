@@ -4,6 +4,7 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
+import Swal from 'sweetalert2';
 
 const upcomingSchedules = [
     { id: 1, title: 'Annual Review Meeting', date: 'Mar 15, 2026', time: '10:30 AM', type: 'Meeting' },
@@ -16,12 +17,91 @@ const meetingSummaries = [
     { id: 2, title: 'Legal Compliance Audit', date: 'Jan 25, 2026', summary: 'Verification of all entities completed. Minor edits requested for personal records.' },
 ];
 
-export default function CalendarPage() {
-    const [events] = useState([
-        { title: 'Review Meeting', start: '2026-03-15T10:30:00', backgroundColor: '#10b981', borderColor: '#10b981' },
-        { title: 'Doc Check', start: '2026-03-18T14:00:00', backgroundColor: 'transparent', borderColor: '#000000' },
-        { title: 'Strategy Session', start: '2026-03-22T11:00:00', backgroundColor: '#10b981', borderColor: '#10b981' },
+export default function CalendarPage({ isAdmin = false }) {
+    const [events, setEvents] = useState([
+        { id: '1', title: 'Review Meeting', start: '2026-03-15T10:30:00', backgroundColor: '#10b981', borderColor: '#10b981' },
+        { id: '2', title: 'Doc Check', start: '2026-03-18T14:00:00', backgroundColor: 'transparent', borderColor: '#000000' },
+        { id: '3', title: 'Strategy Session', start: '2026-03-22T11:00:00', backgroundColor: '#10b981', borderColor: '#10b981' },
     ]);
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [newEvent, setNewEvent] = useState({ title: '', date: '', time: '', type: 'Meeting' });
+
+    const handleDateSelect = (selectInfo) => {
+        if (!isAdmin) return;
+        setNewEvent({ ...newEvent, date: selectInfo.startStr });
+        setIsModalOpen(true);
+    };
+
+    const handleAddEvent = (e) => {
+        e.preventDefault();
+        const start = `${newEvent.date}T${newEvent.time || '00:00:00'}`;
+        const color = newEvent.type === 'Meeting' ? '#10b981' : 'transparent';
+        const borderColor = newEvent.type === 'Meeting' ? '#10b981' : '#000000';
+        
+        const newEv = {
+            id: String(Date.now()),
+            title: newEvent.title,
+            start,
+            backgroundColor: color,
+            borderColor: borderColor
+        };
+
+        setEvents([...events, newEv]);
+        setIsModalOpen(false);
+        setNewEvent({ title: '', date: '', time: '', type: 'Meeting' });
+
+        Swal.fire({
+            title: 'Schedule Confirmed!',
+            text: 'The new activity has been successfully added to the agenda.',
+            icon: 'success',
+            background: '#ffffff',
+            confirmButtonColor: '#D4AF37',
+            customClass: {
+                title: 'text-black font-black uppercase tracking-widest text-lg',
+                content: 'text-gray-600 font-bold',
+                confirmButton: 'px-8 py-3 rounded-full font-black uppercase tracking-widest'
+            }
+        });
+    };
+
+    const handleEventClick = (clickInfo) => {
+        if (!isAdmin) return;
+        
+        Swal.fire({
+            title: 'Cancel Schedule?',
+            text: `Are you sure you want to remove '${clickInfo.event.title}' from the agenda?`,
+            icon: 'warning',
+            showCancelButton: true,
+            background: '#ffffff',
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#D4AF37',
+            confirmButtonText: 'Yes, Remove It',
+            cancelButtonText: 'No, Keep It',
+            reverseButtons: true,
+            customClass: {
+                title: 'text-black font-black uppercase tracking-widest text-lg',
+                content: 'text-gray-600 font-bold',
+                confirmButton: 'px-6 py-2 rounded-full font-black uppercase tracking-widest text-[10px]',
+                cancelButton: 'px-6 py-2 rounded-full font-black uppercase tracking-widest text-[10px]'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                setEvents(events.filter(ev => ev.id !== clickInfo.event.id));
+                Swal.fire({
+                    title: 'Removed!',
+                    text: 'The schedule has been successfully removed.',
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false,
+                    background: '#ffffff',
+                    customClass: {
+                        title: 'text-black font-black uppercase tracking-widest text-sm',
+                    }
+                });
+            }
+        });
+    };
 
     return (
         <div className="w-full h-full space-y-8 animate__animated animate__fadeIn relative overflow-visible">
@@ -75,6 +155,11 @@ export default function CalendarPage() {
                             height="550px"
                             eventTextColor="#000000"
                             dayMaxEvents={true}
+                            selectable={isAdmin}
+                            selectMirror={true}
+                            select={handleDateSelect}
+                            eventClick={handleEventClick}
+                            editable={isAdmin}
                         />
                     </div>
                 </div>
@@ -145,7 +230,64 @@ export default function CalendarPage() {
                 </div>
             </div>
 
-            {/* Global Style overrides for FullCalendar theme matching */}
+            {/* Admin Management Modal */}
+            {isModalOpen && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate__animated animate__fadeIn">
+                    <div className="bg-white rounded-3xl shadow-2xl border-2 border-[#D4AF37]/30 w-full max-w-md overflow-hidden animate__animated animate__zoomIn">
+                        <div className="bg-gradient-gold py-4 px-6 flex items-center justify-between">
+                            <h3 className="text-black font-black uppercase tracking-widest text-sm">Add New Schedule</h3>
+                            <button onClick={() => setIsModalOpen(false)} className="text-black hover:scale-110 transition-transform">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        <form onSubmit={handleAddEvent} className="p-8 space-y-5">
+                            <div>
+                                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">Event Title</label>
+                                <input 
+                                    required
+                                    type="text" 
+                                    className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black"
+                                    placeholder="e.g. Executive Meeting"
+                                    value={newEvent.title}
+                                    onChange={(e) => setNewEvent({...newEvent, title: e.target.value})}
+                                />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">Time</label>
+                                    <input 
+                                        type="time" 
+                                        className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black"
+                                        value={newEvent.time}
+                                        onChange={(e) => setNewEvent({...newEvent, time: e.target.value})}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">Type</label>
+                                    <select 
+                                        className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black"
+                                        value={newEvent.type}
+                                        onChange={(e) => setNewEvent({...newEvent, type: e.target.value})}
+                                    >
+                                        <option value="Meeting">Meeting</option>
+                                        <option value="Task">Task</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button 
+                                type="submit"
+                                className="w-full py-4 mt-2 bg-gradient-gold text-black font-black uppercase tracking-widest rounded-xl shadow-lg hover:brightness-110 active:scale-[0.98] transition-all"
+                            >
+                                Confirm Schedule
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Global Style overrides */}
             <style jsx global>{`
                 .calendar-container .fc {
                     --fc-border-color: #f1f1f1;
