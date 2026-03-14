@@ -5,17 +5,14 @@ export default function Page() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center relative p-4 bg-white overflow-hidden">
 
-      {/* Background Image with Overlay */}
-      <div
-        className="absolute inset-0 z-0 bg-no-repeat"
-        style={{
-          backgroundImage: "url('/lion.png')",
-          backgroundPosition: "right -15% bottom -15%",
-          backgroundSize: "70% auto",
-          opacity: 0.1,
-          filter: "sepia(0.3) hue-rotate(5deg)"
-        }}
-      ></div>
+      {/* Premium Shimmering Gold Watermark - Bottom Right (Mirrored Design) */}
+      <div className="absolute right-0 bottom-0 translate-x-[10%] translate-y-[25%] w-[1050px] h-[1050px] opacity-[0.35] pointer-events-none z-0 flex items-center justify-center">
+        <img 
+            src="/lion.png" 
+            alt="" 
+            className="w-full h-full object-contain filter drop-shadow-[0_0_30px_rgba(212,175,55,0.3)] saturate-[2] brightness-[1.1] sepia-[0.5]" 
+        />
+      </div>
 
       <div className="z-20 w-full flex justify-center items-center">
         <LoginCard />

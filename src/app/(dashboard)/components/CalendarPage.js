@@ -24,12 +24,18 @@ export default function CalendarPage() {
     ]);
 
     return (
-        <div className="w-full h-full space-y-8 animate__animated animate__fadeIn">
+        <div className="w-full h-full space-y-8 animate__animated animate__fadeIn relative overflow-visible">
+            {/* Global Watermark - Premium Shimmering Gold */}
+            <div className="absolute left-0 top-[220px] -translate-x-[35%] -translate-y-1/2 w-[1400px] h-[1400px] opacity-[0.25] pointer-events-none z-0 flex items-center justify-center">
+                <img 
+                    src="/lion.png" 
+                    alt="" 
+                    className="w-full h-full object-contain filter drop-shadow-[0_0_30px_rgba(212,175,55,0.3)] saturate-[2] brightness-[1.1] sepia-[0.5]" 
+                />
+            </div>
+
             {/* Header Section */}
-            <div className="w-full text-center py-6 relative overflow-hidden flex flex-col items-center justify-center min-h-[15vh]">
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-[20%] w-[400px] h-[400px] opacity-[0.08] pointer-events-none z-0">
-                    <img src="/lion.png" alt="" className="w-full h-full object-contain" />
-                </div>
+            <div className="w-full text-center py-6 relative flex flex-col items-center justify-center min-h-[15vh]">
                 <div className="relative z-10 w-full">
                     <h1 className="text-3xl md:text-4xl font-bold mb-2 tracking-wide text-gradient-gold bg-clip-text">
                         SCHEDULES

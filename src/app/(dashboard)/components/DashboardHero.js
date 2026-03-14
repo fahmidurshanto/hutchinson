@@ -1,10 +1,6 @@
 export default function DashboardHero() {
     return (
-        <div className="w-full text-center py-8 md:py-16 mb-8 animate__animated animate__fadeIn relative overflow-hidden flex flex-col items-center justify-center min-h-[40vh]">
-            {/* Watermark Logo */}
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-[30%] w-[1200px] h-[1200px] opacity-[0.1] pointer-events-none z-0 mix-blend-multiply flex items-center justify-center">
-                <img src="/lion.png" alt="" className="w-full h-full object-contain filter drop-shadow-3xl" />
-            </div>
+        <div className="w-full text-center py-8 md:py-16 mb-8 animate__animated animate__fadeIn relative flex flex-col items-center justify-center min-h-[40vh]">
 
             <div className="relative z-10 w-full">
                 <h1 className="text-4xl md:text-5xl font-bold mb-4 tracking-wide text-gradient-gold bg-clip-text">

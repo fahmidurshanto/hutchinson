@@ -49,7 +49,7 @@ export default function TopNav() {
 
 
                     {/* Login Button */}
-                    <Link href="/login" className="px-5 py-1.5 rounded-full bg-gradient-gold text-gray-900 text-xs font-bold shadow-md hover:shadow-lg hover:scale-105 transition-all mr-2">
+                    <Link href="/login" className="px-5 cursor-pointer py-1.5 rounded-full bg-gradient-gold text-gray-900 text-xs font-bold shadow-md hover:shadow-lg hover:scale-105 transition-all mr-2">
                         Login
                     </Link>
                     {/* Logout */}

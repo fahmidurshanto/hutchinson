@@ -55,20 +55,21 @@ export default function LoginForm() {
                 </label>
             </div>
 
-            {/* Login Button */}
-            <button 
-                type="submit"
-                className="w-full py-2 px-4 rounded-[4px] shadow-[0_4px_8px_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(255,255,255,0.4)] transition-all flex items-center justify-center gap-1.5 mt-2 hover:brightness-105 active:scale-[0.98]"
-                style={{
-                    background: 'linear-gradient(to bottom, #d5b573 0%, #a87e35 50%, #c19c50 100%)',
-                    border: '1px solid #725721'
-                }}
-            >
-                <span className="text-[16px] font-medium text-black tracking-normal">LOGIN</span>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-[14px] h-[14px] text-black">
-                    <path fillRule="evenodd" d="M12 1.5a5.25 5.25 0 00-5.25 5.25v3a3 3 0 00-3 3v6.75a3 3 0 003 3h10.5a3 3 0 003-3v-6.75a3 3 0 00-3-3v-3c0-2.9-2.35-5.25-5.25-5.25zm3.75 8.25v-3a3.75 3.75 0 10-7.5 0v3h7.5z" clipRule="evenodd" />
-                </svg>
-            </button>
+            {/* Premium Metallic Login Button with Refined 3D Border Gradient */}
+            <div className="w-full p-[3px] rounded-xl mt-5 transition-all hover:brightness-110 active:scale-[0.98] shadow-[0_8px_25px_rgba(0,0,0,0.4)] bg-gradient-to-b from-[#fcfcfc] via-[#cecece] to-[#8a8a8a]">
+                <button 
+                    type="submit"
+                    className="w-full py-3.5 px-4 rounded-[10px] flex items-center justify-center gap-3 shadow-[inset_0_2px_2px_rgba(0,0,0,0.3),inset_0_2px_0_rgba(255,255,255,0.4)]"
+                    style={{
+                        background: 'linear-gradient(to bottom, #d5b573 0%, #f7e2af 15%, #a87e35 85%, #c19c50 100%)',
+                    }}
+                >
+                    <span className="text-[17px] font-black text-black tracking-[0.1em]">LOGIN</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-[18px] h-[18px] text-black drop-shadow-sm">
+                        <path fillRule="evenodd" d="M12 1.5a5.25 5.25 0 00-5.25 5.25v3a3 3 0 00-3 3v6.75a3 3 0 003 3h10.5a3 3 0 003-3v-6.75a3 3 0 00-3-3v-3c0-2.9-2.35-5.25-5.25-5.25zm3.75 8.25v-3a3.75 3.75 0 10-7.5 0v3h7.5z" clipRule="evenodd" />
+                    </svg>
+                </button>
+            </div>
         </form>
     )
 }
