@@ -16,7 +16,7 @@ export default function TopNav() {
                 CONTAINER 1 — Branding (logo) + User Info
                 White curved band. Logo is absolute inside, overflows below.
             ══════════════════════════════════════════════════════ */}
-            <div className="relative w-full flex items-center h-12 bg-white shadow-lg border overflow-visible">
+            <div className="relative w-full flex items-center h-12 bg-white shadow-lg overflow-visible">
 
                 {/* Logo Panel — overflows below Container 1 into Container 2 */}
                 <div className="absolute left-0 top-0 w-[180px] h-[102px] bg-white rounded-br-[2.5rem] flex items-center justify-center shadow-lg z-50">
