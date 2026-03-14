@@ -8,7 +8,7 @@ const initialUsers = [
     { id: 3, name: 'James Wilson', email: 'james.w@partner.com', role: 'client', status: 'pending', joined: '10 Mar 2025' },
     { id: 4, name: 'Maria Garcia', email: 'maria.g@globalcorp.com', role: 'client', status: 'active', joined: '05 Apr 2025' },
     { id: 5, name: 'Robert Kim', email: 'r.kim@techventures.io', role: 'client', status: 'suspended', joined: '18 May 2025' },
-    { id: 6, name: 'Lisa Thompson', email: 'lisa.t@hutchinson.apac', role: 'admin', status: 'active', joined: '01 Jun 2025' },
+    { id: 6, name: 'Lisa Thompson', email: 'lisa.t@partner.com', role: 'client', status: 'active', joined: '01 Jun 2025' },
 ];
 
 const statusStyles = {
@@ -27,7 +27,7 @@ export default function UserManagement() {
     const [search, setSearch] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
-    const [formData, setFormData] = useState({ name: '', email: '', role: 'client', status: 'active' });
+    const [formData, setFormData] = useState({ name: '', email: '', password: '', status: 'active' });
 
     const filtered = userList.filter(u =>
         u.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -37,10 +37,10 @@ export default function UserManagement() {
     const handleOpenModal = (user = null) => {
         if (user) {
             setEditingUser(user);
-            setFormData({ name: user.name, email: user.email, role: user.role, status: user.status });
+            setFormData({ name: user.name, email: user.email, password: '', status: user.status });
         } else {
             setEditingUser(null);
-            setFormData({ name: '', email: '', role: 'client', status: 'active' });
+            setFormData({ name: '', email: '', password: '', status: 'active' });
         }
         setIsModalOpen(true);
     };
@@ -66,6 +66,7 @@ export default function UserManagement() {
             const newUser = {
                 id: Date.now(),
                 ...formData,
+                role: 'client',
                 joined: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
             };
             setUserList([newUser, ...userList]);
@@ -104,6 +105,7 @@ export default function UserManagement() {
     };
 
     const toggleStatus = (user) => {
+        if (user.role === 'admin') return; // Only one admin allowed, status locked
         const statuses = ['active', 'pending', 'suspended'];
         const currentIndex = statuses.indexOf(user.status);
         const nextStatus = statuses[(currentIndex + 1) % statuses.length];
@@ -217,9 +219,9 @@ export default function UserManagement() {
 
             {/* Modal */}
             {isModalOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate__animated animate__fadeIn">
-                    <div className="bg-white rounded-[2rem] shadow-2xl border-2 border-[#D4AF37]/30 w-full max-w-lg overflow-hidden animate__animated animate__zoomIn">
-                        <div className="bg-gradient-gold py-5 px-8 flex items-center justify-between">
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate__animated animate__fadeIn">
+                    <div className="bg-white rounded-[2rem] shadow-2xl border-2 border-[#D4AF37]/30 w-full max-w-lg overflow-hidden animate__animated animate__zoomIn flex flex-col max-h-[90vh]">
+                        <div className="bg-gradient-gold py-5 px-8 flex items-center justify-between shrink-0">
                             <h3 className="text-black font-black uppercase tracking-widest text-sm">
                                 {editingUser ? 'Edit Partner Account' : 'Register New Partner'}
                             </h3>
@@ -229,7 +231,8 @@ export default function UserManagement() {
                                 </svg>
                             </button>
                         </div>
-                        <form onSubmit={handleSubmit} className="p-10 space-y-6">
+                        <div className="overflow-y-auto custom-scrollbar">
+                            <form onSubmit={handleSubmit} className="p-10 space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="md:col-span-2">
                                     <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">Full Name</label>
@@ -253,16 +256,16 @@ export default function UserManagement() {
                                         onChange={(e) => setFormData({...formData, email: e.target.value})}
                                     />
                                 </div>
-                                <div>
-                                    <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">Account Role</label>
-                                    <select 
-                                        className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black cursor-pointer"
-                                        value={formData.role}
-                                        onChange={(e) => setFormData({...formData, role: e.target.value})}
-                                    >
-                                        <option value="client">Partner (Client)</option>
-                                        <option value="admin">Administrator</option>
-                                    </select>
+                                <div className="md:col-span-2">
+                                    <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">Password</label>
+                                    <input 
+                                        required={!editingUser}
+                                        type="password" 
+                                        className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black"
+                                        placeholder={editingUser ? "Leave blank to keep current" : "Enter password"}
+                                        value={formData.password}
+                                        onChange={(e) => setFormData({...formData, password: e.target.value})}
+                                    />
                                 </div>
                                 <div>
                                     <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">Initial Status</label>
@@ -285,6 +288,7 @@ export default function UserManagement() {
                                 {editingUser ? 'Update Account' : 'Register Partner'}
                             </button>
                         </form>
+                        </div>
                     </div>
                 </div>
             )}

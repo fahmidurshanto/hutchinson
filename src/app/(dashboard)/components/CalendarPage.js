@@ -12,10 +12,6 @@ const upcomingSchedules = [
     { id: 3, title: 'Financial Strategy Session', date: 'Mar 22, 2026', time: '11:00 AM', type: 'Consultation' },
 ];
 
-const meetingSummaries = [
-    { id: 1, title: 'Q1 Partnership Update', date: 'Feb 10, 2026', summary: 'Discussed global network expansion and new service application workflows.' },
-    { id: 2, title: 'Legal Compliance Audit', date: 'Jan 25, 2026', summary: 'Verification of all entities completed. Minor edits requested for personal records.' },
-];
 
 export default function CalendarPage({ isAdmin = false }) {
     const [events, setEvents] = useState([
@@ -167,24 +163,6 @@ export default function CalendarPage({ isAdmin = false }) {
                 {/* Right Panel: Upcoming Sched & Summaries */}
                 <div className="lg:col-span-4 space-y-6 flex flex-col">
 
-                    {/* Instructions/Reminders Card */}
-                    <div className="bg-gradient-gold p-6 rounded-2xl shadow-lg border border-[#b38b22]/30 relative overflow-hidden group hover:scale-[1.02] transition-all duration-300">
-                        <div className="absolute right-[-10%] top-[-10%] opacity-10 group-hover:rotate-12 transition-transform duration-700">
-                            <svg className="w-32 h-32 text-black" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M11 17l-5-5 1.41-1.41L11 14.17l7.59-7.59L20 8l-9 9z" />
-                            </svg>
-                        </div>
-                        <h3 className="text-black font-black text-xs uppercase tracking-widest mb-3 flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 bg-black rounded-full"></span>
-                            Instructions/Reminders
-                        </h3>
-                        <p className="text-black/80 text-sm font-bold leading-relaxed mb-4">
-                            Please remember to bring your updated **NRIC/Passport** and **Proof of Address** for the "Document Verification" meeting on Mar 18.
-                        </p>
-                        <div className="inline-flex items-center gap-2 bg-black text-white px-3 py-1.5 rounded-full text-[10px] font-black tracking-tighter uppercase">
-                            Primary Requirement
-                        </div>
-                    </div>
 
                     {/* Upcoming Schedules Section */}
                     <div className="bg-white rounded-2xl shadow-lg border border-gray-100 flex-1 flex flex-col overflow-hidden">
@@ -208,24 +186,6 @@ export default function CalendarPage({ isAdmin = false }) {
                         </div>
                     </div>
 
-                    {/* Meeting Summary Section */}
-                    <div className="bg-gradient-gold rounded-2xl shadow-2xl border border-[#b38b22]/30 p-6 relative overflow-hidden group">
-                        <div className="absolute right-[-5%] top-[-5%] opacity-[0.03] group-hover:scale-110 transition-transform duration-1000">
-                            <svg className="w-40 h-40 text-black" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14h-7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
-                            </svg>
-                        </div>
-                        <h3 className="text-black font-black text-xs uppercase tracking-widest mb-5 border-b border-black/10 pb-3">Recent Meeting Summaries</h3>
-                        <div className="space-y-6 relative z-10">
-                            {meetingSummaries.map(item => (
-                                <div key={item.id} className="relative pl-6 before:absolute before:left-0 before:top-1 before:w-2 before:h-2 before:bg-black before:rounded-full">
-                                    <h4 className="font-black text-sm mb-1 text-black">{item.title}</h4>
-                                    <p className="text-[10px] text-black/60 mb-2 font-bold">{item.date}</p>
-                                    <p className="text-xs text-black/80 leading-relaxed font-bold bg-white/20 p-3 rounded-xl border border-white/30">{item.summary}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
 
                 </div>
             </div>

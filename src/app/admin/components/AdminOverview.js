@@ -47,46 +47,25 @@ export default function AdminOverview() {
                 ))}
             </div>
 
-            {/* Recent Activity & Quick Actions */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Recent Activity */}
-                <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-xl overflow-hidden">
-                    <div className="px-6 py-5 bg-gray-50/50 border-b border-gray-100">
-                        <h2 className="text-xs font-black text-gray-900 uppercase tracking-widest">Recent Activity</h2>
-                    </div>
-                    <div className="divide-y divide-gray-50">
-                        {recentActivity.map((item, idx) => (
-                            <div key={idx} className="px-6 py-5 flex items-center gap-4 hover:bg-gray-50/80 transition-colors">
-                                <div className="w-11 h-11 rounded-full bg-gradient-gold flex items-center justify-center text-white font-black text-sm flex-shrink-0 shadow-md">
-                                    {item.user.split(' ').map(n => n[0]).join('')}
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-sm text-gray-950 font-bold truncate">
-                                        <span className="text-[#A67C00]">{item.user}</span> <span className="text-gray-400 mx-1">—</span> {item.action}
-                                    </p>
-                                    <p className="text-[10px] text-gray-400 font-black uppercase tracking-wider mt-0.5">{item.time}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+            {/* Recent Activity */}
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-xl overflow-hidden">
+                <div className="px-6 py-5 bg-gray-50/50 border-b border-gray-100">
+                    <h2 className="text-xs font-black text-gray-900 uppercase tracking-widest">Recent Activity</h2>
                 </div>
-
-                {/* Quick Actions */}
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-xl p-6 flex flex-col">
-                    <h2 className="text-xs font-black text-gray-900 uppercase tracking-widest mb-6 border-b border-gray-50 pb-4">Quick Actions</h2>
-                    <div className="space-y-3 flex-1">
-                        {[
-                            { label: 'Add New User', icon: '➕' },
-                            { label: 'Review Applications', icon: '📋' },
-                            { label: 'Generate Report', icon: '📊' },
-                            { label: 'System Logs', icon: '🔍' },
-                        ].map((action) => (
-                            <button key={action.label} className="cursor-pointer w-full flex items-center gap-3 px-5 py-4 rounded-xl bg-gray-50 text-xs text-gray-600 font-black uppercase tracking-widest hover:bg-gradient-gold hover:text-black transition-all hover:scale-[1.02] border border-gray-100 shadow-sm">
-                                <span className="text-lg">{action.icon}</span>
-                                {action.label}
-                            </button>
-                        ))}
-                    </div>
+                <div className="divide-y divide-gray-50">
+                    {recentActivity.map((item, idx) => (
+                        <div key={idx} className="px-6 py-5 flex items-center gap-4 hover:bg-gray-50/80 transition-colors">
+                            <div className="w-11 h-11 rounded-full bg-gradient-gold flex items-center justify-center text-white font-black text-sm flex-shrink-0 shadow-md">
+                                {item.user.split(' ').map(n => n[0]).join('')}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <p className="text-sm text-gray-950 font-bold truncate">
+                                    <span className="text-[#A67C00]">{item.user}</span> <span className="text-gray-400 mx-1">—</span> {item.action}
+                                </p>
+                                <p className="text-[10px] text-gray-400 font-black uppercase tracking-wider mt-0.5">{item.time}</p>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </div>
         </div>
