@@ -69,50 +69,52 @@ export default function TopNav() {
                 CONTAINER 2 — Navigation Links
                 Silver bar, tabs start after the logo width.
             ══════════════════════════════════════════════════════ */}
-            <nav className="flex items-stretch h-11 ml-[180px] md:ml-[12%] bg-gradient-to-r from-[#939391] via-[#b7b8b2] to-[#a4a39f]">
-                {tabs.map((tab) => {
-                    const isReportRoute = tab === 'REPORTS';
-                    const isAdminRoute = tab === 'ADMIN';
-                    const isServicesRoute = tab === 'SERVICES';
-                    const isRoute = isReportRoute || isAdminRoute || isServicesRoute;
+            <div className="w-full bg-gradient-to-r from-[#939391] via-[#b7b8b2] to-[#a4a39f]">
+                <nav className="flex items-stretch h-11 ml-[180px] md:ml-[12%]">
+                    {tabs.map((tab) => {
+                        const isReportRoute = tab === 'REPORTS';
+                        const isAdminRoute = tab === 'ADMIN';
+                        const isServicesRoute = tab === 'SERVICES';
+                        const isRoute = isReportRoute || isAdminRoute || isServicesRoute;
 
-                    let href = '/';
-                    if (isReportRoute) href = '/reports';
-                    if (isAdminRoute) href = '/admin';
-                    if (isServicesRoute) href = '/services';
+                        let href = '/';
+                        if (isReportRoute) href = '/reports';
+                        if (isAdminRoute) href = '/admin';
+                        if (isServicesRoute) href = '/services';
 
-                    // Active logic: 
-                    // 1. If it's a dedicated route, check pathname
-                    // 2. If it's a home tab (only DASHBOARD now), check if we are on home AND activeTab matches
-                    const isActive = isRoute
-                        ? pathname.startsWith(href)
-                        : (pathname === '/' && activeTab === tab);
+                        // Active logic: 
+                        // 1. If it's a dedicated route, check pathname
+                        // 2. If it's a home tab (only DASHBOARD now), check if we are on home AND activeTab matches
+                        const isActive = isRoute
+                            ? pathname.startsWith(href)
+                            : (pathname === '/' && activeTab === tab);
 
-                    const tabContent = (
-                        <span className={`flex items-center h-full px-6 font-bold text-xs tracking-[0.08em] whitespace-nowrap border-b-[3px] transition-colors cursor-pointer select-none
-                            ${isActive
-                                ? 'bg-[linear-gradient(180deg,#1e232d_100%,#2a303c_0%)] text-white border-[#D4AF37]'
-                                : 'text-[#4a4a4a] border-transparent hover:bg-black/5'
-                            }`}
-                        >
-                            {tab}
-                        </span>
-                    );
+                        const tabContent = (
+                            <span className={`flex items-center h-full px-6 font-bold text-xs tracking-[0.08em] whitespace-nowrap border-b-[3px] transition-colors cursor-pointer select-none
+                                ${isActive
+                                    ? 'bg-[linear-gradient(180deg,#1e232d_100%,#2a303c_0%)] text-white border-[#D4AF37]'
+                                    : 'text-[#4a4a4a] border-transparent hover:bg-black/5'
+                                }`}
+                            >
+                                {tab}
+                            </span>
+                        );
 
-                    return (
-                        <Link
-                            key={tab}
-                            href={href}
-                            className="flex items-stretch"
-                            onClick={() => {
-                                if (!isRoute) setActiveTab(tab);
-                            }}
-                        >
-                            {tabContent}
-                        </Link>
-                    );
-                })}
-            </nav>
+                        return (
+                            <Link
+                                key={tab}
+                                href={href}
+                                className="flex items-stretch"
+                                onClick={() => {
+                                    if (!isRoute) setActiveTab(tab);
+                                }}
+                            >
+                                {tabContent}
+                            </Link>
+                        );
+                    })}
+                </nav>
+            </div>
 
         </header>
     );
