@@ -1,15 +1,8 @@
 "use client";
 import React, { useState } from 'react';
 import Swal from 'sweetalert2';
-
-const initialUsers = [
-    { id: 1, name: 'Alexander Reed', email: 'alexander@hutchinson.apac', role: 'admin', status: 'active', joined: '15 Jan 2025' },
-    { id: 2, name: 'Sarah Chen', email: 'sarah.chen@hutchinson.apac', role: 'client', status: 'active', joined: '22 Feb 2025' },
-    { id: 3, name: 'James Wilson', email: 'james.w@partner.com', role: 'client', status: 'pending', joined: '10 Mar 2025' },
-    { id: 4, name: 'Maria Garcia', email: 'maria.g@globalcorp.com', role: 'client', status: 'active', joined: '05 Apr 2025' },
-    { id: 5, name: 'Robert Kim', email: 'r.kim@techventures.io', role: 'client', status: 'suspended', joined: '18 May 2025' },
-    { id: 6, name: 'Lisa Thompson', email: 'lisa.t@partner.com', role: 'client', status: 'active', joined: '01 Jun 2025' },
-];
+import { useRouter } from 'next/navigation';
+import { initialUsers } from '@/data/users';
 
 const statusStyles = {
     active: 'bg-green-50 text-green-600 border border-green-100',
@@ -17,12 +10,8 @@ const statusStyles = {
     suspended: 'bg-red-50 text-red-600 border border-red-100',
 };
 
-const roleStyles = {
-    admin: 'bg-gradient-gold text-black shadow-sm',
-    client: 'bg-gray-100 text-gray-500 border border-gray-200',
-};
-
 export default function UserManagement() {
+    const router = useRouter();
     const [userList, setUserList] = useState(initialUsers);
     const [search, setSearch] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -153,7 +142,6 @@ export default function UserManagement() {
                         <thead>
                             <tr className="border-b border-gray-50 bg-gray-50/50">
                                 <th className="text-left px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">User</th>
-                                <th className="text-left px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Role</th>
                                 <th className="text-left px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Status</th>
                                 <th className="text-left px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Joined</th>
                                 <th className="text-right px-6 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Actions</th>
@@ -161,7 +149,11 @@ export default function UserManagement() {
                         </thead>
                         <tbody className="divide-y divide-gray-50">
                             {filtered.map((user) => (
-                                <tr key={user.id} className="hover:bg-gray-50/80 transition-colors group">
+                                <tr 
+                                    key={user.id} 
+                                    onClick={() => router.push(`/admin/users/${user.id}`)}
+                                    className="hover:bg-gray-50/80 transition-colors group cursor-pointer"
+                                >
                                     <td className="px-6 py-5">
                                         <div className="flex items-center gap-4">
                                             <div className="w-10 h-10 rounded-full bg-gradient-silver text-gray-700 flex items-center justify-center font-black text-xs flex-shrink-0 shadow-sm border border-gray-100 uppercase">
@@ -172,11 +164,6 @@ export default function UserManagement() {
                                                 <p className="text-gray-400 text-[11px] font-medium">{user.email}</p>
                                             </div>
                                         </div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <span className={`inline-flex px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${roleStyles[user.role]}`}>
-                                            {user.role}
-                                        </span>
                                     </td>
                                     <td className="px-6 py-4">
                                         <button 
@@ -199,15 +186,7 @@ export default function UserManagement() {
                                                     <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
                                                 </svg>
                                             </button>
-                                            <button 
-                                                onClick={() => handleDelete(user.id, user.name)}
-                                                className="cursor-pointer text-gray-400 hover:text-red-500 transition-colors p-2 hover:bg-white rounded-lg border border-transparent hover:border-gray-100 shadow-sm hover:shadow"
-                                                title="Delete User"
-                                            >
-                                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                                                </svg>
-                                            </button>
+
                                         </div>
                                     </td>
                                 </tr>

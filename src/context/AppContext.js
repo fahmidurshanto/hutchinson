@@ -1,17 +1,19 @@
 "use client";
 
 import { createContext, useContext, useState } from 'react';
+import { initialUsers } from '@/data/users';
 
 const AppContext = createContext();
 
 export function AppProvider({ children }) {
     // Centralized state
-    const [user, setUser] = useState({
+    const [currentUser, setCurrentUser] = useState({
         name: 'Alexander Reed',
         role: 'admin', // 'admin' or 'client'
         avatar: null
     });
 
+    const [userList, setUserList] = useState(initialUsers);
     const [activeTab, setActiveTab] = useState('DASHBOARD');
     const [adminTab, setAdminTab] = useState('OVERVIEW');
 
@@ -24,7 +26,18 @@ export function AppProvider({ children }) {
     });
 
     return (
-        <AppContext.Provider value={{ user, setUser, activeTab, setActiveTab, adminTab, setAdminTab, theme, setTheme }}>
+        <AppContext.Provider value={{ 
+            user: currentUser, 
+            setUser: setCurrentUser, 
+            userList, 
+            setUserList,
+            activeTab, 
+            setActiveTab, 
+            adminTab, 
+            setAdminTab, 
+            theme, 
+            setTheme 
+        }}>
             {children}
         </AppContext.Provider>
     );
