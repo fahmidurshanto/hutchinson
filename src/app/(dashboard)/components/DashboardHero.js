@@ -3,12 +3,6 @@ export default function DashboardHero() {
         <div className="w-full text-center py-8 md:py-16 mb-8 animate__animated animate__fadeIn relative flex flex-col items-center justify-center min-h-[40vh]">
 
             <div className="relative z-10 w-full">
-                <h1 className="text-4xl md:text-5xl font-bold mb-4 tracking-wide text-gradient-gold bg-clip-text">
-                    GLOBAL PARTNERSHIP PORTAL
-                </h1>
-                <p className="text-gray-600 text-lg md:text-xl font-medium mb-8">
-                    Ensure the data with your premium online portal.
-                </p>
 
                 <button className="cursor-pointer px-8 py-3 rounded-full text-gray-900 bg-gradient-gold font-bold shadow-[0_4px_15px_rgba(212,175,55,0.4)] hover:shadow-[0_6px_20px_rgba(212,175,55,0.6)] hover:scale-105 transition-all flex items-center justify-center mx-auto border border-transparent">
                     EXPLORE NEW OPPORTUNITIES
