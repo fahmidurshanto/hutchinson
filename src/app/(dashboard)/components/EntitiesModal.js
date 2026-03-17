@@ -1,16 +1,6 @@
-"use client";
+import React, { useEffect, useState } from 'react';
 import DashboardModal from '../../../components/ui/DashboardModal';
-
-const primaryEntities = [
-    { name: 'REALTY ACCESS LIMITED', status: 'Active' },
-    { name: 'CONCEPTS VACATION CLUB', status: 'Active' },
-    { name: 'CLUB EMPEROR', status: 'Active' },
-];
-
-const thirdPartyEntities = [
-    { name: 'ASIAN TRAVEL CLUB', status: 'Active' },
-    { name: 'CONCORD DEVELOPMENT PTE LTD', status: 'Active' },
-];
+import { useAppContext } from '@/context/AppContext';
 
 const EntitiesIcon = (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
@@ -19,6 +9,24 @@ const EntitiesIcon = (
 );
 
 export default function EntitiesModal({ isOpen, onClose }) {
+    const { user, fetchEntities } = useAppContext();
+    const [primaryEntities, setPrimaryEntities] = useState([]);
+    const [thirdPartyEntities, setThirdPartyEntities] = useState([]);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (isOpen && user?._id) {
+            setLoading(true);
+            fetchEntities(user._id)
+                .then(res => {
+                    setPrimaryEntities(res.primary);
+                    setThirdPartyEntities(res.thirdParty);
+                })
+                .catch(err => console.error(err))
+                .finally(() => setLoading(false));
+        }
+    }, [isOpen, user?._id]);
+
     return (
         <DashboardModal
             isOpen={isOpen}
@@ -27,37 +35,43 @@ export default function EntitiesModal({ isOpen, onClose }) {
             icon={EntitiesIcon}
         >
             <div className="space-y-8 py-2">
-                {/* Primary Section */}
-                <div>
-                    <h4 className="text-sm font-bold text-gray-900 mb-4 tracking-tight">Primary</h4>
-                    <div className="space-y-3">
-                        {primaryEntities.map((entity) => (
-                            <div key={entity.name} className="flex items-start justify-between">
-                                <span className="text-sm text-gray-700 font-medium uppercase leading-tight w-2/3">{entity.name}</span>
-                                <div className="flex items-center gap-1.5 shrink-0">
-                                    <span className="text-gray-400 font-medium">:</span>
-                                    <span className="text-sm font-bold text-emerald-600">{entity.status}</span>
-                                </div>
+                {loading ? (
+                    <div className="py-10 text-center text-gray-500 font-bold animate-pulse">Loading entities...</div>
+                ) : (
+                    <>
+                        {/* Primary Section */}
+                        <div>
+                            <h4 className="text-sm font-bold text-gray-900 mb-4 tracking-tight uppercase tracking-[0.1em]">Primary</h4>
+                            <div className="space-y-3">
+                                {primaryEntities.length > 0 ? primaryEntities.map((entity) => (
+                                    <div key={entity.name} className="flex items-start justify-between">
+                                        <span className="text-sm text-gray-700 font-medium uppercase leading-tight w-2/3">{entity.name}</span>
+                                        <div className="flex items-center gap-1.5 shrink-0">
+                                            <span className="text-gray-400 font-medium">:</span>
+                                            <span className={`text-sm font-bold ${entity.status === 'Active' ? 'text-emerald-600' : 'text-red-500'}`}>{entity.status}</span>
+                                        </div>
+                                    </div>
+                                )) : <div className="text-xs text-gray-400 italic">No primary entities found.</div>}
                             </div>
-                        ))}
-                    </div>
-                </div>
+                        </div>
 
-                {/* 3rd Party Section */}
-                <div>
-                    <h4 className="text-sm font-bold text-gray-900 mb-4 tracking-tight">3rd Party Entities/ Marketing Agents</h4>
-                    <div className="space-y-3">
-                        {thirdPartyEntities.map((entity) => (
-                            <div key={entity.name} className="flex items-start justify-between">
-                                <span className="text-sm text-gray-700 font-medium uppercase leading-tight w-2/3">{entity.name}</span>
-                                <div className="flex items-center gap-1.5 shrink-0">
-                                    <span className="text-gray-400 font-medium">:</span>
-                                    <span className="text-sm font-bold text-emerald-600">{entity.status}</span>
-                                </div>
+                        {/* 3rd Party Section */}
+                        <div>
+                            <h4 className="text-sm font-bold text-gray-900 mb-4 tracking-tight uppercase tracking-[0.1em]">3rd Party Entities / Marketing Agents</h4>
+                            <div className="space-y-3">
+                                {thirdPartyEntities.length > 0 ? thirdPartyEntities.map((entity) => (
+                                    <div key={entity.name} className="flex items-start justify-between">
+                                        <span className="text-sm text-gray-700 font-medium uppercase leading-tight w-2/3">{entity.name}</span>
+                                        <div className="flex items-center gap-1.5 shrink-0">
+                                            <span className="text-gray-400 font-medium">:</span>
+                                            <span className="text-sm font-bold text-emerald-600">{entity.status}</span>
+                                        </div>
+                                    </div>
+                                )) : <div className="text-xs text-gray-400 italic">No 3rd party entities found.</div>}
                             </div>
-                        ))}
-                    </div>
-                </div>
+                        </div>
+                    </>
+                )}
             </div>
         </DashboardModal>
     );
