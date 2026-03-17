@@ -1,19 +1,85 @@
 "use client";
 
 import React, { useState } from 'react';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useAppContext } from '@/context/AppContext';
+import Swal from 'sweetalert2';
 
 export default function LoginForm() {
     const [showPassword, setShowPassword] = useState(false);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const router = useRouter();
+    const { setUser } = useAppContext();
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setIsLoading(true);
+
+        try {
+            const response = await fetch('http://localhost:8000/api/v1/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
+                credentials: 'include'
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                // The backend sets HTTP-only cookies (accessToken, refreshToken)
+                // BUT it does NOT return the user object in the login response.
+                // We must fetch the profile manually.
+                try {
+                    const userProfile = await fetchCurrentUser();
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Welcome Back',
+                        text: 'Redirecting to your dashboard...',
+                        timer: 1500,
+                        showConfirmButton: false
+                    }).then(() => {
+                        const target = userProfile.role === 'admin' ? '/admin' : '/';
+                        router.push(target);
+                    });
+                } catch (fetchError) {
+                    throw new Error('Authenticated, but could not retrieve profile.');
+                }
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Login Failed',
+                    text: data.message || 'Invalid credentials',
+                    confirmButtonColor: '#D33'
+                });
+            }
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'System Error',
+                text: 'Connection to corporate servers failed.',
+                confirmButtonColor: '#D33'
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     return (
-        <form className="w-full mt-5" onSubmit={(e) => e.preventDefault()}>
+        <form className="w-full mt-5" onSubmit={handleSubmit}>
             {/* Username Input */}
             <div className="w-full mb-4">
                 <div className="relative">
                     <input
                         id="email"
                         type="email"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         placeholder="your.name@hutchinson.apac"
                         className="w-full px-3 py-2.5 border-[1.5px] border-gray-300 rounded-md focus:outline-none focus:border-[#c6a267] focus:ring-1 focus:ring-[#c6a267] transition-colors text-black placeholder-black bg-white text-[14px]"
                     />
@@ -29,7 +95,10 @@ export default function LoginForm() {
                     <input
                         id="password"
                         type={showPassword ? "text" : "password"}
-                        placeholder="[brushed silver text]"
+                        required
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="••••••••"
                         className="w-full px-3 py-2.5 border-[1.5px] border-gray-300 rounded-md focus:outline-none focus:border-[#c6a267] focus:ring-1 focus:ring-[#c6a267] transition-colors text-black placeholder-gray-500 bg-white text-[14px]"
                     />
                     <button 
@@ -59,15 +128,18 @@ export default function LoginForm() {
             <div className="w-full p-[3px] rounded-xl mt-5 transition-all hover:brightness-110 active:scale-[0.98] shadow-[0_8px_25px_rgba(0,0,0,0.4)] bg-gradient-to-b from-[#fcfcfc] via-[#cecece] to-[#8a8a8a]">
                 <button 
                     type="submit"
+                    disabled={isLoading}
                     className="w-full py-3.5 px-4 rounded-[10px] flex items-center justify-center gap-3 shadow-[inset_0_2px_2px_rgba(0,0,0,0.3),inset_0_2px_0_rgba(255,255,255,0.4)]"
                     style={{
                         background: 'linear-gradient(to bottom, #d5b573 0%, #f7e2af 15%, #a87e35 85%, #c19c50 100%)',
                     }}
                 >
-                    <span className="text-[17px] font-black text-black tracking-[0.1em]">LOGIN</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-[18px] h-[18px] text-black drop-shadow-sm">
-                        <path fillRule="evenodd" d="M12 1.5a5.25 5.25 0 00-5.25 5.25v3a3 3 0 00-3 3v6.75a3 3 0 003 3h10.5a3 3 0 003-3v-6.75a3 3 0 00-3-3v-3c0-2.9-2.35-5.25-5.25-5.25zm3.75 8.25v-3a3.75 3.75 0 10-7.5 0v3h7.5z" clipRule="evenodd" />
-                    </svg>
+                    <span className="text-[17px] font-black text-black tracking-[0.1em]">{isLoading ? 'AUTHENTICATING...' : 'LOGIN'}</span>
+                    {!isLoading && (
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-[18px] h-[18px] text-black drop-shadow-sm">
+                            <path fillRule="evenodd" d="M12 1.5a5.25 5.25 0 00-5.25 5.25v3a3 3 0 00-3 3v6.75a3 3 0 003 3h10.5a3 3 0 003-3v-6.75a3 3 0 00-3-3v-3c0-2.9-2.35-5.25-5.25-5.25zm3.75 8.25v-3a3.75 3.75 0 10-7.5 0v3h7.5z" clipRule="evenodd" />
+                        </svg>
+                    )}
                 </button>
             </div>
         </form>

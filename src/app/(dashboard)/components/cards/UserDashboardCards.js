@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import PersonalModal from '../PersonalModal';
 import FinancialSummaryModal from '../FinancialSummaryModal';
 import EntitiesModal from '../EntitiesModal';
-import ServiceAnalysisModal from '../ServiceAnalysisModal';
 import DocumentsModal from '../DocumentsModal';
 
 const cards = [
@@ -35,15 +34,6 @@ const cards = [
         ),
     },
     {
-        id: 'service-analysis',
-        label: 'Service Analysis',
-        icon: (
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
-            </svg>
-        ),
-    },
-    {
         id: 'documents',
         label: 'Documents',
         icon: (
@@ -58,14 +48,12 @@ export default function UserDashboardCards({ onCardClick }) {
     const [personalOpen, setPersonalOpen] = useState(false);
     const [financialOpen, setFinancialOpen] = useState(false);
     const [entitiesOpen, setEntitiesOpen] = useState(false);
-    const [serviceOpen, setServiceOpen] = useState(false);
     const [documentsOpen, setDocumentsOpen] = useState(false);
 
     const handleCardClick = (id) => {
         if (id === 'personal') setPersonalOpen(true);
         if (id === 'financial-summary') setFinancialOpen(true);
         if (id === 'entities') setEntitiesOpen(true);
-        if (id === 'service-analysis') setServiceOpen(true);
         if (id === 'documents') setDocumentsOpen(true);
         if (onCardClick) onCardClick(id);
     };
@@ -75,7 +63,6 @@ export default function UserDashboardCards({ onCardClick }) {
         <PersonalModal isOpen={personalOpen} onClose={() => setPersonalOpen(false)} />
         <FinancialSummaryModal isOpen={financialOpen} onClose={() => setFinancialOpen(false)} />
         <EntitiesModal isOpen={entitiesOpen} onClose={() => setEntitiesOpen(false)} />
-        <ServiceAnalysisModal isOpen={serviceOpen} onClose={() => setServiceOpen(false)} />
         <DocumentsModal isOpen={documentsOpen} onClose={() => setDocumentsOpen(false)} />
         <div className="w-full grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5 mt-2">
             {cards.map((card) => (

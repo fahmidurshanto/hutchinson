@@ -2,12 +2,12 @@
 import React from 'react';
 
 const services = [
-    { id: 1, name: 'Global Network Entry', status: 'Valid' },
-    { id: 2, name: 'APAC Residency Program', status: 'Valid' },
-    { id: 3, name: 'Strategic Tax Advisory', status: 'Invalid' },
-    { id: 4, name: 'Corporate Compliance Audit', status: 'Valid' },
-    { id: 5, name: 'Asset Management Portal', status: 'Invalid' },
-    { id: 6, name: 'Executive Liaison Services', status: 'Valid' },
+    { id: 1, name: 'Termination', status: 'Valid' },
+    { id: 2, name: 'Capital Gain tax', status: 'Valid' },
+    { id: 3, name: 'Trustee fees', status: 'Valid' },
+    { id: 4, name: 'Anti Money laundering', status: 'Valid' },
+    { id: 5, name: 'Remittance', status: 'Valid' },
+    { id: 6, name: 'Custody & services fees', status: 'Valid' },
 ];
 
 export default function ServicesPage() {
