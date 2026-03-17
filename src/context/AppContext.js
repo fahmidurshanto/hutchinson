@@ -187,6 +187,96 @@ export function AppProvider({ children }) {
         }
     };
 
+    // API: Fetch All Users (Admin Only)
+    const fetchAllUsers = async () => {
+        try {
+            const response = await api.get('/auth/users');
+            const data = response.data;
+            if (data.success) {
+                setUserList(data.users);
+                return data.users;
+            }
+            throw new Error(data.message || 'Could not fetch users');
+        } catch (error) {
+            console.error('Fetch users error:', error);
+            throw error;
+        }
+    };
+
+    // API: Update User Details (Admin Only)
+    const updateUser = async (id, userData) => {
+        try {
+            const response = await api.patch(`/auth/user/${id}`, userData);
+            const data = response.data;
+            if (data.success) {
+                setUserList(prev => prev.map(u => u._id === id ? { ...u, ...data.user } : u));
+                return data;
+            }
+            throw new Error(data.message || 'Update failed');
+        } catch (error) {
+            console.error('Update user error:', error);
+            throw error;
+        }
+    };
+
+    // API: Delete User (Admin Only)
+    const deleteUser = async (id) => {
+        try {
+            const response = await api.delete(`/auth/user/${id}`);
+            const data = response.data;
+            if (data.success) {
+                setUserList(prev => prev.filter(u => u._id !== id));
+                return data;
+            }
+            throw new Error(data.message || 'Delete failed');
+        } catch (error) {
+            console.error('Delete user error:', error);
+            throw error;
+        }
+    };
+
+    // API: Profile Data Fetchers
+    const fetchFinancialSummary = async (userId) => {
+        try {
+            const response = await api.get(`/user/financial-summary/${userId}`);
+            return response.data;
+        } catch (error) {
+            console.error('Financial summary error:', error);
+            throw error;
+        }
+    };
+
+    const fetchEntities = async (userId) => {
+        try {
+            const response = await api.get(`/user/entities/${userId}`);
+            return response.data;
+        } catch (error) {
+            console.error('Entities error:', error);
+            throw error;
+        }
+    };
+
+    const fetchServiceStatus = async (userId) => {
+        try {
+            const response = await api.get(`/user/services/${userId}`);
+            return response.data;
+        } catch (error) {
+            console.error('Service status error:', error);
+            throw error;
+        }
+    };
+
+    useEffect(() => {
+        // Initial load of user if session exists
+        fetchCurrentUser().catch(() => {});
+    }, []);
+
+    useEffect(() => {
+        if (currentUser?.role === 'admin') {
+            fetchAllUsers().catch(() => {});
+        }
+    }, [currentUser]);
+
     return (
         <AppContext.Provider value={{ 
             user: currentUser, 
@@ -199,6 +289,12 @@ export function AppProvider({ children }) {
             registerUser,
             fetchCurrentUser,
             changePassword,
+            fetchAllUsers,
+            updateUser,
+            deleteUser,
+            fetchFinancialSummary,
+            fetchEntities,
+            fetchServiceStatus,
             userList, 
             setUserList,
             activeTab, 

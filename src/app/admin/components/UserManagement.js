@@ -14,7 +14,7 @@ const statusStyles = {
 
 export default function UserManagement() {
     const router = useRouter();
-    const { userList, setUserList, registerUser } = useAppContext();
+    const { userList, setUserList, registerUser, updateUser, deleteUser } = useAppContext();
     const [search, setSearch] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
@@ -78,26 +78,28 @@ export default function UserManagement() {
         e.preventDefault();
         
         if (editingUser) {
-            // Backend currently only has changePassword for users by admin
-            // Full update endpoint not found in index.js, so we skip backend update for now
-            setUserList(userList.map(u => u.id === editingUser.id ? { ...u, ...formData } : u));
-            Swal.fire({
-                title: 'User Updated',
-                text: 'Local state updated. (Note: Backend update for all fields pending API endpoint)',
-                icon: 'info',
-                confirmButtonColor: '#D4AF37'
-            });
+            try {
+                const response = await updateUser(editingUser._id || editingUser.id, formData);
+                if (response.success) {
+                    Swal.fire({
+                        title: 'User Updated',
+                        text: 'User details have been synchronized with the server.',
+                        icon: 'success',
+                        confirmButtonColor: '#D4AF37'
+                    });
+                }
+            } catch (error) {
+                Swal.fire({
+                    title: 'Update Failed',
+                    text: error.message,
+                    icon: 'error',
+                    confirmButtonColor: '#D33'
+                });
+            }
         } else {
             try {
                 await registerUser(formData);
-                const newUser = {
-                    id: Date.now(),
-                    ...formData,
-                    name: `${formData.firstName} ${formData.lastName}`,
-                    role: 'client',
-                    joined: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
-                };
-                setUserList([newUser, ...userList]);
+                // fetchAllUsers is called in AppContext via useEffect on userList change or manually
                 Swal.fire({
                     title: 'User Registered',
                     text: 'A new partner has been registered successfully in the backend.',
@@ -126,17 +128,25 @@ export default function UserManagement() {
             cancelButtonColor: '#D4AF37',
             confirmButtonText: 'Yes, Remove Partner',
             reverseButtons: true
-        }).then((result) => {
+        }).then(async (result) => {
             if (result.isConfirmed) {
-                // Backend delete for user not found in index.js
-                setUserList(userList.filter(u => u.id !== id));
-                Swal.fire({
-                    title: 'Deleted!',
-                    text: 'User has been removed from local state.',
-                    icon: 'success',
-                    timer: 1500,
-                    showConfirmButton: false
-                });
+                try {
+                    await deleteUser(id);
+                    Swal.fire({
+                        title: 'Deleted!',
+                        text: 'User has been removed from the server.',
+                        icon: 'success',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                } catch (error) {
+                    Swal.fire({
+                        title: 'Delete Failed',
+                        text: error.message,
+                        icon: 'error',
+                        confirmButtonColor: '#D33'
+                    });
+                }
             }
         });
     };
@@ -196,41 +206,50 @@ export default function UserManagement() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50">
-                            {filtered.map((user) => (
+                            {filtered.map((u) => (
                                 <tr 
-                                    key={user.id} 
+                                    key={u._id || u.id} 
                                     className="hover:bg-gray-50/80 transition-colors group"
                                 >
                                     <td className="px-6 py-5">
                                         <div className="flex items-center gap-4">
                                             <div className="w-10 h-10 rounded-full bg-gradient-silver text-gray-700 flex items-center justify-center font-black text-xs flex-shrink-0 shadow-sm border border-gray-100 uppercase">
-                                                {user.firstName ? (user.firstName[0] + (user.lastName ? user.lastName[0] : '')) : (user.name ? user.name[0] : 'U')}
+                                                {u.firstName ? (u.firstName[0] + (u.lastName ? u.lastName[0] : '')) : (u.name ? u.name[0] : 'U')}
                                             </div>
                                             <div>
-                                                <p className="text-gray-950 font-bold group-hover:text-[#A67C00] transition-colors">{user.firstName ? `${user.firstName} ${user.lastName}` : user.name}</p>
-                                                <p className="text-gray-400 text-[11px] font-medium">{user.email}</p>
+                                                <p className="text-gray-950 font-bold group-hover:text-[#A67C00] transition-colors">{u.firstName ? `${u.firstName} ${u.lastName}` : u.name}</p>
+                                                <p className="text-gray-400 text-[11px] font-medium">{u.email}</p>
                                             </div>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
                                         <button 
-                                            onClick={() => toggleStatus(user)}
-                                            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter transition-all hover:scale-105 active:scale-95 ${statusStyles[user.status]}`}
+                                            onClick={() => toggleStatus(u)}
+                                            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter transition-all hover:scale-105 active:scale-95 ${statusStyles[u.status]}`}
                                         >
                                             <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span>
-                                            {user.status}
+                                            {u.status}
                                         </button>
                                     </td>
-                                    <td className="px-6 py-4 text-gray-500 font-bold">{user.joined}</td>
+                                    <td className="px-6 py-4 text-gray-500 font-bold">{u.joined || new Date(u.createdAt).toLocaleDateString()}</td>
                                     <td className="px-6 py-4 text-right">
                                         <div className="flex items-center justify-end gap-2">
                                             <button 
-                                                onClick={() => handleOpenModal(user)}
+                                                onClick={() => handleOpenModal(u)}
                                                 className="cursor-pointer text-gray-400 hover:text-[#A67C00] transition-colors p-2 hover:bg-white rounded-lg border border-transparent hover:border-gray-100 shadow-sm hover:shadow"
                                                 title="Edit User"
                                             >
                                                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                                     <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                                                </svg>
+                                            </button>
+                                            <button 
+                                                onClick={() => handleDelete(u._id || u.id, u.firstName || u.name)}
+                                                className="cursor-pointer text-gray-400 hover:text-red-500 transition-colors p-2 hover:bg-white rounded-lg border border-transparent hover:border-gray-100 shadow-sm hover:shadow"
+                                                title="Delete User"
+                                            >
+                                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                                 </svg>
                                             </button>
                                         </div>

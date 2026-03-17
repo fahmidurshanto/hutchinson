@@ -6,16 +6,22 @@ import Swal from 'sweetalert2';
 
 export default function UserDetailPage({ params }) {
     const router = useRouter();
-    const { userList, setUserList } = useAppContext();
+    const { userList, updateUser, deleteUser } = useAppContext();
     const resolvedParams = use(params);
-    const userId = parseInt(resolvedParams.id);
-    const user = userList.find(u => u.id === userId);
+    const userId = resolvedParams.id;
+    const user = userList.find(u => (u._id || u.id) === userId);
 
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [formData, setFormData] = useState({
-        name: user?.name || '',
+        firstName: user?.firstName || user?.name?.split(' ')[0] || '',
+        lastName: user?.lastName || user?.name?.split(' ').slice(1).join(' ') || '',
         email: user?.email || '',
-        status: user?.status || 'active'
+        status: user?.status || 'active',
+        Phone: user?.Phone || '',
+        gender: user?.gender || 'male',
+        nric: user?.nric || '',
+        address: user?.address || '',
+        nationality: user?.nationality || ''
     });
 
     if (!user) {
@@ -35,49 +41,64 @@ export default function UserDetailPage({ params }) {
     const handleDelete = () => {
         Swal.fire({
             title: 'Remove User?',
-            text: `Are you sure you want to delete ${user.name}? This action cannot be undone.`,
+            text: `Are you sure you want to delete ${user.firstName || user.name}? This action cannot be undone.`,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
             cancelButtonColor: '#D4AF37',
             confirmButtonText: 'Yes, Remove User',
             reverseButtons: true
-        }).then((result) => {
+        }).then(async (result) => {
             if (result.isConfirmed) {
-                setUserList(userList.filter(u => u.id !== userId));
-                Swal.fire({
-                    title: 'Deleted!',
-                    text: 'User has been removed from the portal.',
-                    icon: 'success',
-                    timer: 1500,
-                    showConfirmButton: false
-                }).then(() => {
-                    router.push('/admin/users');
-                });
+                try {
+                    await deleteUser(user._id || user.id);
+                    Swal.fire({
+                        title: 'Deleted!',
+                        text: 'User has been removed from the portal.',
+                        icon: 'success',
+                        timer: 1500,
+                        showConfirmButton: false
+                    }).then(() => {
+                        router.push('/admin/users');
+                    });
+                } catch (error) {
+                    Swal.fire('Error', error.message, 'error');
+                }
             }
         });
     };
 
     const handleEdit = () => {
-        setFormData({ name: user.name, email: user.email, status: user.status });
+        setFormData({ 
+            firstName: user.firstName || user.name?.split(' ')[0] || '',
+            lastName: user.lastName || user.name?.split(' ').slice(1).join(' ') || '',
+            email: user.email, 
+            status: user.status,
+            Phone: user.Phone || '',
+            gender: user.gender || 'male',
+            nric: user.nric || '',
+            address: user.address || '',
+            nationality: user.nationality || ''
+        });
         setIsEditModalOpen(true);
     };
 
     const handleCloseModal = () => setIsEditModalOpen(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        
-        setUserList(userList.map(u => u.id === userId ? { ...u, ...formData } : u));
-        
-        Swal.fire({
-            title: 'Profile Updated',
-            text: 'User information has been successfully updated.',
-            icon: 'success',
-            confirmButtonColor: '#D4AF37'
-        });
-        
-        handleCloseModal();
+        try {
+            await updateUser(user._id || user.id, formData);
+            Swal.fire({
+                title: 'Profile Updated',
+                text: 'User information has been successfully updated.',
+                icon: 'success',
+                confirmButtonColor: '#D4AF37'
+            });
+            handleCloseModal();
+        } catch (error) {
+            Swal.fire('Error', error.message, 'error');
+        }
     };
 
 
