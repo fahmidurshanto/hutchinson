@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import api from '@/lib/api';
 import { useAppContext } from '@/context/AppContext';
 import Swal from 'sweetalert2';
 
@@ -11,24 +12,16 @@ export default function LoginForm() {
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
-    const { setUser } = useAppContext();
+    const { setUser, fetchCurrentUser } = useAppContext();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
 
         try {
-            const response = await fetch('http://localhost:8000/api/v1/auth/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email, password }),
-                credentials: 'include'
-            });
-
-            const data = await response.json();
-
+            const response = await api.post('/auth/login', { email, password });
+            const data = response.data;
+console.log(data);
             if (data.success) {
                 // The backend sets HTTP-only cookies (accessToken, refreshToken)
                 // BUT it does NOT return the user object in the login response.

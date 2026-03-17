@@ -2,9 +2,9 @@
 
 import { createContext, useContext, useState, useEffect } from 'react';
 import { initialUsers } from '@/data/users';
+import api from '@/lib/api';
 
 const AppContext = createContext();
-const API_URL = 'http://localhost:8000/api/v1';
 
 export function AppProvider({ children }) {
     // Centralized state
@@ -45,13 +45,13 @@ export function AppProvider({ children }) {
             formData.append('file', file);
             formData.append('userId', currentUser?.id || '69b2fe0f9f780f4730036dc5');
 
-            const response = await fetch(`${API_URL}/document/upload`, {
-                method: 'POST',
-                body: formData,
-                credentials: 'include'
+            const response = await api.post('/document/upload', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
             });
 
-            const data = await response.json();
+            const data = response.data;
             if (data.success) {
                 const newDoc = {
                     id: data.document._id,
@@ -74,11 +74,8 @@ export function AppProvider({ children }) {
     // API: Delete Document (Admin only)
     const deleteDocument = async (docId) => {
         try {
-            const response = await fetch(`${API_URL}/document/delete/${docId}`, {
-                method: 'DELETE',
-                credentials: 'include'
-            });
-            const data = await response.json();
+            const response = await api.delete(`/document/delete/${docId}`);
+            const data = response.data;
             if (data.success) {
                 setDocuments(prev => prev.filter(doc => doc.id !== docId));
                 return data;
@@ -95,8 +92,8 @@ export function AppProvider({ children }) {
         try {
             // Note: window.open might be better for binary stream if backend serves file directly
             // But we need to handle the "already seen" 403 response
-            const response = await fetch(`${API_URL}/document/view/${docId}`, {
-                credentials: 'include'
+            const response = await api.get(`/document/view/${docId}`, {
+                responseType: 'blob'
             });
             
             if (response.status === 403) {
@@ -104,8 +101,8 @@ export function AppProvider({ children }) {
                 throw new Error(data.message || 'Access Denied');
             }
 
-            if (response.ok) {
-                const blob = await response.blob();
+            if (response.status === 200) {
+                const blob = response.data;
                 const url = window.URL.createObjectURL(blob);
                 window.open(url, '_blank');
                 
@@ -134,13 +131,8 @@ export function AppProvider({ children }) {
     // API: Register User (Admin Only)
     const registerUser = async (userData) => {
         try {
-            const response = await fetch(`${API_URL}/auth/user/register`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(userData),
-                credentials: 'include'
-            });
-            const data = await response.json();
+            const response = await api.post('/auth/user/register', userData);
+            const data = response.data;
             if (data.success) {
                 // Refresh user list if needed, or just return
                 return data;
@@ -155,12 +147,10 @@ export function AppProvider({ children }) {
     // API: Fetch My Profile
     const fetchCurrentUser = async () => {
         try {
-            const response = await fetch(`${API_URL}/auth/me`, {
-                credentials: 'include'
-            });
-            const data = await response.json();
+            const response = await api.get('/auth/me');
+            const data = response.data;
             if (data.success) {
-                setUser({
+                setCurrentUser({
                     id: data.user.id,
                     name: `${data.user.firstName} ${data.user.lastName}`,
                     email: data.user.email,
@@ -183,17 +173,12 @@ export function AppProvider({ children }) {
     // API: Change Password
     const changePassword = async (passwordData, isUserSpecific = false) => {
         const endpoint = isUserSpecific 
-            ? `${API_URL}/auth/user/changepassword` 
-            : `${API_URL}/auth/admin/changepassword`;
+            ? '/auth/user/changepassword' 
+            : '/auth/admin/changepassword';
         
         try {
-            const response = await fetch(endpoint, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(passwordData),
-                credentials: 'include'
-            });
-            const data = await response.json();
+            const response = await api.post(endpoint, passwordData);
+            const data = response.data;
             if (data.success) return data;
             throw new Error(data.message || 'Password change failed');
         } catch (error) {
