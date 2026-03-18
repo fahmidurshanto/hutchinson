@@ -75,35 +75,11 @@ const thirdPartyTiers = [
 
 export default function MembershipsPage() {
     const renderTierCard = (tier, idx) => (
-        <div key={idx} className="bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden flex flex-col group hover:scale-[1.03] transition-all duration-500 w-full mb-8">
-            <div className={`h-3 bg-gradient-to-r ${tier.color}`}></div>
-            <div className="p-8 pb-10 flex-1 flex flex-col">
-                <div className="flex justify-between items-start gap-4 mb-6">
-                    <h3 className="text-xl font-black text-gray-900 tracking-tight leading-tight uppercase">{tier.name}</h3>
-                    <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border shrink-0 ${tier.status === 'Active' ? 'bg-green-50 text-green-600 border-green-100' : 'bg-gray-50 text-gray-400 border-gray-100'}`}>
-                        {tier.status}
-                    </span>
-                </div>
-                
-                <ul className="space-y-5 flex-1">
-                    {tier.benefits.map((benefit, bIdx) => (
-                        <li key={bIdx} className="flex items-start gap-4 animate__animated animate__fadeIn" style={{ animationDelay: `${bIdx * 0.1}s` }}>
-                            <div className="mt-1 w-5 h-5 rounded-full bg-gradient-gold flex items-center justify-center shrink-0 shadow-sm">
-                                <svg className="w-3 h-3 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                                </svg>
-                            </div>
-                            <span className="text-gray-600 font-bold text-sm tracking-tight">{benefit}</span>
-                        </li>
-                    ))}
-                </ul>
-
-                <div className="mt-8 flex items-center gap-3 opacity-30 group-hover:opacity-100 transition-opacity duration-500">
-                    <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-400 to-transparent"></div>
-                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 whitespace-nowrap">Hutchinson Excellence</span>
-                    <div className="h-px flex-1 bg-gradient-to-r from-transparent via-gray-400 to-transparent"></div>
-                </div>
-            </div>
+        <div key={idx} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex items-center justify-between px-6 py-5 w-full mb-4 hover:shadow-md hover:border-gray-200 transition-all duration-300 group">
+            <h3 className="text-sm font-black text-gray-900 tracking-tight uppercase leading-tight">{tier.name}</h3>
+            <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border shrink-0 ${tier.status === 'Active' ? 'bg-green-50 text-green-600 border-green-100' : 'bg-gray-50 text-gray-400 border-gray-100'}`}>
+                {tier.status}
+            </span>
         </div>
     );
 

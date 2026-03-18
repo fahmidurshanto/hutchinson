@@ -13,12 +13,7 @@ export function AppProvider({ children }) {
     const pathname = usePathname();
     const router = useRouter();
 
-    const [documents, setDocuments] = useState([
-        { id: 1, name: 'Monthly Performance - Sept 2025', date: '2025-10-01', size: '2.4 MB', category: 'Recent Reports', viewedBy: [] },
-        { id: 2, name: 'Annual Strategy Review', date: '2025-09-15', size: '15.8 MB', category: 'Recent Reports', viewedBy: [] },
-        { id: 3, name: 'Updated KYC Documents', date: '2025-10-14', size: '1.2 MB', category: 'Legal & Identity', viewedBy: [] },
-        { id: 4, name: 'Trust Declaration', date: '2025-01-20', size: '4.5 MB', category: 'Legal & Identity', viewedBy: [] }
-    ]);
+    const [documents, setDocuments] = useState([]);
 
     const [userList, setUserList] = useState(initialUsers);
     const [activeTab, setActiveTab] = useState('DASHBOARD');
@@ -91,7 +86,7 @@ export function AppProvider({ children }) {
                     date: new Date(data.document.createdAt).toISOString().split('T')[0],
                     size: 'N/A',
                     category: 'Recent Uploads',
-                    viewedBy: data.document.hasUserSeen ? [data.document.user] : []
+                    hasUserSeen: data.document.hasUserSeen || false
                 };
                 setDocuments(prev => [newDoc, ...prev]);
 
@@ -157,8 +152,8 @@ export function AppProvider({ children }) {
 
     const markAsViewedLocally = (docId) => {
         setDocuments(prev => prev.map(doc => {
-            if (doc.id === docId && !doc.viewedBy.includes(currentUser.id)) {
-                return { ...doc, viewedBy: [...doc.viewedBy, currentUser.id] };
+            if (String(doc.id) === String(docId)) {
+                return { ...doc, hasUserSeen: true };
             }
             return doc;
         }));
@@ -318,6 +313,29 @@ export function AppProvider({ children }) {
         }
     };
 
+    // API: Fetch Documents for current user
+    const fetchUserDocuments = async (userId) => {
+        if (!userId) return;
+        try {
+            const response = await api.get(`/document/user/${userId}`);
+            const data = response.data;
+            if (data.success) {
+                const mapped = data.documents.map(doc => ({
+                    id: doc._id,
+                    userId: doc.user,
+                    name: doc.name,
+                    date: new Date(doc.createdAt).toISOString().split('T')[0],
+                    size: doc.size || 'N/A',
+                    category: 'Documents',
+                    hasUserSeen: doc.hasUserSeen || false
+                }));
+                setDocuments(mapped);
+            }
+        } catch (error) {
+            console.error('Fetch user documents error:', error);
+        }
+    };
+
     useEffect(() => {
         // Initial load of user if session exists and not on login page
         if (pathname !== '/login') {
@@ -329,7 +347,11 @@ export function AppProvider({ children }) {
         if (currentUser?.role === 'admin') {
             fetchAllUsers().catch(() => { });
         }
+        if (currentUser?.id) {
+            fetchUserDocuments(currentUser.id).catch(() => { });
+        }
     }, [currentUser]);
+
 
     return (
         <AppContext.Provider value={{
@@ -357,7 +379,8 @@ export function AppProvider({ children }) {
             adminTab,
             setAdminTab,
             theme,
-            setTheme
+            setTheme,
+            fetchUserDocuments
         }}>
             {children}
         </AppContext.Provider>

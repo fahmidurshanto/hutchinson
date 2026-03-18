@@ -29,7 +29,7 @@ const DocumentIcon = (
 
 export default function DashboardHomePage() {
     const router = useRouter();
-    const { user, documents, fetchFinancialSummary, fetchEntities } = useAppContext();
+    const { user, documents, fetchFinancialSummary, fetchEntities, fetchUserDocuments } = useAppContext();
     const [financialData, setFinancialData] = useState([]);
     const [totalDisbursement, setTotalDisbursement] = useState('USD 0');
     const [primaryEntities, setPrimaryEntities] = useState([]);
@@ -38,11 +38,12 @@ export default function DashboardHomePage() {
 
     useEffect(() => {
         const loadUserData = async () => {
-            if (user?._id) {
+            if (user?.id || user?._id) {
+                const userId = user._id || user.id;
                 try {
                     const [financialRes, entitiesRes] = await Promise.all([
-                        fetchFinancialSummary(user._id),
-                        fetchEntities(user._id)
+                        fetchFinancialSummary(userId),
+                        fetchEntities(userId)
                     ]);
 
                     if (financialRes) {
@@ -65,7 +66,20 @@ export default function DashboardHomePage() {
         };
 
         loadUserData();
-    }, [user?._id]);
+    }, [user?.id, user?._id]);
+
+    // Filter documents belonging to current user
+    const userId = user?._id || user?.id;
+    const userDocs = documents.filter(doc =>
+        !doc.userId || String(doc.userId) === String(userId)
+    );
+
+    const recentDocs = userDocs.filter(doc => {
+        const docDate = new Date(doc.date);
+        const weekAgo = new Date();
+        weekAgo.setDate(weekAgo.getDate() - 7);
+        return docDate > weekAgo;
+    });
 
     const activePrimaryEntities = primaryEntities.filter(e => e.status === 'Active').length;
     const activeThirdPartyEntities = thirdPartyEntities.filter(e => e.status === 'Active').length;
@@ -175,22 +189,15 @@ export default function DashboardHomePage() {
                                 </div>
                                 <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Documents</span>
                             </div>
-                            <h3 className="text-2xl font-black text-gray-900 mb-1">{documents.length}</h3>
+                            <h3 className="text-2xl font-black text-gray-900 mb-1">{userDocs.length}</h3>
                             <p className="text-sm text-gray-600 mb-3">Total Documents</p>
                             <div className="space-y-1">
                                 <div className="flex justify-between text-xs">
                                     <span className="text-gray-400">Recent:</span>
-                                    <span className="text-gray-700 font-medium">
-                                        {documents.filter(doc => {
-                                            const docDate = new Date(doc.date);
-                                            const weekAgo = new Date();
-                                            weekAgo.setDate(weekAgo.getDate() - 7);
-                                            return docDate > weekAgo;
-                                        }).length} this week
-                                    </span>
+                                    <span className="text-gray-700 font-medium">{recentDocs.length} this week</span>
                                 </div>
                                 <div className="flex justify-between text-xs">
-                                    <span className="text-gray-400">Storage:</span>
+                                    <span className="text-gray-400">Vault:</span>
                                     <span className="text-gray-700 font-medium">Active</span>
                                 </div>
                             </div>
