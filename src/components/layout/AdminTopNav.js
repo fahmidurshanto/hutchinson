@@ -41,7 +41,7 @@ export default function AdminTopNav() {
                     </span>
 
                     <div className="flex items-center gap-2">
-                        <span className="font-bold text-sm text-[#3a3a3a]">{user.name}</span>
+                        <span className="font-bold text-sm text-[#3a3a3a]">{user?.name}</span>
                     </div>
 
                     <div className="w-9 h-9 rounded-full flex items-center justify-center text-white shadow-md bg-gradient-gold">

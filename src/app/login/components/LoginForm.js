@@ -21,14 +21,16 @@ export default function LoginForm() {
         try {
             const response = await api.post('/auth/login', { email, password });
             const data = response.data;
-console.log(data);
+            console.log(data);
             if (data.success) {
                 // The backend sets HTTP-only cookies (accessToken, refreshToken)
                 // BUT it does NOT return the user object in the login response.
                 // We must fetch the profile manually.
                 try {
+                    // Small delay to ensure browser persists cookies after cross-domain response
+                    await new Promise(resolve => setTimeout(resolve, 500));
                     const userProfile = await fetchCurrentUser();
-                    
+
                     Swal.fire({
                         icon: 'success',
                         title: 'Welcome Back',
@@ -51,6 +53,7 @@ console.log(data);
                 });
             }
         } catch (error) {
+            console.log(error);
             Swal.fire({
                 icon: 'error',
                 title: 'System Error',
@@ -94,9 +97,9 @@ console.log(data);
                         placeholder="••••••••"
                         className="w-full px-3 py-2.5 border-[1.5px] border-gray-300 rounded-md focus:outline-none focus:border-[#c6a267] focus:ring-1 focus:ring-[#c6a267] transition-colors text-black placeholder-gray-500 bg-white text-[14px]"
                     />
-                    <button 
-                        type="button" 
-                        onClick={() => setShowPassword(!showPassword)} 
+                    <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
                         title="Toggle Password Visibility"
                         className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                     >
@@ -119,7 +122,7 @@ console.log(data);
 
             {/* Premium Metallic Login Button with Refined 3D Border Gradient */}
             <div className="w-full p-[3px] rounded-xl mt-5 transition-all hover:brightness-110 active:scale-[0.98] shadow-[0_8px_25px_rgba(0,0,0,0.4)] bg-gradient-to-b from-[#fcfcfc] via-[#cecece] to-[#8a8a8a]">
-                <button 
+                <button
                     type="submit"
                     disabled={isLoading}
                     className="w-full py-3.5 px-4 rounded-[10px] flex items-center justify-center gap-3 shadow-[inset_0_2px_2px_rgba(0,0,0,0.3),inset_0_2px_0_rgba(255,255,255,0.4)]"

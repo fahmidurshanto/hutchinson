@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import { initialUsers } from '@/data/users';
 import api from '@/lib/api';
 
@@ -8,12 +9,9 @@ const AppContext = createContext();
 
 export function AppProvider({ children }) {
     // Centralized state
-    const [currentUser, setCurrentUser] = useState({
-        id: 'u-admin-1',
-        name: 'Alexander Reed',
-        role: 'admin', // 'admin' or 'client'
-        avatar: null
-    });
+    const [currentUser, setCurrentUser] = useState(null);
+    const pathname = usePathname();
+    const router = useRouter();
 
     const [documents, setDocuments] = useState([
         { id: 1, name: 'Monthly Performance - Sept 2025', date: '2025-10-01', size: '2.4 MB', category: 'Recent Reports', viewedBy: [] },
@@ -35,7 +33,19 @@ export function AppProvider({ children }) {
     });
 
     const logout = () => {
-        setCurrentUser(null);
+        const userLogout = async () => {
+           try {
+            const response = await api.get('/auth/logout');
+            const data = response.data;
+            console.log(data);
+           } catch (error) {
+            console.error(error);
+           } finally {
+            setCurrentUser(null);
+            router.push('/login');
+           }
+        }
+        userLogout();
     };
 
     // API: Upload Document
@@ -95,7 +105,7 @@ export function AppProvider({ children }) {
             const response = await api.get(`/document/view/${docId}`, {
                 responseType: 'blob'
             });
-            
+
             if (response.status === 403) {
                 const data = await response.json();
                 throw new Error(data.message || 'Access Denied');
@@ -105,7 +115,7 @@ export function AppProvider({ children }) {
                 const blob = response.data;
                 const url = window.URL.createObjectURL(blob);
                 window.open(url, '_blank');
-                
+
                 // Mark as viewed locally if user is not admin
                 if (currentUser.role !== 'admin') {
                     markAsViewedLocally(docId);
@@ -172,10 +182,10 @@ export function AppProvider({ children }) {
 
     // API: Change Password
     const changePassword = async (passwordData, isUserSpecific = false) => {
-        const endpoint = isUserSpecific 
-            ? '/auth/user/changepassword' 
+        const endpoint = isUserSpecific
+            ? '/auth/user/changepassword'
             : '/auth/admin/changepassword';
-        
+
         try {
             const response = await api.post(endpoint, passwordData);
             const data = response.data;
@@ -267,20 +277,22 @@ export function AppProvider({ children }) {
     };
 
     useEffect(() => {
-        // Initial load of user if session exists
-        fetchCurrentUser().catch(() => {});
-    }, []);
+        // Initial load of user if session exists and not on login page
+        if (pathname !== '/login') {
+            fetchCurrentUser().catch(() => { });
+        }
+    }, [pathname]);
 
     useEffect(() => {
         if (currentUser?.role === 'admin') {
-            fetchAllUsers().catch(() => {});
+            fetchAllUsers().catch(() => { });
         }
     }, [currentUser]);
 
     return (
-        <AppContext.Provider value={{ 
-            user: currentUser, 
-            setUser: setCurrentUser, 
+        <AppContext.Provider value={{
+            user: currentUser,
+            setUser: setCurrentUser,
             logout,
             documents,
             addDocument,
@@ -295,14 +307,14 @@ export function AppProvider({ children }) {
             fetchFinancialSummary,
             fetchEntities,
             fetchServiceStatus,
-            userList, 
+            userList,
             setUserList,
-            activeTab, 
-            setActiveTab, 
-            adminTab, 
-            setAdminTab, 
-            theme, 
-            setTheme 
+            activeTab,
+            setActiveTab,
+            adminTab,
+            setAdminTab,
+            theme,
+            setTheme
         }}>
             {children}
         </AppContext.Provider>

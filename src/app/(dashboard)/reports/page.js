@@ -72,6 +72,11 @@ const CustomTooltip = ({ active, payload, label }) => {
 
 export default function ReportsPage() {
     const [selectedYear, setSelectedYear] = useState("2024");
+    const [isMounted, setIsMounted] = useState(false);
+
+    React.useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     return (
         <div className="w-full max-w-7xl mx-auto p-4 md:p-8 animate__animated animate__fadeIn">
@@ -120,43 +125,45 @@ export default function ReportsPage() {
                         </div>
 
                         <div className="flex-1 min-h-[350px]">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <BarChart
-                                    data={dummyData[selectedYear]}
-                                    margin={{ top: 10, right: 10, left: 10, bottom: 0 }}
-                                >
-                                    <defs>
-                                        <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="0%" stopColor="#e6c875" />
-                                            <stop offset="100%" stopColor="#b38b22" />
-                                        </linearGradient>
-                                    </defs>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-                                    <XAxis 
-                                        dataKey="month" 
-                                        axisLine={false} 
-                                        tickLine={false} 
-                                        tick={{ fill: '#9ca3af', fontSize: 12, fontWeight: 600 }}
-                                        dy={10}
-                                    />
-                                    <YAxis 
-                                        axisLine={false} 
-                                        tickLine={false} 
-                                        tick={{ fill: '#9ca3af', fontSize: 12, fontWeight: 600 }}
-                                        tickFormatter={(value) => `$${value/1000}k`}
-                                    />
-                                    <Tooltip content={<CustomTooltip />} cursor={{ fill: '#f9fafb' }} />
-                                    <Bar 
-                                        dataKey="amount" 
-                                        radius={[10, 10, 0, 0]}
-                                        animationDuration={1500}
+                            {isMounted && (
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <BarChart
+                                        data={dummyData[selectedYear]}
+                                        margin={{ top: 10, right: 10, left: 10, bottom: 0 }}
                                     >
-                                        {dummyData[selectedYear].map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill="url(#barGradient)" />
-                                        ))}
-                                    </Bar>
-                                </BarChart>
-                            </ResponsiveContainer>
+                                        <defs>
+                                            <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="0%" stopColor="#e6c875" />
+                                                <stop offset="100%" stopColor="#b38b22" />
+                                            </linearGradient>
+                                        </defs>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                                        <XAxis 
+                                            dataKey="month" 
+                                            axisLine={false} 
+                                            tickLine={false} 
+                                            tick={{ fill: '#9ca3af', fontSize: 12, fontWeight: 600 }}
+                                            dy={10}
+                                        />
+                                        <YAxis 
+                                            axisLine={false} 
+                                            tickLine={false} 
+                                            tick={{ fill: '#9ca3af', fontSize: 12, fontWeight: 600 }}
+                                            tickFormatter={(value) => `$${value/1000}k`}
+                                        />
+                                        <Tooltip content={<CustomTooltip />} cursor={{ fill: '#f9fafb' }} />
+                                        <Bar 
+                                            dataKey="amount" 
+                                            radius={[10, 10, 0, 0]}
+                                            animationDuration={1500}
+                                        >
+                                            {dummyData[selectedYear].map((entry, index) => (
+                                                <Cell key={`cell-${index}`} fill="url(#barGradient)" />
+                                            ))}
+                                        </Bar>
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            )}
                         </div>
                     </div>
                 </div>

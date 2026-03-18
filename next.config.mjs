@@ -1,7 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
-  // other config options...
+  async rewrites() {
+    return [
+      {
+        source: '/api/v1/:path*',
+        destination: 'https://server.hutchinsonapac.com/api/v1/:path*',
+      },
+    ];
+  },
 };
 
 export default nextConfig;
