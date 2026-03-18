@@ -77,7 +77,7 @@ export default function LoginForm() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="your.name@hutchinson.apac"
-                        className="w-full px-3 py-2.5 border-[1.5px] border-gray-300 rounded-md focus:outline-none focus:border-[#c6a267] focus:ring-1 focus:ring-[#c6a267] transition-colors text-black placeholder-black bg-white text-[14px]"
+                        className="w-full px-3 py-2.5 border-[1.5px] border-gray-300 rounded-md focus:outline-none focus:border-[#c6a267] focus:ring-1 focus:ring-[#c6a267] transition-colors text-black placeholder-gray-500 bg-white text-[14px]"
                     />
                 </div>
                 <label htmlFor="email" className="block mt-1 text-[13px] font-medium text-[#9a804a]">
