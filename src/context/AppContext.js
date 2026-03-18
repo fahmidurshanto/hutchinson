@@ -49,11 +49,11 @@ export function AppProvider({ children }) {
     };
 
     // API: Upload Document
-    const addDocument = async (file) => {
+    const addDocument = async (file, targetUserId = null) => {
         try {
             const formData = new FormData();
             formData.append('file', file);
-            formData.append('userId', currentUser?.id || '69b2fe0f9f780f4730036dc5');
+            formData.append('userId', targetUserId || currentUser?.id || '69b2fe0f9f780f4730036dc5');
 
             const response = await api.post('/document/upload', formData, {
                 headers: {
@@ -65,6 +65,7 @@ export function AppProvider({ children }) {
             if (data.success) {
                 const newDoc = {
                     id: data.document._id,
+                    userId: targetUserId || currentUser?.id,
                     name: data.document.name,
                     date: new Date(data.document.createdAt).toISOString().split('T')[0],
                     size: 'N/A',
@@ -166,7 +167,7 @@ export function AppProvider({ children }) {
                     lastName: data.user.lastName,
                     name: `${data.user.firstName} ${data.user.lastName}`,
                     email: data.user.email,
-                    role: data.user.role,
+                    role: data.user.role || data.user.Role,
                     phone: data.user.Phone,
                     gender: data.user.gender,
                     nric: data.user.nric,

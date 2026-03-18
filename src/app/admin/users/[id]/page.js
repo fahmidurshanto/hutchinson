@@ -3,6 +3,7 @@ import React, { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppContext } from '@/context/AppContext';
 import Swal from 'sweetalert2';
+import UserDocuments from '../../components/UserDocuments';
 
 export default function UserDetailPage({ params }) {
     const router = useRouter();
@@ -243,6 +244,11 @@ export default function UserDetailPage({ params }) {
                             </div>
                         </div>
                     </div>
+
+                    <UserDocuments 
+                        targetUserId={userId} 
+                        userName={user.firstName ? `${user.firstName} ${user.lastName}` : user.name} 
+                    />
                 </div>
             </div>
 

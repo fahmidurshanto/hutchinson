@@ -11,7 +11,6 @@ export default function AdminTopNav() {
     const tabs = [
         { name: 'OVERVIEW', href: '/admin' },
         { name: 'USERS', href: '/admin/users' },
-        { name: 'DOCUMENTS', href: '/admin/documents' },
         { name: 'ACTIVITIES', href: '/admin/activities' },
         { name: 'SCHEDULE', href: '/admin/schedule' }
     ];
