@@ -33,7 +33,7 @@ export default function LoginForm() {
 
                     Swal.fire({
                         icon: 'success',
-                        title: 'Welcome Back',
+                        title: 'Welcome',
                         text: 'Redirecting to your dashboard...',
                         timer: 1500,
                         showConfirmButton: false

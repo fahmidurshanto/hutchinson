@@ -23,7 +23,7 @@ export default function AdminOverview() {
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-3xl font-bold text-gray-900 uppercase tracking-tight">Admin Dashboard</h1>
-                    <p className="text-gray-500 font-medium mt-1">Welcome back, here&apos;s what&apos;s happening today.</p>
+                    <p className="text-gray-500 font-medium mt-1">Welcome, here&apos;s what&apos;s happening today.</p>
                 </div>
                 <div className="hidden sm:flex items-center gap-2 text-sm text-gray-500 font-bold bg-white px-4 py-2 rounded-full shadow-sm border border-gray-100">
                     <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
