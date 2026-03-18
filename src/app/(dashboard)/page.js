@@ -1,32 +1,34 @@
 "use client";
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAppContext } from '../../context/AppContext';
 
 const UserIcon = (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6 text-gray-900">
         <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
     </svg>
 );
 
 const FinancialIcon = (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6 text-gray-900">
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
     </svg>
 );
 
-const EntityIcon = (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+const MembershipIcon = (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6 text-gray-900">
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z" />
     </svg>
 );
 
 const DocumentIcon = (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6 text-gray-900">
         <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" />
     </svg>
 );
 
 export default function DashboardHomePage() {
+    const router = useRouter();
     const { user, documents, fetchFinancialSummary, fetchEntities } = useAppContext();
     const [financialData, setFinancialData] = useState([]);
     const [totalDisbursement, setTotalDisbursement] = useState('USD 0');
@@ -141,11 +143,11 @@ export default function DashboardHomePage() {
                             </div>
                         </div>
 
-                        {/* Entities Card */}
+                        {/* Memberships Card */}
                         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-200">
                             <div className="flex items-center justify-between mb-4">
                                 <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center">
-                                    {EntityIcon}
+                                    {MembershipIcon}
                                 </div>
                                 <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Memberships</span>
                             </div>
@@ -201,25 +203,37 @@ export default function DashboardHomePage() {
                     <div className="mt-8">
                         <h2 className="text-lg font-black text-gray-900 mb-4">Quick Actions</h2>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <button className="p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors duration-200 text-center group">
+                            <button 
+                                onClick={() => router.push('/personal')}
+                                className="p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors duration-200 text-center group cursor-pointer"
+                            >
                                 <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform">
                                     {UserIcon}
                                 </div>
                                 <span className="text-xs font-medium text-gray-700">View Profile</span>
                             </button>
-                            <button className="p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors duration-200 text-center group">
+                            <button 
+                                onClick={() => router.push('/reports')}
+                                className="p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors duration-200 text-center group cursor-pointer"
+                            >
                                 <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform">
                                     {FinancialIcon}
                                 </div>
                                 <span className="text-xs font-medium text-gray-700">Financial Details</span>
                             </button>
-                            <button className="p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors duration-200 text-center group">
+                            <button 
+                                onClick={() => router.push('/memberships')}
+                                className="p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors duration-200 text-center group cursor-pointer"
+                            >
                                 <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform">
-                                    {EntityIcon}
+                                    {MembershipIcon}
                                 </div>
                                 <span className="text-xs font-medium text-gray-700">Memberships</span>
                             </button>
-                            <button className="p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors duration-200 text-center group">
+                            <button 
+                                onClick={() => router.push('/documents')}
+                                className="p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors duration-200 text-center group cursor-pointer"
+                            >
                                 <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform">
                                     {DocumentIcon}
                                 </div>
