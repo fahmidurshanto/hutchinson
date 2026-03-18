@@ -5,10 +5,18 @@ export function proxy(request) {
     const token = request.cookies.get('refreshToken')?.value;
     const { pathname } = request.nextUrl;
 
+    const isPublicFile = pathname.match(/\.[^/]+$/);
+    // matches anything like /logo.png, /image.jpg, /file.css, etc.
+
+    if (isPublicFile) {
+        return NextResponse.next();
+    }
+
+
     // Define routes that shouldn't be protected by this proxy
-    const isPublicRoute = 
-        pathname.startsWith('/_next') || 
-        pathname.startsWith('/api') || 
+    const isPublicRoute =
+        pathname.startsWith('/_next') ||
+        pathname.startsWith('/api') ||
         pathname.startsWith('/static') ||
         // Add any other public asset paths here if needed
         pathname === '/favicon.ico';
