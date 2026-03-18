@@ -232,15 +232,28 @@ export default function UserDetailPage({ params }) {
                         </div>
                         <div className="p-8">
                             <div className="space-y-6">
-                                {[1, 2, 3].map(i => (
-                                    <div key={i} className="flex gap-4">
-                                        <div className="w-2 h-2 rounded-full bg-[#D4AF37] mt-1.5 flex-shrink-0"></div>
-                                        <div>
-                                            <p className="text-sm text-gray-950 font-bold">User updated their residential address</p>
-                                            <p className="text-[10px] text-gray-400 font-bold uppercase mt-0.5">March {10 + i}, 2025 • 10:45 AM</p>
+                                {user.activities && user.activities.length > 0 ? (
+                                    user.activities.map(activity => (
+                                        <div key={activity.id} className="flex gap-4 group">
+                                            <div className="w-2 h-2 rounded-full bg-[#D4AF37] mt-1.5 flex-shrink-0 group-hover:scale-125 transition-transform"></div>
+                                            <div>
+                                                <p className="text-sm text-gray-950 font-bold group-hover:text-[#D4AF37] transition-colors">{activity.title}</p>
+                                                <p className="text-[10px] text-gray-400 font-bold uppercase mt-0.5">
+                                                    {activity.date} • {activity.time}
+                                                </p>
+                                                {activity.description && (
+                                                    <p className="text-[11px] text-gray-500 mt-1 italic leading-relaxed">
+                                                        "{activity.description}"
+                                                    </p>
+                                                )}
+                                            </div>
                                         </div>
+                                    ))
+                                ) : (
+                                    <div className="py-4 text-center">
+                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">No activity recorded yet</p>
                                     </div>
-                                ))}
+                                )}
                             </div>
                         </div>
                     </div>

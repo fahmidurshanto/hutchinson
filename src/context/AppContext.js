@@ -48,6 +48,27 @@ export function AppProvider({ children }) {
         userLogout();
     };
 
+    const logActivity = (userId, title, description) => {
+        const now = new Date();
+        const newActivity = {
+            id: Date.now(),
+            title,
+            description,
+            date: now.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
+            time: now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+        };
+
+        setUserList(prev => prev.map(u => {
+            if (String(u._id || u.id) === String(userId)) {
+                return {
+                    ...u,
+                    activities: [newActivity, ...(u.activities || [])]
+                };
+            }
+            return u;
+        }));
+    };
+
     // API: Upload Document
     const addDocument = async (file, targetUserId = null) => {
         try {
@@ -73,6 +94,10 @@ export function AppProvider({ children }) {
                     viewedBy: data.document.hasUserSeen ? [data.document.user] : []
                 };
                 setDocuments(prev => [newDoc, ...prev]);
+
+                // Log Activity
+                logActivity(targetUserId || currentUser?.id, 'Document Uploaded', `File "${file.name}" was added to the vault.`);
+
                 return data;
             }
             throw new Error(data.message || 'Upload failed');
@@ -223,6 +248,10 @@ export function AppProvider({ children }) {
             const data = response.data;
             if (data.success) {
                 setUserList(prev => prev.map(u => u._id === id ? { ...u, ...data.user } : u));
+                
+                // Log Activity
+                logActivity(id, 'Profile Updated', 'User account information was modified by admin.');
+                
                 return data;
             }
             throw new Error(data.message || 'Update failed');
