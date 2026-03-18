@@ -1,5 +1,5 @@
 "use client";
-import React, { use, useState } from 'react';
+import React, { use, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppContext } from '@/context/AppContext';
 import Swal from 'sweetalert2';
@@ -173,15 +173,15 @@ export default function UserDetailPage({ params }) {
                         <div className="space-y-4">
                             <div className="flex justify-between items-center text-sm">
                                 <span className="text-gray-400 font-bold">Member Since</span>
-                                <span className="text-gray-950 font-black">{user.joined}</span>
+                                <span className="text-gray-950 font-black">
+                                    {user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : user.joined}
+                                </span>
                             </div>
                             <div className="flex justify-between items-center text-sm">
-                                <span className="text-gray-400 font-bold">Total Projects</span>
-                                <span className="text-gray-950 font-black">12</span>
-                            </div>
-                            <div className="flex justify-between items-center text-sm">
-                                <span className="text-gray-400 font-bold">Last Login</span>
-                                <span className="text-gray-950 font-black">2 hours ago</span>
+                                <span className="text-gray-400 font-bold">Last Updates</span>
+                                <span className="text-gray-950 font-black">
+                                    {user.updatedAt ? new Date(user.updatedAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Recently'}
+                                </span>
                             </div>
                         </div>
                     </div>
