@@ -17,7 +17,6 @@ export default function UserManagement() {
     const { userList, setUserList, registerUser, updateUser, deleteUser } = useAppContext();
     const [search, setSearch] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [editingUser, setEditingUser] = useState(null);
     const [formData, setFormData] = useState({ 
         firstName: '', 
         lastName: '', 
@@ -36,84 +35,45 @@ export default function UserManagement() {
         u.email.toLowerCase().includes(search.toLowerCase())
     );
 
-    const handleOpenModal = (user = null) => {
-        if (user) {
-            setEditingUser(user);
-            setFormData({ 
-                firstName: user.firstName || user.name.split(' ')[0], 
-                lastName: user.lastName || user.name.split(' ').slice(1).join(' '), 
-                email: user.email, 
-                password: '', 
-                Phone: user.Phone || '', 
-                gender: user.gender || 'male', 
-                nric: user.nric || '', 
-                address: user.address || '', 
-                nationality: user.nationality || '',
-                status: user.status 
-            });
-        } else {
-            setEditingUser(null);
-            setFormData({ 
-                firstName: '', 
-                lastName: '', 
-                email: '', 
-                password: '', 
-                Phone: '', 
-                gender: 'male', 
-                nric: '', 
-                address: '', 
-                nationality: '',
-                status: 'active' 
-            });
-        }
+    const handleOpenModal = () => {
+        setFormData({ 
+            firstName: '', 
+            lastName: '', 
+            email: '', 
+            password: '', 
+            Phone: '', 
+            gender: 'male', 
+            nric: '', 
+            address: '', 
+            nationality: '',
+            status: 'active' 
+        });
         setIsModalOpen(true);
     };
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
-        setEditingUser(null);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         
-        if (editingUser) {
-            try {
-                const response = await updateUser(editingUser._id || editingUser.id, formData);
-                if (response.success) {
-                    Swal.fire({
-                        title: 'User Updated',
-                        text: 'User details have been synchronized with the server.',
-                        icon: 'success',
-                        confirmButtonColor: '#D4AF37'
-                    });
-                }
-            } catch (error) {
-                Swal.fire({
-                    title: 'Update Failed',
-                    text: error.message,
-                    icon: 'error',
-                    confirmButtonColor: '#D33'
-                });
-            }
-        } else {
-            try {
-                await registerUser(formData);
-                // fetchAllUsers is called in AppContext via useEffect on userList change or manually
-                Swal.fire({
-                    title: 'User Registered',
-                    text: 'A new partner has been registered successfully in the backend.',
-                    icon: 'success',
-                    confirmButtonColor: '#D4AF37'
-                });
-            } catch (error) {
-                Swal.fire({
-                    title: 'Registration Failed',
-                    text: error.message,
-                    icon: 'error',
-                    confirmButtonColor: '#D33'
-                });
-            }
+        try {
+            await registerUser(formData);
+            // fetchAllUsers is called in AppContext via useEffect on userList change or manually
+            Swal.fire({
+                title: 'User Registered',
+                text: 'A new partner has been registered successfully in the backend.',
+                icon: 'success',
+                confirmButtonColor: '#D4AF37'
+            });
+        } catch (error) {
+            Swal.fire({
+                title: 'Registration Failed',
+                text: error.message,
+                icon: 'error',
+                confirmButtonColor: '#D33'
+            });
         }
         handleCloseModal();
     };
@@ -209,7 +169,8 @@ export default function UserManagement() {
                             {filtered.map((u) => (
                                 <tr 
                                     key={u._id || u.id} 
-                                    className="hover:bg-gray-50/80 transition-colors group"
+                                    onClick={() => router.push(`/admin/users/${u._id || u.id}`)}
+                                    className="hover:bg-gray-50/80 transition-colors group cursor-pointer"
                                 >
                                     <td className="px-6 py-5">
                                         <div className="flex items-center gap-4">
@@ -224,7 +185,10 @@ export default function UserManagement() {
                                     </td>
                                     <td className="px-6 py-4">
                                         <button 
-                                            onClick={() => toggleStatus(u)}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                toggleStatus(u);
+                                            }}
                                             className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter transition-all hover:scale-105 active:scale-95 ${statusStyles[u.status]}`}
                                         >
                                             <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span>
@@ -235,16 +199,10 @@ export default function UserManagement() {
                                     <td className="px-6 py-4 text-right">
                                         <div className="flex items-center justify-end gap-2">
                                             <button 
-                                                onClick={() => handleOpenModal(u)}
-                                                className="cursor-pointer text-gray-400 hover:text-[#A67C00] transition-colors p-2 hover:bg-white rounded-lg border border-transparent hover:border-gray-100 shadow-sm hover:shadow"
-                                                title="Edit User"
-                                            >
-                                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                                                </svg>
-                                            </button>
-                                            <button 
-                                                onClick={() => handleDelete(u._id || u.id, u.firstName || u.name)}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleDelete(u._id || u.id, u.firstName || u.name);
+                                                }}
                                                 className="cursor-pointer text-gray-400 hover:text-red-500 transition-colors p-2 hover:bg-white rounded-lg border border-transparent hover:border-gray-100 shadow-sm hover:shadow"
                                                 title="Delete User"
                                             >
@@ -267,7 +225,7 @@ export default function UserManagement() {
                     <div className="bg-white rounded-[2rem] shadow-2xl border-2 border-[#D4AF37]/30 w-full max-w-2xl overflow-hidden animate__animated animate__zoomIn flex flex-col max-h-[90vh]">
                         <div className="bg-gradient-gold py-5 px-8 flex items-center justify-between shrink-0">
                             <h3 className="text-black font-black uppercase tracking-widest text-sm">
-                                {editingUser ? 'Edit Partner Details' : 'Register Corporate Partner'}
+                                Register Corporate Partner
                             </h3>
                             <button onClick={handleCloseModal} className="text-black hover:scale-110 transition-transform cursor-pointer">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
@@ -324,12 +282,10 @@ export default function UserManagement() {
                                             <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">Address</label>
                                             <textarea required rows="2" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black resize-none" placeholder="Enter full address" value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} />
                                         </div>
-                                        {!editingUser && (
-                                            <div>
-                                                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">Security Key (Password)</label>
-                                                <input required type="password" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" placeholder="Min. 6 characters" value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} />
-                                            </div>
-                                        )}
+                                        <div>
+                                            <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">Security Key (Password)</label>
+                                            <input required type="password" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" placeholder="Min. 6 characters" value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} />
+                                        </div>
                                     </div>
                                 </div>
 
@@ -337,7 +293,7 @@ export default function UserManagement() {
                                     type="submit"
                                     className="w-full py-5 bg-gradient-gold text-black font-black uppercase tracking-widest rounded-xl shadow-lg hover:shadow-gold-500/40 hover:brightness-110 active:scale-[0.98] transition-all cursor-pointer mt-4"
                                 >
-                                    {editingUser ? 'Synchronize Details' : 'Finalize Registration'}
+                                    Finalize Registration
                                 </button>
                             </form>
                         </div>

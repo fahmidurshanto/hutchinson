@@ -278,6 +278,16 @@ export function AppProvider({ children }) {
         }
     };
 
+    const fetchInvestmentReports = async (userId) => {
+        try {
+            const response = await api.get(`/user/investment-reports/${userId}`);
+            return response.data;
+        } catch (error) {
+            console.error('Investment reports error:', error);
+            throw error;
+        }
+    };
+
     useEffect(() => {
         // Initial load of user if session exists and not on login page
         if (pathname !== '/login') {
@@ -309,6 +319,7 @@ export function AppProvider({ children }) {
             fetchFinancialSummary,
             fetchEntities,
             fetchServiceStatus,
+            fetchInvestmentReports,
             userList,
             setUserList,
             activeTab,

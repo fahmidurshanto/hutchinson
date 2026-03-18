@@ -9,7 +9,7 @@ export default function UserDetailPage({ params }) {
     const { userList, updateUser, deleteUser } = useAppContext();
     const resolvedParams = use(params);
     const userId = resolvedParams.id;
-    const user = userList.find(u => (u._id || u.id) === userId);
+    const user = userList.find(u => String(u._id || u.id) === String(userId));
 
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [formData, setFormData] = useState({
@@ -117,7 +117,7 @@ export default function UserDetailPage({ params }) {
                     </button>
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900 uppercase tracking-tight">User Details</h1>
-                        <p className="text-gray-500 font-medium mt-1">Full profile information for {user.name}.</p>
+                        <p className="text-gray-500 font-medium mt-1">Full profile information for {user.firstName ? `${user.firstName} ${user.lastName}` : user.name}.</p>
                     </div>
                 </div>
                 <div className="flex gap-3">
@@ -148,9 +148,11 @@ export default function UserDetailPage({ params }) {
                 <div className="lg:col-span-1 space-y-6">
                     <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-xl flex flex-col items-center text-center">
                         <div className="w-32 h-32 rounded-full bg-gradient-gold flex items-center justify-center text-black font-black text-4xl shadow-2xl mb-6 uppercase">
-                            {user.name.split(' ').map(n => n[0]).join('')}
+                            {user.firstName ? (user.firstName[0] + (user.lastName ? user.lastName[0] : '')) : (user.name ? user.name[0] : 'U')}
                         </div>
-                        <h2 className="text-2xl font-black text-gray-950 uppercase tracking-tight">{user.name}</h2>
+                        <h2 className="text-2xl font-black text-gray-950 uppercase tracking-tight">
+                            {user.firstName ? `${user.firstName} ${user.lastName}` : user.name}
+                        </h2>
                         <p className="text-gray-400 font-bold mt-1">{user.email}</p>
                         
                         <div className="w-full grid grid-cols-2 gap-3 mt-8">
@@ -160,7 +162,7 @@ export default function UserDetailPage({ params }) {
                             </div>
                             <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100">
                                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Role</p>
-                                <span className="text-xs font-black text-[#A67C00] uppercase">{user.role}</span>
+                                <span className="text-xs font-black text-[#A67C00] uppercase tracking-widest">{user.role || 'Partner'}</span>
                             </div>
                         </div>
                     </div>
@@ -194,11 +196,11 @@ export default function UserDetailPage({ params }) {
                         <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div>
                                 <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">First Name</label>
-                                <p className="text-base text-gray-950 font-bold">{user.name.split(' ')[0]}</p>
+                                <p className="text-base text-gray-950 font-bold">{user.firstName || user.name?.split(' ')[0]}</p>
                             </div>
                             <div>
                                 <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Last Name</label>
-                                <p className="text-base text-gray-950 font-bold">{user.name.split(' ').slice(1).join(' ')}</p>
+                                <p className="text-base text-gray-950 font-bold">{user.lastName || user.name?.split(' ').slice(1).join(' ')}</p>
                             </div>
                             <div>
                                 <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Email</label>
@@ -206,11 +208,19 @@ export default function UserDetailPage({ params }) {
                             </div>
                             <div>
                                 <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Contact Number</label>
-                                <p className="text-base text-gray-950 font-bold">+65 8899 7766</p>
+                                <p className="text-base text-gray-950 font-bold">{user.Phone || 'N/A'}</p>
+                            </div>
+                            <div>
+                                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">NRIC / Passport</label>
+                                <p className="text-base text-gray-950 font-bold">{user.nric || 'N/A'}</p>
+                            </div>
+                            <div>
+                                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Nationality</label>
+                                <p className="text-base text-gray-950 font-bold">{user.nationality || 'N/A'}</p>
                             </div>
                             <div className="md:col-span-2">
                                 <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Residential Address</label>
-                                <p className="text-base text-gray-950 font-bold">123 Hutchinson Road, #05-12 Marina Quay, Singapore 123456</p>
+                                <p className="text-base text-gray-950 font-bold">{user.address || 'N/A'}</p>
                             </div>
                         </div>
                     </div>
@@ -239,7 +249,7 @@ export default function UserDetailPage({ params }) {
             {/* Edit Modal */}
             {isEditModalOpen && (
                 <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate__animated animate__fadeIn">
-                    <div className="bg-white rounded-[2rem] shadow-2xl border-2 border-[#D4AF37]/30 w-full max-w-lg overflow-hidden animate__animated animate__zoomIn flex flex-col max-h-[90vh]">
+                    <div className="bg-white rounded-[2rem] shadow-2xl border-2 border-[#D4AF37]/30 w-full max-w-2xl overflow-hidden animate__animated animate__zoomIn flex flex-col max-h-[90vh]">
                         <div className="bg-gradient-gold py-5 px-8 flex items-center justify-between shrink-0">
                             <h3 className="text-black font-black uppercase tracking-widest text-sm">
                                 Edit User Profile
@@ -250,52 +260,71 @@ export default function UserDetailPage({ params }) {
                                 </svg>
                             </button>
                         </div>
-                        <div className="overflow-y-auto custom-scrollbar">
-                            <form onSubmit={handleSubmit} className="p-10 space-y-6">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="md:col-span-2">
-                                    <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">Full Name</label>
-                                    <input 
-                                        required
-                                        type="text" 
-                                        className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black"
-                                        placeholder="Enter name"
-                                        value={formData.name}
-                                        onChange={(e) => setFormData({...formData, name: e.target.value})}
-                                    />
-                                </div>
-                                <div className="md:col-span-2">
-                                    <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">Email Address</label>
-                                    <input 
-                                        required
-                                        type="email" 
-                                        className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black"
-                                        placeholder="email@example.com"
-                                        value={formData.email}
-                                        onChange={(e) => setFormData({...formData, email: e.target.value})}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">Status</label>
-                                    <select 
-                                        className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black cursor-pointer"
-                                        value={formData.status}
-                                        onChange={(e) => setFormData({...formData, status: e.target.value})}
-                                    >
-                                        <option value="active">Active</option>
-                                        <option value="pending">Pending</option>
-                                        <option value="suspended">Suspended</option>
-                                    </select>
-                                </div>
-                            </div>
+                        <div className="overflow-y-auto custom-scrollbar p-10">
+                            <form onSubmit={handleSubmit} className="space-y-8">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div className="space-y-6">
+                                        <h4 className="text-[12px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100 pb-2">Identity Details</h4>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">First Name</label>
+                                                <input required type="text" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" value={formData.firstName} onChange={(e) => setFormData({...formData, firstName: e.target.value})} />
+                                            </div>
+                                            <div>
+                                                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">Last Name</label>
+                                                <input required type="text" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" value={formData.lastName} onChange={(e) => setFormData({...formData, lastName: e.target.value})} />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">Gender</label>
+                                            <select className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black cursor-pointer" value={formData.gender} onChange={(e) => setFormData({...formData, gender: e.target.value})}>
+                                                <option value="male">Male</option>
+                                                <option value="female">Female</option>
+                                                <option value="other">Other</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">NRIC / Passport No.</label>
+                                            <input required type="text" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" value={formData.nric} onChange={(e) => setFormData({...formData, nric: e.target.value})} />
+                                        </div>
+                                        <div>
+                                            <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">Nationality</label>
+                                            <input required type="text" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" value={formData.nationality} onChange={(e) => setFormData({...formData, nationality: e.target.value})} />
+                                        </div>
+                                    </div>
 
-                            <button 
-                                type="submit"
-                                className="w-full py-4 mt-4 bg-gradient-gold text-black font-black uppercase tracking-widest rounded-xl shadow-lg hover:shadow-gold-500/40 hover:brightness-110 active:scale-[0.98] transition-all cursor-pointer"
-                            >
-                                Update Profile
-                            </button>
-                        </form>
+                                    <div className="space-y-6">
+                                        <h4 className="text-[12px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100 pb-2">Status & Contact</h4>
+                                        <div>
+                                            <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">Status</label>
+                                            <select className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black cursor-pointer" value={formData.status} onChange={(e) => setFormData({...formData, status: e.target.value})}>
+                                                <option value="active">Active</option>
+                                                <option value="pending">Pending</option>
+                                                <option value="suspended">Suspended</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">Email Address</label>
+                                            <input required type="email" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} />
+                                        </div>
+                                        <div>
+                                            <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">Phone Number</label>
+                                            <input required type="tel" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" value={formData.Phone} onChange={(e) => setFormData({...formData, Phone: e.target.value})} />
+                                        </div>
+                                        <div className="md:col-span-2">
+                                            <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">Address</label>
+                                            <textarea required rows="2" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black resize-none" value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button 
+                                    type="submit"
+                                    className="w-full py-5 bg-gradient-gold text-black font-black uppercase tracking-widest rounded-xl shadow-lg hover:shadow-gold-500/40 hover:brightness-110 active:scale-[0.98] transition-all cursor-pointer mt-4"
+                                >
+                                    Update Profile
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>

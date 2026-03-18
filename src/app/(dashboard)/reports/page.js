@@ -1,5 +1,6 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useAppContext } from '@/context/AppContext';
 import { 
     BarChart, 
     Bar, 
@@ -61,12 +62,33 @@ const CustomTooltip = ({ active, payload, label }) => {
 };
 
 export default function ReportsPage() {
+    const { user, fetchInvestmentReports } = useAppContext();
+    const [reportsData, setReportsData] = useState(null);
     const [selectedYear, setSelectedYear] = useState("2024");
     const [isMounted, setIsMounted] = useState(false);
+    const [loading, setLoading] = useState(true);
 
-    React.useEffect(() => {
+    useEffect(() => {
         setIsMounted(true);
-    }, []);
+        if (user?.id) { // In AppContext, user has 'id' (mapped from _id)
+            setLoading(true);
+            fetchInvestmentReports(user.id)
+                .then(res => {
+                    if (res.success && Object.keys(res.data).length > 0) {
+                        setReportsData(res.data);
+                        const availableYears = Object.keys(res.data);
+                        if (!availableYears.includes(selectedYear)) {
+                            setSelectedYear(availableYears[availableYears.length - 1]);
+                        }
+                    }
+                })
+                .catch(err => console.error('Error fetching reports:', err))
+                .finally(() => setLoading(false));
+        }
+    }, [user?.id]);
+
+    const displayData = reportsData || dummyData;
+    const years = Object.keys(displayData);
 
     return (
         <div className="w-full max-w-7xl mx-auto p-4 md:p-8 animate__animated animate__fadeIn">
@@ -115,7 +137,7 @@ export default function ReportsPage() {
                             {isMounted && (
                                 <ResponsiveContainer width="100%" height="100%">
                                     <BarChart
-                                        data={dummyData[selectedYear]}
+                                        data={displayData[selectedYear] || []}
                                         margin={{ top: 10, right: 10, left: 10, bottom: 0 }}
                                     >
                                         <defs>
@@ -144,7 +166,7 @@ export default function ReportsPage() {
                                             radius={[10, 10, 0, 0]}
                                             animationDuration={1500}
                                         >
-                                            {dummyData[selectedYear].map((entry, index) => (
+                                            {(displayData[selectedYear] || []).map((entry, index) => (
                                                 <Cell key={`cell-${index}`} fill="url(#barGradient)" />
                                             ))}
                                         </Bar>
