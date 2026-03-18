@@ -17,18 +17,25 @@ export default function DocumentsPage() {
     const handleFileChange = async (e) => {
         const file = e.target.files?.[0];
         if (file) {
+            Swal.fire({
+                title: 'Encrypting & Uploading...',
+                text: `Transferring ${file.name} to the secure vault.`,
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
+
             try {
                 await addDocument(file);
                 Swal.fire({
                     icon: 'success',
-                    title: 'Document Uploaded',
-                    text: `${file.name} has been added to the vault.`,
+                    title: 'Asset Secured',
+                    text: `${file.name} has been successfully added to your vault.`,
                     confirmButtonColor: '#D4AF37'
                 });
             } catch (error) {
                 Swal.fire({
                     icon: 'error',
-                    title: 'Upload Failed',
+                    title: 'Transmission Failed',
                     text: error.message,
                     confirmButtonColor: '#D33'
                 });
@@ -51,9 +58,6 @@ export default function DocumentsPage() {
     };
 
 
-
-    // Group documents by category for display
-    const categories = [...new Set(documents.map(d => d.category))];
 
     return (
         <div className="w-full h-full flex flex-col items-center relative overflow-visible">
@@ -83,72 +87,72 @@ export default function DocumentsPage() {
                         Access and manage your sensitive document repository.
                     </p>
 
-                    {isAdmin && (
-                        <button
-                            onClick={handleUploadClick}
-                            className="px-8 py-3 bg-gradient-gold rounded-full text-black font-black text-xs uppercase tracking-widest shadow-xl hover:scale-105 transition-all flex items-center gap-2 mx-auto"
-                        >
-                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                            </svg>
-                            Upload Document
-                        </button>
-                    )}
+                    <button
+                        onClick={handleUploadClick}
+                        className="px-8 py-3 bg-gradient-gold rounded-full text-black font-black text-xs uppercase tracking-widest shadow-xl hover:scale-105 transition-all flex items-center gap-2 mx-auto cursor-pointer"
+                    >
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                        Upload Document
+                    </button>
                 </div>
             </div>
 
             {/* Content Section */}
-            <div className="w-full max-w-4xl px-4 animate__animated animate__fadeInUp relative z-10 space-y-10">
-                {categories.map((category, gIdx) => (
-                    <div key={gIdx} className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                        <div className="bg-gray-50 px-8 py-5 border-b border-gray-100 flex items-center gap-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 text-[#D4AF37]">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 9.776c.112-.017.227-.026.344-.026h15.812c.117 0 .232.009.344.026m-16.5 0a2.25 2.25 0 00-1.883 2.542l.857 6a2.25 2.25 0 002.227 1.932H19.05a2.25 2.25 0 002.227-1.932l.857-6a2.25 2.25 0 00-1.883-2.542m-16.5 0V6A2.25 2.25 0 016 3.75h2.25m9 0h2.25A2.25 2.25 0 0121 6v3.776m-12 0h6m-9-3h9m-9-3h9" />
-                            </svg>
-                            <h3 className="font-black text-xs uppercase tracking-[0.2em] text-gray-500">{category}</h3>
-                        </div>
-                        <div className="divide-y divide-gray-50">
-                            {documents.filter(d => d.category === category).map((doc, dIdx) => {
-                                const isViewed = !isAdmin && doc.viewedBy.includes(user?.id);
+            <div className="w-full max-w-4xl px-4 animate__animated animate__fadeInUp relative z-10">
+                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                    <div className="bg-gray-50 px-8 py-5 border-b border-gray-100 flex items-center gap-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 text-[#D4AF37]">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 9.776c.112-.017.227-.026.344-.026h15.812c.117 0 .232.009.344.026m-16.5 0a2.25 2.25 0 00-1.883 2.542l.857 6a2.25 2.25 0 002.227 1.932H19.05a2.25 2.25 0 002.227-1.932l.857-6a2.25 2.25 0 00-1.883-2.542m-16.5 0V6A2.25 2.25 0 016 3.75h2.25m9 0h2.25A2.25 2.25 0 0121 6v3.776m-12 0h6m-9-3h9m-9-3h9" />
+                        </svg>
+                        <h3 className="font-black text-xs uppercase tracking-[0.2em] text-gray-500">All Files & Documents</h3>
+                    </div>
+                    <div className="divide-y divide-gray-50">
+                        {documents.map((doc, dIdx) => {
+                            const isViewed = !isAdmin && doc.viewedBy.includes(user?.id);
 
-                                return (
-                                    <div key={dIdx} className="p-6 flex items-center justify-between hover:bg-gray-50 transition-colors group">
-                                        <div className="flex items-center gap-5">
-                                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all
-                                                ${isViewed ? 'bg-gray-100 text-gray-300' : 'bg-gray-50 text-gray-400 group-hover:bg-gradient-gold group-hover:text-black'}`}>
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                                                </svg>
-                                            </div>
-                                            <div>
-                                                <p className={`font-bold tracking-tight transition-colors ${isViewed ? 'text-gray-300' : 'text-gray-900 group-hover:text-[#A67C00]'}`}>{doc.name}</p>
-                                                <p className="text-[10px] font-black text-gray-400 uppercase mt-1">
-                                                    {doc.date} • {doc.size}
-                                                    {isViewed && <span className="ml-2 text-red-300">• VIEWED</span>}
-                                                </p>
-                                            </div>
+                            return (
+                                <div key={dIdx} className="p-6 flex items-center justify-between hover:bg-gray-50 transition-colors group">
+                                    <div className="flex items-center gap-5">
+                                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all
+                                            ${isViewed ? 'bg-gray-100 text-gray-300' : 'bg-gray-50 text-gray-400 group-hover:bg-gradient-gold group-hover:text-black'}`}>
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                                            </svg>
                                         </div>
-
-                                        <div className="flex items-center gap-2">
-                                            <button
-                                                disabled={isViewed}
-                                                onClick={() => handleView(doc)}
-                                                className={`px-4 py-2 rounded-lg font-black text-[10px] uppercase tracking-widest transition-all
-                                                    ${isViewed
-                                                        ? 'bg-gray-100 text-gray-300 border border-gray-100 cursor-not-allowed'
-                                                        : 'bg-white text-black border-2 border-gray-100 hover:border-[#D4AF37] hover:shadow-md'}`}
-                                            >
-                                                {isViewed ? 'Viewed' : 'View'}
-                                            </button>
-
-
+                                        <div>
+                                            <p className={`font-bold tracking-tight transition-colors ${isViewed ? 'text-gray-300' : 'text-gray-900 group-hover:text-[#A67C00]'}`}>{doc.name}</p>
+                                            <p className="text-[10px] font-black text-gray-400 uppercase mt-1">
+                                                {doc.date} • {doc.size}
+                                                {isViewed && <span className="ml-2 text-red-300">• VIEWED</span>}
+                                            </p>
                                         </div>
                                     </div>
-                                );
-                            })}
-                        </div>
+
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            disabled={isViewed}
+                                            onClick={() => handleView(doc)}
+                                            className={`px-6 py-2 rounded-lg font-black text-[10px] uppercase tracking-widest transition-all
+                                                ${isViewed
+                                                    ? 'bg-gray-100 text-gray-300 border border-gray-100 cursor-not-allowed'
+                                                    : 'bg-white text-black border-2 border-gray-100 hover:border-[#D4AF37] hover:shadow-md cursor-pointer'}`}
+                                        >
+                                            {isViewed ? 'Viewed' : 'View'}
+                                        </button>
+                                    </div>
+                                </div>
+                            );
+                        })}
+
+                        {documents.length === 0 && (
+                            <div className="p-12 text-center">
+                                <p className="text-gray-400 font-bold uppercase tracking-widest text-xs">No documents available in the vault</p>
+                            </div>
+                        )}
                     </div>
-                ))}
+                </div>
             </div>
 
             <div className="w-full text-center py-12 mt-8">
