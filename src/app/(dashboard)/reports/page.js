@@ -108,10 +108,7 @@ export default function ReportsPage() {
                                 </h2>
                                 <p className="text-gray-500 mt-1">Monthly performance and capital allocation</p>
                             </div>
-                            <div className="hidden sm:block text-right">
-                                <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Growth Rate</span>
-                                <div className="text-green-500 font-bold text-lg">+12.5%</div>
-                            </div>
+
                         </div>
 
                         <div className="flex-1 min-h-[350px]">
