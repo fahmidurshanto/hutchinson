@@ -1,22 +1,27 @@
 "use client";
 import React from 'react';
-
-const stats = [
-    { label: 'Total Users', value: '1,247', change: '+12%', icon: '👥', color: 'from-blue-500 to-blue-600' },
-    { label: 'Active Sessions', value: '89', change: '+5%', icon: '🟢', color: 'from-green-500 to-green-600' },
-    { label: 'Pending Approvals', value: '23', change: '-3%', icon: '⏳', color: 'from-amber-500 to-amber-600' },
-    { label: 'Total Revenue', value: '$2.4M', change: '+18%', icon: '💰', color: 'from-purple-500 to-purple-600' },
-];
-
-const recentActivity = [
-    { user: 'Sarah Chen', action: 'Submitted new service application', time: '2 min ago', type: 'application' },
-    { user: 'James Wilson', action: 'Account approved by admin', time: '15 min ago', type: 'approval' },
-    { user: 'Maria Garcia', action: 'Updated company profile', time: '1 hour ago', type: 'update' },
-    { user: 'Robert Kim', action: 'Password reset requested', time: '2 hours ago', type: 'security' },
-    { user: 'Lisa Thompson', action: 'New document uploaded', time: '3 hours ago', type: 'document' },
-];
+import { useAppContext } from '@/context/AppContext';
 
 export default function AdminOverview() {
+    const { userList } = useAppContext();
+
+    // Real computed stats
+    const totalUsers = userList?.length ?? 0;
+    const activeSessions = userList?.filter(u => (u.status || u.Status || '').toLowerCase() === 'active').length ?? 0;
+
+    // Aggregate all activities from all users, sort newest first, take top 5
+    const recentActivity = (userList || [])
+        .flatMap(u =>
+            (u.activities || []).map(act => ({
+                user: u.name || `${u.firstName || ''} ${u.lastName || ''}`.trim() || u.email,
+                action: act.description || act.title || 'Performed an action',
+                time: act.time ? `${act.date} ${act.time}` : act.date || '',
+                id: act.id || 0,
+            }))
+        )
+        .sort((a, b) => b.id - a.id)
+        .slice(0, 5);
+
     return (
         <div className="w-full space-y-8 animate__animated animate__fadeIn">
             {/* Header */}
@@ -32,19 +37,24 @@ export default function AdminOverview() {
             </div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                {stats.map((stat) => (
-                    <div key={stat.label} className="bg-white rounded-2xl p-6 border border-gray-100 shadow-xl hover:border-[#D4AF37]/30 transition-all group hover:scale-[1.02]">
-                        <div className="flex items-center justify-between mb-4">
-                            <span className="text-2xl">{stat.icon}</span>
-                            <span className={`text-[10px] font-black uppercase px-3 py-1 rounded-full ${stat.change.startsWith('+') ? 'bg-green-50 text-green-600 border border-green-100' : 'bg-red-50 text-red-600 border border-red-100'}`}>
-                                {stat.change}
-                            </span>
-                        </div>
-                        <p className="text-3xl font-black text-gray-900 mb-1">{stat.value}</p>
-                        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">{stat.label}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-xl hover:border-[#D4AF37]/30 transition-all group hover:scale-[1.02]">
+                    <div className="flex items-center justify-between mb-4">
+                        <span className="text-2xl">👥</span>
+                        <span className="text-[10px] font-black uppercase px-3 py-1 rounded-full bg-green-50 text-green-600 border border-green-100">Live</span>
                     </div>
-                ))}
+                    <p className="text-3xl font-black text-gray-900 mb-1">{totalUsers}</p>
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Total Users</p>
+                </div>
+
+                <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-xl hover:border-[#D4AF37]/30 transition-all group hover:scale-[1.02]">
+                    <div className="flex items-center justify-between mb-4">
+                        <span className="text-2xl">🟢</span>
+                        <span className="text-[10px] font-black uppercase px-3 py-1 rounded-full bg-green-50 text-green-600 border border-green-100">Live</span>
+                    </div>
+                    <p className="text-3xl font-black text-gray-900 mb-1">{activeSessions}</p>
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Active Users</p>
+                </div>
             </div>
 
             {/* Recent Activity */}
@@ -53,19 +63,27 @@ export default function AdminOverview() {
                     <h2 className="text-xs font-black text-gray-900 uppercase tracking-widest">Recent Activity</h2>
                 </div>
                 <div className="divide-y divide-gray-50">
-                    {recentActivity.map((item, idx) => (
-                        <div key={idx} className="px-6 py-5 flex items-center gap-4 hover:bg-gray-50/80 transition-colors">
-                            <div className="w-11 h-11 rounded-full bg-gradient-gold flex items-center justify-center text-white font-black text-sm flex-shrink-0 shadow-md">
-                                {item.user.split(' ').map(n => n[0]).join('')}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <p className="text-sm text-gray-950 font-bold truncate">
-                                    <span className="text-[#A67C00]">{item.user}</span> <span className="text-gray-400 mx-1">—</span> {item.action}
-                                </p>
-                                <p className="text-[10px] text-gray-400 font-black uppercase tracking-wider mt-0.5">{item.time}</p>
-                            </div>
+                    {recentActivity.length === 0 ? (
+                        <div className="px-6 py-10 text-center text-gray-400 text-sm font-bold uppercase tracking-widest opacity-50">
+                            No activity recorded yet
                         </div>
-                    ))}
+                    ) : (
+                        recentActivity.map((item, idx) => (
+                            <div key={idx} className="px-6 py-5 flex items-center gap-4 hover:bg-gray-50/80 transition-colors">
+                                <div className="w-11 h-11 rounded-full bg-gradient-gold flex items-center justify-center text-black font-black text-sm flex-shrink-0 shadow-md">
+                                    {item.user.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-sm text-gray-950 font-bold truncate">
+                                        <span className="text-[#A67C00]">{item.user}</span>
+                                        <span className="text-gray-400 mx-1">—</span>
+                                        {item.action}
+                                    </p>
+                                    <p className="text-[10px] text-gray-400 font-black uppercase tracking-wider mt-0.5">{item.time}</p>
+                                </div>
+                            </div>
+                        ))
+                    )}
                 </div>
             </div>
         </div>
