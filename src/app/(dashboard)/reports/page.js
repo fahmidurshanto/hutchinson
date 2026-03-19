@@ -12,40 +12,8 @@ import {
     Cell
 } from 'recharts';
 
-const dummyData = {
-    "2021": [
-        { month: 'Jan', amount: 45000 }, { month: 'Feb', amount: 52000 }, { month: 'Mar', amount: 48000 },
-        { month: 'Apr', amount: 61000 }, { month: 'May', amount: 55000 }, { month: 'Jun', amount: 67000 },
-        { month: 'Jul', amount: 72000 }, { month: 'Aug', amount: 78000 }, { month: 'Sep', amount: 85000 },
-        { month: 'Oct', amount: 92000 }, { month: 'Nov', amount: 88000 }, { month: 'Dec', amount: 105000 },
-    ],
-    "2022": [
-        { month: 'Jan', amount: 115000 }, { month: 'Feb', amount: 128000 }, { month: 'Mar', amount: 122000 },
-        { month: 'Apr', amount: 145000 }, { month: 'May', amount: 132000 }, { month: 'Jun', amount: 155000 },
-        { month: 'Jul', amount: 162000 }, { month: 'Aug', amount: 178000 }, { month: 'Sep', amount: 185000 },
-        { month: 'Oct', amount: 192000 }, { month: 'Nov', amount: 188000 }, { month: 'Dec', amount: 205000 },
-    ],
-    "2023": [
-        { month: 'Jan', amount: 215000 }, { month: 'Feb', amount: 230000 }, { month: 'Mar', amount: 225000 },
-        { month: 'Apr', amount: 245000 }, { month: 'May', amount: 260000 }, { month: 'Jun', amount: 280000 },
-        { month: 'Jul', amount: 295000 }, { month: 'Aug', amount: 310000 }, { month: 'Sep', amount: 325000 },
-        { month: 'Oct', amount: 340000 }, { month: 'Nov', amount: 355000 }, { month: 'Dec', amount: 380000 },
-    ],
-    "2024": [
-        { month: 'Jan', amount: 395000 }, { month: 'Feb', amount: 410000 }, { month: 'Mar', amount: 405000 },
-        { month: 'Apr', amount: 425000 }, { month: 'May', amount: 440000 }, { month: 'Jun', amount: 460000 },
-        { month: 'Jul', amount: 475000 }, { month: 'Aug', amount: 490000 }, { month: 'Sep', amount: 510000 },
-        { month: 'Oct', amount: 530000 }, { month: 'Nov', amount: 550000 }, { month: 'Dec', amount: 580000 },
-    ],
-    "2025": [
-        { month: 'Jan', amount: 600000 }, { month: 'Feb', amount: 620000 }, { month: 'Mar', amount: 615000 },
-        { month: 'Apr', amount: 645000 }, { month: 'May', amount: 660000 }, { month: 'Jun', amount: 695000 },
-        { month: 'Jul', amount: 710000 }, { month: 'Aug', amount: 730000 }, { month: 'Sep', amount: 750000 },
-        { month: 'Oct', amount: 770000 }, { month: 'Nov', amount: 790000 }, { month: 'Dec', amount: 820000 },
-    ]
-};
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-const years = Object.keys(dummyData);
 
 const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
@@ -63,22 +31,28 @@ const CustomTooltip = ({ active, payload, label }) => {
 
 export default function ReportsPage() {
     const { user, fetchInvestmentReports } = useAppContext();
-    const [reportsData, setReportsData] = useState(null);
-    const [selectedYear, setSelectedYear] = useState("2024");
+    const [reportsData, setReportsData] = useState({});
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
+    const [years, setYears] = useState([new Date().getFullYear().toString()]);
     const [isMounted, setIsMounted] = useState(false);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         setIsMounted(true);
-        if (user?.id) { // In AppContext, user has 'id' (mapped from _id)
+        if (user?.id) { 
             setLoading(true);
             fetchInvestmentReports(user.id)
                 .then(res => {
-                    if (res.success && Object.keys(res.data).length > 0) {
+                    if (res.success && res.data) {
                         setReportsData(res.data);
                         const availableYears = Object.keys(res.data);
-                        if (!availableYears.includes(selectedYear)) {
-                            setSelectedYear(availableYears[availableYears.length - 1]);
+                        if (availableYears.length > 0) {
+                            setYears(availableYears.sort((a,b) => b-a)); // descending
+                            if (!availableYears.includes(selectedYear)) {
+                                setSelectedYear(availableYears[availableYears.length - 1]);
+                            }
+                        } else {
+                            setYears([new Date().getFullYear().toString()]);
                         }
                     }
                 })
@@ -87,8 +61,19 @@ export default function ReportsPage() {
         }
     }, [user?.id]);
 
-    const displayData = reportsData || dummyData;
-    const years = Object.keys(displayData);
+    const getChartData = () => {
+        const yearData = reportsData[selectedYear] || [];
+        return MONTHS.map(month => {
+            const found = yearData.find(d => d.month === month);
+            return {
+                month,
+                amount: found ? found.amount : 0
+            };
+        });
+    };
+
+    const displayData = getChartData();
+
 
     return (
         <div className="w-full max-w-7xl mx-auto p-4 md:p-8 animate__animated animate__fadeIn">
@@ -137,7 +122,8 @@ export default function ReportsPage() {
                             {isMounted && (
                                 <ResponsiveContainer width="100%" height="100%">
                                     <BarChart
-                                        data={displayData[selectedYear] || []}
+                                        data={displayData}
+
                                         margin={{ top: 10, right: 10, left: 10, bottom: 0 }}
                                     >
                                         <defs>
@@ -166,7 +152,7 @@ export default function ReportsPage() {
                                             radius={[10, 10, 0, 0]}
                                             animationDuration={1500}
                                         >
-                                            {(displayData[selectedYear] || []).map((entry, index) => (
+                                            {displayData.map((entry, index) => (
                                                 <Cell key={`cell-${index}`} fill="url(#barGradient)" />
                                             ))}
                                         </Bar>
