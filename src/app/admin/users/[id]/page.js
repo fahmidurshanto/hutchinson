@@ -218,6 +218,26 @@ export default function UserDetailPage({ params }) {
                             </div>
                         </div>
                     </div>
+                    <div className="space-y-3">
+                        <button 
+                            onClick={() => router.push(`/admin/users/${userId}/memberships`)}
+                            className="w-full px-6 py-4 rounded-2xl bg-gradient-gold text-black font-black text-xs uppercase tracking-widest hover:scale-[1.02] shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-3"
+                        >
+                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5zm6-10.125a1.875 1.875 0 11-3.75 0 1.875 1.875 0 013.75 0zm1.294 6.336a6.721 6.721 0 01-3.17.789 6.721 6.721 0 01-3.168-.789 3.376 3.376 0 016.338 0z" />
+                            </svg>
+                            Memberships
+                        </button>
+                        <button 
+                            onClick={() => router.push(`/admin/users/${userId}/services`)}
+                            className="w-full px-6 py-4 rounded-2xl bg-white border-2 border-[#D4AF37] text-black font-black text-xs uppercase tracking-widest hover:bg-gray-50 hover:scale-[1.02] shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-3"
+                        >
+                            <svg className="w-5 h-5 text-[#A67C00]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.25c0 .621-.504 1.125-1.125 1.125H4.875A1.125 1.125 0 013.75 18.4V14.15m16.5 0a2.25 2.25 0 00-2.25-2.25h-13.5A2.25 2.25 0 002.25 14.15m16.5 0V5.25A2.25 2.25 0 0016.5 3h-9A2.25 2.25 0 005.25 5.25v8.9m13.5 0a2.25 2.25 0 01-2.25 2.25h-13.5a2.25 2.25 0 01-2.25-2.25m16.5 0h.008v.008h-.008v-.008zm-16.5 0h.008v.008h-.008v-.008z" />
+                            </svg>
+                            Services
+                        </button>
+                    </div>
                 </div>
 
                 {/* Right Column - Detailed Info */}
