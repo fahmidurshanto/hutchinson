@@ -52,7 +52,7 @@ export default function UserDetailPage({ params }) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
                 <h1 className="text-2xl font-bold text-gray-900">User not found</h1>
-                <button 
+                <button
                     onClick={() => router.push('/admin/users')}
                     className="px-6 py-2 bg-gradient-gold text-black font-bold rounded-xl"
                 >
@@ -93,10 +93,10 @@ export default function UserDetailPage({ params }) {
     };
 
     const handleEdit = () => {
-        setFormData({ 
+        setFormData({
             firstName: user.firstName || user.name?.split(' ')[0] || '',
             lastName: user.lastName || user.name?.split(' ').slice(1).join(' ') || '',
-            email: user.email, 
+            email: user.email,
             status: user.status,
             Phone: user.Phone || '',
             gender: user.gender || 'male',
@@ -131,7 +131,7 @@ export default function UserDetailPage({ params }) {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                    <button 
+                    <button
                         onClick={() => router.push('/admin/users')}
                         className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-500"
                     >
@@ -145,7 +145,7 @@ export default function UserDetailPage({ params }) {
                     </div>
                 </div>
                 <div className="flex gap-3">
-                    <button 
+                    <button
                         onClick={() => router.push(`/admin/users/${userId}/reports`)}
                         className="px-6 py-3 rounded-xl bg-gradient-gold text-black font-black text-xs uppercase tracking-widest hover:scale-105 shadow-md hover:shadow-lg transition-all flex items-center gap-2"
                     >
@@ -154,7 +154,7 @@ export default function UserDetailPage({ params }) {
                         </svg>
                         Reports
                     </button>
-                    <button 
+                    <button
                         onClick={handleEdit}
                         className="px-6 py-3 rounded-xl bg-white border-2 border-[#D4AF37] text-black font-black text-xs uppercase tracking-widest hover:bg-gray-50 shadow-md hover:shadow-lg transition-all flex items-center gap-2"
                     >
@@ -164,7 +164,7 @@ export default function UserDetailPage({ params }) {
                         </svg>
                         Edit Profile
                     </button>
-                    <button 
+                    <button
                         onClick={handleDelete}
                         className="px-6 py-3 rounded-xl bg-red-50 text-red-600 border border-red-100 font-black text-xs uppercase tracking-widest hover:bg-red-100 transition-all flex items-center gap-2"
                     >
@@ -188,7 +188,7 @@ export default function UserDetailPage({ params }) {
                             {user.firstName ? `${user.firstName} ${user.lastName}` : user.name}
                         </h2>
                         <p className="text-gray-400 font-bold mt-1">{user.email}</p>
-                        
+
                         <div className="w-full grid grid-cols-2 gap-3 mt-8">
                             <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100">
                                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Status</p>
@@ -219,7 +219,7 @@ export default function UserDetailPage({ params }) {
                         </div>
                     </div>
                     <div className="space-y-3">
-                        <button 
+                        <button
                             onClick={() => router.push(`/admin/users/${userId}/memberships`)}
                             className="w-full px-6 py-4 rounded-2xl bg-gradient-gold text-black font-black text-xs uppercase tracking-widest hover:scale-[1.02] shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-3"
                         >
@@ -228,7 +228,7 @@ export default function UserDetailPage({ params }) {
                             </svg>
                             Memberships
                         </button>
-                        <button 
+                        <button
                             onClick={() => router.push(`/admin/users/${userId}/services`)}
                             className="w-full px-6 py-4 rounded-2xl bg-white border-2 border-[#D4AF37] text-black font-black text-xs uppercase tracking-widest hover:bg-gray-50 hover:scale-[1.02] shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-3"
                         >
@@ -311,9 +311,9 @@ export default function UserDetailPage({ params }) {
                         </div>
                     </div>
 
-                    <UserDocuments 
-                        targetUserId={userId} 
-                        userName={user.firstName ? `${user.firstName} ${user.lastName}` : user.name} 
+                    <UserDocuments
+                        targetUserId={userId}
+                        userName={user.firstName ? `${user.firstName} ${user.lastName}` : user.name}
                     />
 
                     {/* Schedules Section */}
@@ -338,11 +338,10 @@ export default function UserDetailPage({ params }) {
                                     {schedules.map((s) => (
                                         <div key={s._id} className="flex gap-4 group p-4 bg-gray-50 rounded-2xl border border-gray-100 hover:border-[#D4AF37]/30 transition-all">
                                             <div className="flex-shrink-0">
-                                                <span className={`inline-block px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full border ${
-                                                    s.type === 'Meeting'
+                                                <span className={`inline-block px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full border ${s.type === 'Meeting'
                                                         ? 'bg-green-50 text-green-600 border-green-100'
                                                         : 'bg-gray-100 text-gray-500 border-gray-200'
-                                                }`}>
+                                                    }`}>
                                                     {s.type}
                                                 </span>
                                             </div>
@@ -388,16 +387,16 @@ export default function UserDetailPage({ params }) {
                                         <div className="grid grid-cols-2 gap-4">
                                             <div>
                                                 <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">First Name</label>
-                                                <input required type="text" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" value={formData.firstName} onChange={(e) => setFormData({...formData, firstName: e.target.value})} />
+                                                <input required type="text" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" value={formData.firstName} onChange={(e) => setFormData({ ...formData, firstName: e.target.value })} />
                                             </div>
                                             <div>
                                                 <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">Last Name</label>
-                                                <input required type="text" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" value={formData.lastName} onChange={(e) => setFormData({...formData, lastName: e.target.value})} />
+                                                <input required type="text" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" value={formData.lastName} onChange={(e) => setFormData({ ...formData, lastName: e.target.value })} />
                                             </div>
                                         </div>
                                         <div>
                                             <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">Gender</label>
-                                            <select className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black cursor-pointer" value={formData.gender} onChange={(e) => setFormData({...formData, gender: e.target.value})}>
+                                            <select className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black cursor-pointer" value={formData.gender} onChange={(e) => setFormData({ ...formData, gender: e.target.value })}>
                                                 <option value="male">Male</option>
                                                 <option value="female">Female</option>
                                                 <option value="other">Other</option>
@@ -405,11 +404,11 @@ export default function UserDetailPage({ params }) {
                                         </div>
                                         <div>
                                             <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">NRIC / Passport No.</label>
-                                            <input required type="text" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" value={formData.nric} onChange={(e) => setFormData({...formData, nric: e.target.value})} />
+                                            <input required type="text" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" value={formData.nric} onChange={(e) => setFormData({ ...formData, nric: e.target.value })} />
                                         </div>
                                         <div>
                                             <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">Nationality</label>
-                                            <input required type="text" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" value={formData.nationality} onChange={(e) => setFormData({...formData, nationality: e.target.value})} />
+                                            <input required type="text" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" value={formData.nationality} onChange={(e) => setFormData({ ...formData, nationality: e.target.value })} />
                                         </div>
                                     </div>
 
@@ -417,7 +416,7 @@ export default function UserDetailPage({ params }) {
                                         <h4 className="text-[12px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100 pb-2">Status & Contact</h4>
                                         <div>
                                             <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">Status</label>
-                                            <select className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black cursor-pointer" value={formData.status} onChange={(e) => setFormData({...formData, status: e.target.value})}>
+                                            <select className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black cursor-pointer" value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value })}>
                                                 <option value="active">Active</option>
                                                 <option value="pending">Pending</option>
                                                 <option value="suspended">Suspended</option>
@@ -425,20 +424,20 @@ export default function UserDetailPage({ params }) {
                                         </div>
                                         <div>
                                             <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">Email Address</label>
-                                            <input required type="email" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} />
+                                            <input required type="email" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
                                         </div>
                                         <div>
                                             <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">Phone Number</label>
-                                            <input required type="tel" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" value={formData.Phone} onChange={(e) => setFormData({...formData, Phone: e.target.value})} />
+                                            <input required type="tel" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" value={formData.Phone} onChange={(e) => setFormData({ ...formData, Phone: e.target.value })} />
                                         </div>
                                         <div className="md:col-span-2">
                                             <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">Address</label>
-                                            <textarea required rows="2" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black resize-none" value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} />
+                                            <textarea required rows="2" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black resize-none" value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} />
                                         </div>
                                     </div>
                                 </div>
 
-                                <button 
+                                <button
                                     type="submit"
                                     className="w-full py-5 bg-gradient-gold text-black font-black uppercase tracking-widest rounded-xl shadow-lg hover:shadow-gold-500/40 hover:brightness-110 active:scale-[0.98] transition-all cursor-pointer mt-4"
                                 >
