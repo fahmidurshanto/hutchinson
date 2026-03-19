@@ -7,6 +7,7 @@ import UserDocuments from '../../components/UserDocuments';
 import api from '@/lib/api';
 import logger from '@/lib/logger';
 import { getFriendlyErrorMessage } from '@/lib/error-utils';
+import NotFound from '@/components/ui/NotFound';
 
 export default function UserDetailPage({ params }) {
     const router = useRouter();
@@ -49,17 +50,7 @@ export default function UserDetailPage({ params }) {
     });
 
     if (!user) {
-        return (
-            <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
-                <h1 className="text-2xl font-bold text-gray-900">User not found</h1>
-                <button
-                    onClick={() => router.push('/admin/users')}
-                    className="px-6 py-2 bg-gradient-gold text-black font-bold rounded-xl"
-                >
-                    Back to Users
-                </button>
-            </div>
-        );
+        return <NotFound title="User Not Found" message="The individual profile you are seeking is not registered in the Hutchinson database." />;
     }
 
     const handleDelete = () => {

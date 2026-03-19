@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
+import NotFound from '@/components/ui/NotFound';
 import { 
     BarChart, 
     Bar, 
@@ -36,6 +37,7 @@ export default function ReportsPage() {
     const [years, setYears] = useState([new Date().getFullYear().toString()]);
     const [isMounted, setIsMounted] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [isNotFound, setIsNotFound] = useState(false);
 
     useEffect(() => {
         setIsMounted(true);
@@ -56,7 +58,12 @@ export default function ReportsPage() {
                         }
                     }
                 })
-                .catch(err => console.error('Error fetching reports:', err))
+                .catch(err => {
+                    console.error('Error fetching reports:', err);
+                    if (err.response?.status === 404) {
+                        setIsNotFound(true);
+                    }
+                })
                 .finally(() => setLoading(false));
         }
     }, [user?.id]);
@@ -74,6 +81,10 @@ export default function ReportsPage() {
 
     const displayData = getChartData();
 
+
+    if (isNotFound) {
+        return <NotFound title="Reports Unavailable" message="We were unable to retrieve your investment reports at this time." backLink="/" backText="Home" />;
+    }
 
     return (
         <div className="w-full max-w-7xl mx-auto p-4 md:p-8 animate__animated animate__fadeIn">

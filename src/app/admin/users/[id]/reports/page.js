@@ -13,6 +13,7 @@ import {
 } from 'recharts';
 import Swal from 'sweetalert2';
 import api from '@/lib/api';
+import NotFound from '@/components/ui/NotFound';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -40,6 +41,7 @@ export default function AdminUserReportsPage({ params }) {
     const [years, setYears] = useState([new Date().getFullYear().toString()]);
     const [isMounted, setIsMounted] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [isNotFound, setIsNotFound] = useState(false);
 
     const [editingMonth, setEditingMonth] = useState(null);
     const [editAmount, setEditAmount] = useState("");
@@ -65,6 +67,9 @@ export default function AdminUserReportsPage({ params }) {
             }
         } catch (error) {
             console.error("Failed to fetch reports:", error);
+            if (error.response?.status === 404) {
+                setIsNotFound(true);
+            }
         } finally {
             setLoading(false);
         }
@@ -145,6 +150,10 @@ export default function AdminUserReportsPage({ params }) {
             };
         });
     };
+
+    if (isNotFound) {
+        return <NotFound title="User Not Found" message="The user you are looking for does not exist in our records." />;
+    }
 
     const displayData = getChartData();
 

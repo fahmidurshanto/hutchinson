@@ -1,16 +1,51 @@
 "use client";
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useAppContext } from '@/context/AppContext';
+import api from '@/lib/api';
+import NotFound from '@/components/ui/NotFound';
 
-const services = [
-    { id: 1, name: 'Termination', status: 'Valid' },
-    { id: 2, name: 'Capital Gain tax', status: 'Valid' },
-    { id: 3, name: 'Trustee fees', status: 'Valid' },
-    { id: 4, name: 'Anti Money laundering', status: 'Valid' },
-    { id: 5, name: 'Remittance', status: 'Valid' },
-    { id: 6, name: 'Custody & services fees', status: 'Valid' },
-];
+// No longer using hardcoded services
+
 
 export default function ServicesPage() {
+    const { user } = useAppContext();
+    const [services, setServices] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [isNotFound, setIsNotFound] = useState(false);
+
+    useEffect(() => {
+        const fetchServices = async () => {
+            if (!user?.id) return;
+            try {
+                const response = await api.get(`/user/user-services/${user.id}`);
+                if (response.data.success) {
+                    setServices(response.data.data);
+                }
+            } catch (error) {
+                console.error('Error fetching services:', error);
+                if (error.response?.status === 404) {
+                    setIsNotFound(true);
+                }
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchServices();
+    }, [user?.id]);
+
+    if (loading) {
+        return (
+            <div className="w-full h-screen flex items-center justify-center bg-white">
+                <div className="w-8 h-8 border-4 border-[#D4AF37] border-t-transparent rounded-full animate-spin"></div>
+            </div>
+        );
+    }
+
+    if (isNotFound) {
+        return <NotFound title="Services Unavailable" message="We were unable to retrieve your account services at this time." />;
+    }
+
     return (
         <div className="w-full h-full flex flex-col items-center relative overflow-visible">
             {/* Global Watermark - Premium Shimmering Gold */}
@@ -46,8 +81,8 @@ export default function ServicesPage() {
                     </div>
 
                     <div className="divide-y divide-gray-100">
-                        {services.map((service) => (
-                            <div key={service.id} className="group p-6 flex flex-col sm:flex-row sm:items-center justify-between hover:bg-gray-50 transition-all duration-300">
+                        {services.map((service, idx) => (
+                            <div key={idx} className="group p-6 flex flex-col sm:flex-row sm:items-center justify-between hover:bg-gray-50 transition-all duration-300">
                                 <div className="flex items-center gap-4 mb-3 sm:mb-0">
                                     <div className="w-10 h-10 rounded-full bg-gradient-gold flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                                         <svg className="w-5 h-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>

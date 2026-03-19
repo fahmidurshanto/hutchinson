@@ -1,14 +1,11 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'next/navigation';
+import api from '@/lib/api';
+import NotFound from '@/components/ui/NotFound';
 
-const initialServices = [
-    { id: 1, name: 'Termination', status: 'Valid' },
-    { id: 2, name: 'Capital Gain tax', status: 'Valid' },
-    { id: 3, name: 'Trustee fees', status: 'Valid' },
-    { id: 4, name: 'Anti Money laundering', status: 'Valid' },
-    { id: 5, name: 'Remittance', status: 'Valid' },
-    { id: 6, name: 'Custody & services fees', status: 'Valid' },
-];
+// No longer using hardcoded initialServices
+
 
 // Edit Status Popup Modal
 function EditStatusModal({ service, onClose, onConfirm }) {
@@ -87,21 +84,60 @@ function EditStatusModal({ service, onClose, onConfirm }) {
 }
 
 export default function ServicesPage() {
-    const [services, setServices] = useState(initialServices);
+    const params = useParams();
+    const userId = params.id;
+    const [services, setServices] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [isNotFound, setIsNotFound] = useState(false);
     const [editTarget, setEditTarget] = useState(null); // the service being edited
 
-    const handleStatusChange = (newStatus) => {
-        const updated = services.map(s =>
-            s.id === editTarget.id ? { ...s, status: newStatus } : s
+    useEffect(() => {
+        const fetchServices = async () => {
+            try {
+                const response = await api.get(`/user/user-services/${userId}`);
+                if (response.data.success) {
+                    setServices(response.data.data);
+                }
+            } catch (error) {
+                console.error('Error fetching services:', error);
+                if (error.response?.status === 404) {
+                    setIsNotFound(true);
+                }
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (userId) fetchServices();
+    }, [userId]);
+
+    if (loading) {
+        return (
+            <div className="w-full h-screen flex items-center justify-center bg-white">
+                <div className="w-8 h-8 border-4 border-[#D4AF37] border-t-transparent rounded-full animate-spin"></div>
+            </div>
         );
-        setServices(updated);
-        console.log('[Service Status Change]', {
-            id: editTarget.id,
-            name: editTarget.name,
-            oldStatus: editTarget.status,
-            newStatus,
-        });
-        setEditTarget(null);
+    }
+
+    if (isNotFound) {
+        return <NotFound title="User Not Found" message="The user whose services you are trying to manage is not registered in the system." />;
+    }
+
+    const handleStatusChange = async (newStatus) => {
+        try {
+            const response = await api.patch(`/user/user-services/${userId}`, {
+                serviceName: editTarget.name,
+                status: newStatus
+            });
+
+            if (response.data.success) {
+                setServices(response.data.data);
+            }
+        } catch (error) {
+            console.error('[Service Status Change Error]', error);
+        } finally {
+            setEditTarget(null);
+        }
     };
 
     return (
@@ -138,8 +174,8 @@ export default function ServicesPage() {
                     </div>
 
                     <div className="divide-y divide-gray-100">
-                        {services.map((service) => (
-                            <div key={service.id} className="group p-6 flex flex-col sm:flex-row sm:items-center justify-between hover:bg-gray-50 transition-all duration-300">
+                        {services.map((service, idx) => (
+                            <div key={idx} className="group p-6 flex flex-col sm:flex-row sm:items-center justify-between hover:bg-gray-50 transition-all duration-300">
                                 <div className="flex items-center gap-4 mb-3 sm:mb-0">
                                     <div className="w-10 h-10 rounded-full bg-gradient-gold flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                                         <svg className="w-5 h-5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>

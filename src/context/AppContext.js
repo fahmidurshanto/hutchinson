@@ -2,7 +2,6 @@
 
 import { createContext, useContext, useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { initialUsers } from '@/data/users';
 import api from '@/lib/api';
 import logger from '@/lib/logger';
 import { getFriendlyErrorMessage } from '@/lib/error-utils';
@@ -16,8 +15,8 @@ export function AppProvider({ children }) {
     const router = useRouter();
 
     const [documents, setDocuments] = useState([]);
-
-    const [userList, setUserList] = useState(initialUsers);
+    const [userList, setUserList] = useState([]);
+    const [isLoadingUsers, setIsLoadingUsers] = useState(false);
     const [activeTab, setActiveTab] = useState('DASHBOARD');
     const [adminTab, setAdminTab] = useState('OVERVIEW');
 
@@ -187,7 +186,7 @@ export function AppProvider({ children }) {
             const response = await api.post('/auth/user/register', userData);
             const data = response.data;
             if (data.success) {
-                // Refresh user list if needed, or just return
+                await fetchAllUsers(); // Refresh user list after registration
                 return data;
             }
             throw new Error(data.message || 'Registration failed');
@@ -248,6 +247,7 @@ export function AppProvider({ children }) {
 
     // API: Fetch All Users (Admin Only)
     const fetchAllUsers = async () => {
+        setIsLoadingUsers(true);
         try {
             const response = await api.get('/auth/users');
             const data = response.data;
@@ -259,6 +259,8 @@ export function AppProvider({ children }) {
         } catch (error) {
             console.error('Fetch users error:', error);
             throw error;
+        } finally {
+            setIsLoadingUsers(false);
         }
     };
 
@@ -392,6 +394,7 @@ export function AppProvider({ children }) {
             fetchCurrentUser,
             changePassword,
             fetchAllUsers,
+            isLoadingUsers,
             updateUser,
             deleteUser,
             fetchFinancialSummary,
