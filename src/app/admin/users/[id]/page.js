@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useAppContext } from '@/context/AppContext';
 import Swal from 'sweetalert2';
 import UserDocuments from '../../components/UserDocuments';
+import api from '@/lib/api';
 
 export default function UserDetailPage({ params }) {
     const router = useRouter();
@@ -11,6 +12,26 @@ export default function UserDetailPage({ params }) {
     const resolvedParams = use(params);
     const userId = resolvedParams.id;
     const user = userList.find(u => String(u._id || u.id) === String(userId));
+
+    const [schedules, setSchedules] = useState([]);
+    const [schedulesLoading, setSchedulesLoading] = useState(true);
+
+    useEffect(() => {
+        if (!userId) return;
+        const fetchSchedules = async () => {
+            try {
+                const res = await api.get(`/schedule/user/${userId}`);
+                if (res.data.success) {
+                    setSchedules(res.data.data || []);
+                }
+            } catch (err) {
+                console.error('Failed to fetch schedules:', err);
+            } finally {
+                setSchedulesLoading(false);
+            }
+        };
+        fetchSchedules();
+    }, [userId]);
 
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [formData, setFormData] = useState({
@@ -262,6 +283,54 @@ export default function UserDetailPage({ params }) {
                         targetUserId={userId} 
                         userName={user.firstName ? `${user.firstName} ${user.lastName}` : user.name} 
                     />
+
+                    {/* Schedules Section */}
+                    <div className="bg-white rounded-3xl border border-gray-100 shadow-xl overflow-hidden">
+                        <div className="px-8 py-6 bg-gray-50/50 border-b border-gray-100 flex items-center justify-between">
+                            <h3 className="text-xs font-black text-gray-900 uppercase tracking-widest">Schedules</h3>
+                            <span className="text-[10px] font-black text-[#D4AF37] uppercase tracking-widest">
+                                {schedules.length} total
+                            </span>
+                        </div>
+                        <div className="p-8">
+                            {schedulesLoading ? (
+                                <div className="flex items-center justify-center py-6">
+                                    <div className="w-6 h-6 border-2 border-gray-200 border-t-[#D4AF37] rounded-full animate-spin"></div>
+                                </div>
+                            ) : schedules.length === 0 ? (
+                                <div className="py-6 text-center">
+                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">No schedules assigned yet</p>
+                                </div>
+                            ) : (
+                                <div className="space-y-4">
+                                    {schedules.map((s) => (
+                                        <div key={s._id} className="flex gap-4 group p-4 bg-gray-50 rounded-2xl border border-gray-100 hover:border-[#D4AF37]/30 transition-all">
+                                            <div className="flex-shrink-0">
+                                                <span className={`inline-block px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full border ${
+                                                    s.type === 'Meeting'
+                                                        ? 'bg-green-50 text-green-600 border-green-100'
+                                                        : 'bg-gray-100 text-gray-500 border-gray-200'
+                                                }`}>
+                                                    {s.type}
+                                                </span>
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-black text-gray-900 group-hover:text-[#A67C00] transition-colors">{s.title}</p>
+                                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mt-0.5">
+                                                    {new Date(s.time).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                                    {' • '}
+                                                    {new Date(s.time).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+                                                </p>
+                                                {s.description && (
+                                                    <p className="text-[11px] text-gray-500 mt-1.5 italic leading-relaxed">"{s.description}"</p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 </div>
             </div>
 

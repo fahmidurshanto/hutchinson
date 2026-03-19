@@ -1,27 +1,86 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import Swal from 'sweetalert2';
-
-const upcomingSchedules = [
-    { id: 1, title: 'Annual Review Meeting', date: 'Mar 15, 2026', time: '10:30 AM', type: 'Meeting' },
-    { id: 2, title: 'Document Verification', date: 'Mar 18, 2026', time: '02:00 PM', type: 'Verification' },
-    { id: 3, title: 'Financial Strategy Session', date: 'Mar 22, 2026', time: '11:00 AM', type: 'Consultation' },
-];
-
+import { useAppContext } from '@/context/AppContext';
+import api from '@/lib/api';
 
 export default function CalendarPage({ isAdmin = false }) {
-    const [events, setEvents] = useState([
-        { id: '1', title: 'Review Meeting', start: '2026-03-15T10:30:00', backgroundColor: '#10b981', borderColor: '#10b981' },
-        { id: '2', title: 'Doc Check', start: '2026-03-18T14:00:00', backgroundColor: 'transparent', borderColor: '#000000' },
-        { id: '3', title: 'Strategy Session', start: '2026-03-22T11:00:00', backgroundColor: '#10b981', borderColor: '#10b981' },
-    ]);
+    const { userList } = useAppContext();
+    const [events, setEvents] = useState([]);
+    const [upcomingSchedules, setUpcomingSchedules] = useState([]);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [newEvent, setNewEvent] = useState({ title: '', date: '', time: '', type: 'Meeting' });
+    const [newEvent, setNewEvent] = useState({ title: '', date: '', time: '', type: 'Meeting', userId: '', userName: '', description: '' });
+    const [userSearch, setUserSearch] = useState('');
+    const [showUserDropdown, setShowUserDropdown] = useState(false);
+    const userDropdownRef = useRef(null);
+
+    // Close user dropdown when clicking outside
+    useEffect(() => {
+        const handler = (e) => {
+            if (userDropdownRef.current && !userDropdownRef.current.contains(e.target)) {
+                setShowUserDropdown(false);
+            }
+        };
+        document.addEventListener('mousedown', handler);
+        return () => document.removeEventListener('mousedown', handler);
+    }, []);
+
+    const fetchSchedules = async () => {
+        try {
+            const endpoint = isAdmin ? '/schedule/admin/all' : '/schedule/my';
+            const res = await api.get(endpoint);
+            if (res.data.success) {
+                const fetchedSchedules = res.data.data;
+                
+                // Format for FullCalendar
+                const formattedEvents = fetchedSchedules.map(sch => {
+                    const color = sch.type === 'Meeting' ? '#10b981' : '#3b82f6';
+                    const borderColor = sch.type === 'Meeting' ? '#10b981' : '#3b82f6';
+                    return {
+                        id: sch._id,
+                        title: sch.title,
+                        start: new Date(sch.time).toISOString(),
+                        backgroundColor: color,
+                        borderColor: borderColor
+                    };
+                });
+                setEvents(formattedEvents);
+
+                // Format for Upcoming list
+                const now = new Date();
+                const upcoming = fetchedSchedules
+                    .filter(sch => new Date(sch.time) >= now)
+                    .sort((a, b) => new Date(a.time) - new Date(b.time))
+                    .slice(0, 5) // top 5
+                    .map(sch => ({
+                        id: sch._id,
+                        title: sch.title,
+                        date: new Date(sch.time).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+                        time: new Date(sch.time).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
+                        type: sch.type
+                    }));
+                setUpcomingSchedules(upcoming);
+            }
+        } catch (error) {
+            console.error("Failed to fetch schedules", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchSchedules();
+    }, [isAdmin]);
+
+    const filteredUsers = (userList || []).filter(u => {
+        const name = u.name || `${u.firstName || ''} ${u.lastName || ''}`.trim();
+        const email = u.email || '';
+        const query = userSearch.toLowerCase();
+        return name.toLowerCase().includes(query) || email.toLowerCase().includes(query);
+    });
 
     const handleDateSelect = (selectInfo) => {
         if (!isAdmin) return;
@@ -29,36 +88,53 @@ export default function CalendarPage({ isAdmin = false }) {
         setIsModalOpen(true);
     };
 
-    const handleAddEvent = (e) => {
+    const handleAddEvent = async (e) => {
         e.preventDefault();
+
+        if (!newEvent.userId) {
+            Swal.fire({ title: 'User Required', text: 'Please select a user to assign this schedule to.', icon: 'warning', confirmButtonColor: '#D4AF37' });
+            return;
+        }
+
         const start = `${newEvent.date}T${newEvent.time || '00:00:00'}`;
-        const color = newEvent.type === 'Meeting' ? '#10b981' : 'transparent';
-        const borderColor = newEvent.type === 'Meeting' ? '#10b981' : '#000000';
-        
-        const newEv = {
-            id: String(Date.now()),
-            title: newEvent.title,
-            start,
-            backgroundColor: color,
-            borderColor: borderColor
-        };
+        const color = newEvent.type === 'Meeting' ? '#10b981' : '#3b82f6';
+        const borderColor = newEvent.type === 'Meeting' ? '#10b981' : '#3b82f6';
 
-        setEvents([...events, newEv]);
-        setIsModalOpen(false);
-        setNewEvent({ title: '', date: '', time: '', type: 'Meeting' });
+        try {
+            // Persist to backend
+            const res = await api.post('/schedule/create', {
+                title: newEvent.title,
+                time: new Date(start).toISOString(),
+                type: newEvent.type,
+                description: newEvent.description || '',
+                userId: newEvent.userId
+            });
 
-        Swal.fire({
-            title: 'Schedule Confirmed!',
-            text: 'The new activity has been successfully added to the agenda.',
-            icon: 'success',
-            background: '#ffffff',
-            confirmButtonColor: '#D4AF37',
-            customClass: {
-                title: 'text-black font-black uppercase tracking-widest text-lg',
-                content: 'text-gray-600 font-bold',
-                confirmButton: 'px-8 py-3 rounded-full font-black uppercase tracking-widest'
+            if (res.data.success) {
+                // Re-fetch all schedules to guarantee sync
+                await fetchSchedules();
+
+                setIsModalOpen(false);
+                setNewEvent({ title: '', date: '', time: '', type: 'Meeting', userId: '', userName: '', description: '' });
+                setUserSearch('');
+
+                Swal.fire({
+                    title: 'Schedule Confirmed!',
+                    text: `Schedule has been saved for ${newEvent.userName}.`,
+                    icon: 'success',
+                    background: '#ffffff',
+                    confirmButtonColor: '#D4AF37',
+                    customClass: {
+                        title: 'text-black font-black uppercase tracking-widest text-lg',
+                        content: 'text-gray-600 font-bold',
+                        confirmButton: 'px-8 py-3 rounded-full font-black uppercase tracking-widest'
+                    }
+                });
             }
-        });
+        } catch (error) {
+            console.error('Schedule save error:', error);
+            Swal.fire({ title: 'Error', text: 'Failed to save schedule. Please try again.', icon: 'error', confirmButtonColor: '#D4AF37' });
+        }
     };
 
     const handleEventClick = (clickInfo) => {
@@ -81,20 +157,28 @@ export default function CalendarPage({ isAdmin = false }) {
                 confirmButton: 'px-6 py-2 rounded-full font-black uppercase tracking-widest text-[10px]',
                 cancelButton: 'px-6 py-2 rounded-full font-black uppercase tracking-widest text-[10px]'
             }
-        }).then((result) => {
+        }).then(async (result) => {
             if (result.isConfirmed) {
-                setEvents(events.filter(ev => ev.id !== clickInfo.event.id));
-                Swal.fire({
-                    title: 'Removed!',
-                    text: 'The schedule has been successfully removed.',
-                    icon: 'success',
-                    timer: 2000,
-                    showConfirmButton: false,
-                    background: '#ffffff',
-                    customClass: {
-                        title: 'text-black font-black uppercase tracking-widest text-sm',
-                    }
-                });
+                try {
+                    await api.delete(`/schedule/${clickInfo.event.id}`);
+                    setEvents(events.filter(ev => ev.id !== clickInfo.event.id));
+                    setUpcomingSchedules(upcomingSchedules.filter(s => s.id !== clickInfo.event.id));
+
+                    Swal.fire({
+                        title: 'Removed!',
+                        text: 'The schedule has been successfully removed.',
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false,
+                        background: '#ffffff',
+                        customClass: {
+                            title: 'text-black font-black uppercase tracking-widest text-sm',
+                        }
+                    });
+                } catch (error) {
+                    console.error("Failed to delete schedule", error);
+                    Swal.fire('Error', 'Failed to delete schedule.', 'error');
+                }
             }
         });
     };
@@ -133,7 +217,7 @@ export default function CalendarPage({ isAdmin = false }) {
                                 <span className="text-[10px] text-black font-bold uppercase">Meetings</span>
                             </div>
                             <div className="flex items-center gap-1.5">
-                                <span className="w-2.5 h-2.5 rounded-full bg-black"></span>
+                                <span className="w-2.5 h-2.5 rounded-full bg-[#3b82f6]"></span>
                                 <span className="text-[10px] text-black font-bold uppercase">Tasks</span>
                             </div>
                         </div>
@@ -170,17 +254,24 @@ export default function CalendarPage({ isAdmin = false }) {
                             <h3 className="text-gray-900 font-bold text-xs uppercase tracking-widest">Upcoming Schedules</h3>
                         </div>
                         <div className="p-4 space-y-3 overflow-y-auto max-h-[300px] custom-scrollbar">
-                            {upcomingSchedules.map(item => (
-                                <div key={item.id} className="p-3 border border-gray-50 rounded-xl hover:border-[#D4AF37]/30 hover:bg-gray-50/50 transition-all group">
-                                    <div className="flex items-center justify-between mb-1">
-                                        <span className="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded font-bold uppercase tracking-tighter">{item.type}</span>
-                                        <span className="text-[10px] text-[#D4AF37] font-black">{item.time}</span>
-                                    </div>
-                                    <h4 className="text-sm font-bold text-black group-hover:text-[#D4AF37] transition-colors line-clamp-1">{item.title}</h4>
-                                    <p className="text-[10px] text-gray-800 font-medium mt-0.5">{item.date}</p>
+                            {upcomingSchedules.length === 0 ? (
+                                <div className="text-center py-8 text-gray-400 font-bold uppercase tracking-widest text-xs">
+                                    No upcoming schedules
                                 </div>
-                            ))}
+                            ) : (
+                                upcomingSchedules.map(item => (
+                                    <div key={item.id} className="p-3 border border-gray-50 rounded-xl hover:border-[#D4AF37]/30 hover:bg-gray-50/50 transition-all group">
+                                        <div className="flex items-center justify-between mb-1">
+                                            <span className="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded font-bold uppercase tracking-tighter">{item.type}</span>
+                                            <span className="text-[10px] text-[#D4AF37] font-black">{item.time}</span>
+                                        </div>
+                                        <h4 className="text-sm font-bold text-black group-hover:text-[#D4AF37] transition-colors line-clamp-1">{item.title}</h4>
+                                        <p className="text-[10px] text-gray-800 font-medium mt-0.5">{item.date}</p>
+                                    </div>
+                                ))
+                            )}
                         </div>
+
                         <div className="p-4 bg-gray-50 border-t border-gray-100">
                             <button className="w-full text-center text-xs font-bold text-gray-500 hover:text-black transition-colors">View All Schedules</button>
                         </div>
@@ -203,6 +294,7 @@ export default function CalendarPage({ isAdmin = false }) {
                             </button>
                         </div>
                         <form onSubmit={handleAddEvent} className="p-8 space-y-5">
+                            {/* Event Title */}
                             <div>
                                 <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">Event Title</label>
                                 <input 
@@ -214,6 +306,68 @@ export default function CalendarPage({ isAdmin = false }) {
                                     onChange={(e) => setNewEvent({...newEvent, title: e.target.value})}
                                 />
                             </div>
+
+                            {/* User Dropdown with Search */}
+                            <div ref={userDropdownRef} className="relative">
+                                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">Assign to User</label>
+                                <div
+                                    className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm font-bold text-black cursor-pointer flex items-center justify-between hover:border-[#D4AF37]/50 transition-all"
+                                    onClick={() => setShowUserDropdown(v => !v)}
+                                >
+                                    <span className={newEvent.userName ? 'text-black' : 'text-gray-400'}>
+                                        {newEvent.userName || 'Select a user...'}
+                                    </span>
+                                    <svg className={`w-4 h-4 text-gray-400 transition-transform ${showUserDropdown ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </div>
+                                {showUserDropdown && (
+                                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border-2 border-[#D4AF37]/30 rounded-xl shadow-2xl z-50 overflow-hidden">
+                                        <div className="p-2 border-b border-gray-100">
+                                            <input
+                                                autoFocus
+                                                type="text"
+                                                placeholder="Search users..."
+                                                className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-xs font-bold text-black outline-none focus:border-[#D4AF37] transition-all"
+                                                value={userSearch}
+                                                onChange={e => setUserSearch(e.target.value)}
+                                                onClick={e => e.stopPropagation()}
+                                            />
+                                        </div>
+                                        <div className="max-h-44 overflow-y-auto">
+                                            {filteredUsers.length === 0 ? (
+                                                <div className="px-4 py-3 text-xs text-gray-400 font-bold uppercase tracking-widest text-center">No users found</div>
+                                            ) : (
+                                                filteredUsers.map(u => {
+                                                    const name = u.name || `${u.firstName || ''} ${u.lastName || ''}`.trim();
+                                                    const uid = u._id || u.id;
+                                                    return (
+                                                        <div
+                                                            key={uid}
+                                                            className="px-4 py-3 flex items-center gap-3 hover:bg-[#D4AF37]/10 cursor-pointer transition-colors"
+                                                            onClick={() => {
+                                                                setNewEvent({ ...newEvent, userId: uid, userName: name });
+                                                                setUserSearch('');
+                                                                setShowUserDropdown(false);
+                                                            }}
+                                                        >
+                                                            <div className="w-7 h-7 rounded-full bg-gradient-gold flex items-center justify-center text-black font-black text-[10px] flex-shrink-0">
+                                                                {name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                                                            </div>
+                                                            <div>
+                                                                <p className="text-xs font-black text-gray-900">{name}</p>
+                                                                <p className="text-[10px] text-gray-400 font-bold">{u.email}</p>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Time & Type */}
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">Time</label>
@@ -236,6 +390,19 @@ export default function CalendarPage({ isAdmin = false }) {
                                     </select>
                                 </div>
                             </div>
+
+                            {/* Description */}
+                            <div>
+                                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">Description</label>
+                                <textarea
+                                    rows={3}
+                                    className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black resize-none"
+                                    placeholder="Brief description of this schedule..."
+                                    value={newEvent.description}
+                                    onChange={(e) => setNewEvent({...newEvent, description: e.target.value})}
+                                />
+                            </div>
+
                             <button 
                                 type="submit"
                                 className="w-full py-4 mt-2 bg-gradient-gold text-black font-black uppercase tracking-widest rounded-xl shadow-lg hover:brightness-110 active:scale-[0.98] transition-all"
