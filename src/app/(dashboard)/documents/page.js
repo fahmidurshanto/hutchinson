@@ -110,7 +110,7 @@ export default function DocumentsPage() {
                     </div>
                     <div className="divide-y divide-gray-50">
                         {documents.map((doc, dIdx) => {
-                            const isViewed = !isAdmin && doc.viewedBy.includes(user?.id);
+                            const isViewed = !isAdmin && doc.hasUserSeen;
 
                             return (
                                 <div key={dIdx} className="p-6 flex items-center justify-between hover:bg-gray-50 transition-colors group">
