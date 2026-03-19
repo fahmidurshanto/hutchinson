@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { initialUsers } from '@/data/users';
 
 import { useAppContext } from '@/context/AppContext';
+import { getFriendlyErrorMessage } from '@/lib/error-utils';
 
 const statusStyles = {
     active: 'bg-green-50 text-green-600 border border-green-100',
@@ -17,17 +18,17 @@ export default function UserManagement() {
     const { userList, setUserList, registerUser, updateUser, deleteUser } = useAppContext();
     const [search, setSearch] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [formData, setFormData] = useState({ 
-        firstName: '', 
-        lastName: '', 
-        email: '', 
-        password: '', 
-        Phone: '', 
-        gender: 'male', 
-        nric: '', 
-        address: '', 
+    const [formData, setFormData] = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        password: '',
+        Phone: '',
+        gender: 'male',
+        nric: '',
+        address: '',
         nationality: '',
-        status: 'active' 
+        status: 'active'
     });
 
     const filtered = userList.filter(u =>
@@ -36,17 +37,17 @@ export default function UserManagement() {
     );
 
     const handleOpenModal = () => {
-        setFormData({ 
-            firstName: '', 
-            lastName: '', 
-            email: '', 
-            password: '', 
-            Phone: '', 
-            gender: 'male', 
-            nric: '', 
-            address: '', 
+        setFormData({
+            firstName: '',
+            lastName: '',
+            email: '',
+            password: '',
+            Phone: '',
+            gender: 'male',
+            nric: '',
+            address: '',
             nationality: '',
-            status: 'active' 
+            status: 'active'
         });
         setIsModalOpen(true);
     };
@@ -57,7 +58,7 @@ export default function UserManagement() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         try {
             await registerUser(formData);
             // fetchAllUsers is called in AppContext via useEffect on userList change or manually
@@ -70,7 +71,7 @@ export default function UserManagement() {
         } catch (error) {
             Swal.fire({
                 title: 'Registration Failed',
-                text: error.message,
+                text: getFriendlyErrorMessage(error),
                 icon: 'error',
                 confirmButtonColor: '#D33'
             });
@@ -116,7 +117,7 @@ export default function UserManagement() {
         const statuses = ['active', 'pending', 'suspended'];
         const currentIndex = statuses.indexOf(user.status);
         const nextStatus = statuses[(currentIndex + 1) % statuses.length];
-        
+
         setUserList(userList.map(u => u.id === user.id ? { ...u, status: nextStatus } : u));
     };
 
@@ -128,7 +129,7 @@ export default function UserManagement() {
                     <h1 className="text-3xl font-bold text-gray-900 uppercase tracking-tight">Users</h1>
                     <p className="text-gray-500 font-medium mt-1">Manage partner accounts and permissions.</p>
                 </div>
-                <button 
+                <button
                     onClick={() => handleOpenModal()}
                     className="cursor-pointer px-6 py-3 rounded-xl bg-gradient-gold text-black font-black text-xs uppercase tracking-widest shadow-lg hover:shadow-gold-500/30 hover:scale-[1.02] transition-all flex items-center gap-2"
                 >
@@ -167,8 +168,8 @@ export default function UserManagement() {
                         </thead>
                         <tbody className="divide-y divide-gray-50">
                             {filtered.map((u) => (
-                                <tr 
-                                    key={u._id || u.id} 
+                                <tr
+                                    key={u._id || u.id}
                                     onClick={() => router.push(`/admin/users/${u._id || u.id}`)}
                                     className="hover:bg-gray-50/80 transition-colors group cursor-pointer"
                                 >
@@ -184,7 +185,7 @@ export default function UserManagement() {
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <button 
+                                        <button
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 toggleStatus(u);
@@ -198,7 +199,7 @@ export default function UserManagement() {
                                     <td className="px-6 py-4 text-gray-500 font-bold">{u.joined || new Date(u.createdAt).toLocaleDateString()}</td>
                                     <td className="px-6 py-4 text-right">
                                         <div className="flex items-center justify-end gap-2">
-                                            <button 
+                                            <button
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     handleDelete(u._id || u.id, u.firstName || u.name);
@@ -242,16 +243,16 @@ export default function UserManagement() {
                                         <div className="grid grid-cols-2 gap-4">
                                             <div>
                                                 <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">First Name</label>
-                                                <input required type="text" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" value={formData.firstName} onChange={(e) => setFormData({...formData, firstName: e.target.value})} />
+                                                <input required type="text" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" value={formData.firstName} onChange={(e) => setFormData({ ...formData, firstName: e.target.value })} />
                                             </div>
                                             <div>
                                                 <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">Last Name</label>
-                                                <input required type="text" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" value={formData.lastName} onChange={(e) => setFormData({...formData, lastName: e.target.value})} />
+                                                <input required type="text" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" value={formData.lastName} onChange={(e) => setFormData({ ...formData, lastName: e.target.value })} />
                                             </div>
                                         </div>
                                         <div>
                                             <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">Gender</label>
-                                            <select className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black cursor-pointer" value={formData.gender} onChange={(e) => setFormData({...formData, gender: e.target.value})}>
+                                            <select className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black cursor-pointer" value={formData.gender} onChange={(e) => setFormData({ ...formData, gender: e.target.value })}>
                                                 <option value="male">Male</option>
                                                 <option value="female">Female</option>
                                                 <option value="other">Other</option>
@@ -259,11 +260,11 @@ export default function UserManagement() {
                                         </div>
                                         <div>
                                             <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">NRIC / Passport No.</label>
-                                            <input required type="text" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" placeholder="S1234567A" value={formData.nric} onChange={(e) => setFormData({...formData, nric: e.target.value})} />
+                                            <input required type="text" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" placeholder="S1234567A" value={formData.nric} onChange={(e) => setFormData({ ...formData, nric: e.target.value })} />
                                         </div>
                                         <div>
                                             <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">Nationality</label>
-                                            <input required type="text" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" placeholder="Singaporean" value={formData.nationality} onChange={(e) => setFormData({...formData, nationality: e.target.value})} />
+                                            <input required type="text" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" placeholder="Singaporean" value={formData.nationality} onChange={(e) => setFormData({ ...formData, nationality: e.target.value })} />
                                         </div>
                                     </div>
 
@@ -272,24 +273,24 @@ export default function UserManagement() {
                                         <h4 className="text-[12px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100 pb-2">Corporate Contact</h4>
                                         <div>
                                             <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">Corporate Email</label>
-                                            <input required type="email" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" placeholder="partner@company.com" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} />
+                                            <input required type="email" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" placeholder="partner@company.com" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
                                         </div>
                                         <div>
                                             <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">Phone Number</label>
-                                            <input required type="tel" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" placeholder="+65 8888 8888" value={formData.Phone} onChange={(e) => setFormData({...formData, Phone: e.target.value})} />
+                                            <input required type="tel" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" placeholder="+65 8888 8888" value={formData.Phone} onChange={(e) => setFormData({ ...formData, Phone: e.target.value })} />
                                         </div>
                                         <div className="md:col-span-2">
                                             <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">Address</label>
-                                            <textarea required rows="2" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black resize-none" placeholder="Enter full address" value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} />
+                                            <textarea required rows="2" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black resize-none" placeholder="Enter full address" value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} />
                                         </div>
                                         <div>
                                             <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">Security Key (Password)</label>
-                                            <input required type="password" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" placeholder="Min. 6 characters" value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} />
+                                            <input required type="password" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" placeholder="Min. 6 characters" value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
                                         </div>
                                     </div>
                                 </div>
 
-                                <button 
+                                <button
                                     type="submit"
                                     className="w-full py-5 bg-gradient-gold text-black font-black uppercase tracking-widest rounded-xl shadow-lg hover:shadow-gold-500/40 hover:brightness-110 active:scale-[0.98] transition-all cursor-pointer mt-4"
                                 >

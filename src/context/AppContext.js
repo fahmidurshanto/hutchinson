@@ -4,6 +4,8 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { initialUsers } from '@/data/users';
 import api from '@/lib/api';
+import logger from '@/lib/logger';
+import { getFriendlyErrorMessage } from '@/lib/error-utils';
 
 const AppContext = createContext();
 
@@ -27,18 +29,38 @@ export function AppProvider({ children }) {
         muted: '#666666'
     });
 
+    // Global 401 Interceptor
+    useEffect(() => {
+        const interceptor = api.interceptors.response.use(
+            (response) => response,
+            (error) => {
+                if (error.response?.status === 401) {
+                    setCurrentUser(null);
+                    router.push('/login');
+                    // Return a resolved promise to prevent technical errors bubbling up
+                    return Promise.resolve({ data: { success: false, silent: true } });
+                }
+                return Promise.reject(error);
+            }
+        );
+
+        return () => api.interceptors.response.eject(interceptor);
+    }, [router]);
+
     const logout = () => {
         const userLogout = async () => {
-           try {
-            const response = await api.get('/auth/logout');
-            const data = response.data;
-            console.log(data);
-           } catch (error) {
-            console.error(error);
-           } finally {
-            setCurrentUser(null);
-            router.push('/login');
-           }
+            try {
+                const response = await api.get('/auth/logout');
+                const data = response.data;
+                console.log(data);
+            } catch (error) {
+                if (error.response?.status !== 401) {
+                    logger.error('Logout error:', error);
+                }
+            } finally {
+                setCurrentUser(null);
+                router.push('/login');
+            }
         }
         userLogout();
     };
@@ -170,7 +192,7 @@ export function AppProvider({ children }) {
             }
             throw new Error(data.message || 'Registration failed');
         } catch (error) {
-            console.error('Registration error:', error);
+            // console.error('Registration error:', error);
             throw error;
         }
     };
@@ -198,9 +220,13 @@ export function AppProvider({ children }) {
             }
             throw new Error(data.message || 'Could not fetch profile');
         } catch (error) {
-            console.error('Fetch profile error:', error);
-            throw error;
+            // Only log if it's NOT a silent auth failure
+            if (error?.data?.silent !== true && error?.response?.status !== 401) {
+                logger.error('Fetch profile error:', error);
+            }
+            // Do not re-throw to prevent Red Screen overlay
         }
+
     };
 
     // API: Change Password
@@ -243,10 +269,10 @@ export function AppProvider({ children }) {
             const data = response.data;
             if (data.success) {
                 setUserList(prev => prev.map(u => u._id === id ? { ...u, ...data.user } : u));
-                
+
                 // Log Activity
                 logActivity(id, 'Profile Updated', 'User account information was modified by admin.');
-                
+
                 return data;
             }
             throw new Error(data.message || 'Update failed');

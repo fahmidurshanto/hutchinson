@@ -5,6 +5,8 @@ import { useAppContext } from '@/context/AppContext';
 import Swal from 'sweetalert2';
 import UserDocuments from '../../components/UserDocuments';
 import api from '@/lib/api';
+import logger from '@/lib/logger';
+import { getFriendlyErrorMessage } from '@/lib/error-utils';
 
 export default function UserDetailPage({ params }) {
     const router = useRouter();
@@ -25,7 +27,7 @@ export default function UserDetailPage({ params }) {
                     setSchedules(res.data.data || []);
                 }
             } catch (err) {
-                console.error('Failed to fetch schedules:', err);
+                logger.error('Failed to fetch schedules:', err);
             } finally {
                 setSchedulesLoading(false);
             }
@@ -84,7 +86,7 @@ export default function UserDetailPage({ params }) {
                         router.push('/admin/users');
                     });
                 } catch (error) {
-                    Swal.fire('Error', error.message, 'error');
+                    Swal.fire('Error', getFriendlyErrorMessage(error), 'error');
                 }
             }
         });
@@ -119,7 +121,7 @@ export default function UserDetailPage({ params }) {
             });
             handleCloseModal();
         } catch (error) {
-            Swal.fire('Error', error.message, 'error');
+            Swal.fire('Error', getFriendlyErrorMessage(error), 'error');
         }
     };
 
