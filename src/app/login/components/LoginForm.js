@@ -29,7 +29,7 @@ export default function LoginForm() {
                 try {
                     // Small delay to ensure browser persists cookies after cross-domain response
                     await new Promise(resolve => setTimeout(resolve, 500));
-                    const userProfile = await fetchCurrentUser();
+                    const freshUser = await fetchCurrentUser();
 
                     Swal.fire({
                         icon: 'success',
@@ -38,11 +38,23 @@ export default function LoginForm() {
                         timer: 1500,
                         showConfirmButton: false
                     }).then(() => {
-                        const target = userProfile.role === 'admin' ? '/admin' : '/';
+                        // Safe check for role
+                        const role = freshUser?.role || freshUser?.Role || 'client';
+                        const target = role === 'admin' ? '/admin' : '/';
                         router.push(target);
                     });
                 } catch (fetchError) {
-                    throw new Error('Authenticated, but could not retrieve profile.');
+                    console.error('Profile fetch failed:', fetchError);
+                    // Fallback redirect if profile fetch fails
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Logged In',
+                        text: 'Redirecting...',
+                        timer: 1500,
+                        showConfirmButton: false
+                    }).then(() => {
+                        router.push('/');
+                    });
                 }
             } else {
                 Swal.fire({
