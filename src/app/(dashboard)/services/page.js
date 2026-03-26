@@ -58,13 +58,13 @@ export default function ServicesPage() {
             </div>
 
             {/* Header Section */}
-            <div className="w-full text-center py-6 md:py-14 mb-2 animate__animated animate__fadeIn relative flex flex-col items-center justify-center min-h-[15vh] px-4">
-                <div className="relative z-10 w-full">
-                    <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-3 tracking-wide text-gradient-gold bg-clip-text uppercase">
+            <div className="w-full text-center py-8 md:py-14 animate__animated animate__fadeIn relative flex flex-col items-center justify-center min-h-[15vh] md:min-h-[25vh]">
+                <div className="relative z-10 w-full px-4">
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black mb-4 tracking-tight text-gradient-gold bg-clip-text uppercase leading-none">
                         Our Services
                     </h1>
-                    <p className="text-gray-500 text-xs sm:text-sm md:text-lg font-medium">
-                        View the status of your subscribed and available services.
+                    <p className="text-[10px] sm:text-xs md:text-base text-gray-400 font-bold uppercase tracking-[0.3em] max-w-2xl mx-auto opacity-70">
+                        Subscribed & Strategic Account Services • Precision & Trust
                     </p>
                 </div>
             </div>

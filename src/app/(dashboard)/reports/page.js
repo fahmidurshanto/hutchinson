@@ -87,26 +87,35 @@ export default function ReportsPage() {
     }
 
     return (
-        <div className="w-full max-w-7xl mx-auto p-4 md:p-8 animate__animated animate__fadeIn pb-12">
-            <div className="flex flex-col lg:flex-row gap-6 md:gap-10">
+        <div className="w-full max-w-7xl mx-auto p-2 sm:p-4 md:p-8 animate__animated animate__fadeIn pb-12">
+            {/* Header Section */}
+            <div className="w-full text-center py-8 md:py-14 animate__animated animate__fadeIn relative flex flex-col items-center justify-center min-h-[15vh] md:min-h-[25vh]">
+                <div className="relative z-10 w-full px-4">
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black mb-4 tracking-tight text-gradient-gold bg-clip-text uppercase leading-none">
+                        Capital Reports
+                    </h1>
+                    <p className="text-[10px] sm:text-xs md:text-base text-gray-400 font-bold uppercase tracking-[0.3em] max-w-2xl mx-auto opacity-70">
+                        Strategic Investment Analytics • Allocation Performance
+                    </p>
+                </div>
+            </div>
+
+            <div className="flex flex-col lg:flex-row gap-6 md:gap-10 mt-4 md:mt-8">
                 
                 {/* Left Column: Year Selection - Horizontal scroll on mobile, Vertical on Desktop */}
-                <div className="w-full lg:w-48 flex flex-row lg:flex-col gap-3 overflow-x-auto no-scrollbar pb-2 lg:pb-0">
-                    <h3 className="hidden lg:block text-lg font-bold text-gray-800 mb-2 border-b-2 border-[#D4AF37]/20 pb-2">
-                        Select Year
+                <div className="w-full lg:w-48 flex flex-row lg:flex-col gap-2 sm:gap-3 overflow-x-auto no-scrollbar pb-4 lg:pb-0 px-2 sm:px-0">
+                    <h3 className="hidden lg:block text-[11px] font-black text-gray-400 uppercase tracking-widest mb-4 border-b border-gray-100 pb-3">
+                        Strategic Period
                     </h3>
                     {years.map((year) => (
                         <button
                             key={year}
                             onClick={() => setSelectedYear(year)}
-                            className={`px-6 py-3 lg:py-4 rounded-xl font-bold text-xs lg:text-sm tracking-widest transition-all duration-300 shadow-sm whitespace-nowrap
+                            className={`px-5 sm:px-6 py-2.5 sm:py-3.5 lg:py-4 rounded-xl font-black text-[10px] sm:text-xs tracking-widest transition-all duration-300 shadow-sm whitespace-nowrap border
                                 ${selectedYear === year 
-                                    ? 'bg-gradient-gold text-white scale-105 z-10' 
-                                    : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-100'
+                                    ? 'bg-gradient-gold text-black border-[#D4AF37] scale-105 z-10' 
+                                    : 'bg-white text-gray-400 hover:bg-gray-50 border-gray-100'
                                 }`}
-                                style={{
-                                    background: selectedYear === year ? 'linear-gradient(135deg, #e6c875 0%, #d4af37 50%, #b38b22 100%)' : ''
-                                }}
                         >
                             {year}
                         </button>
@@ -114,17 +123,17 @@ export default function ReportsPage() {
                 </div>
 
                 {/* Right Column: Chart */}
-                <div className="flex-1 bg-white rounded-3xl p-6 md:p-10 shadow-xl border border-gray-100 relative overflow-hidden">
+                <div className="flex-1 bg-white rounded-[1.5rem] md:rounded-[2rem] p-5 sm:p-8 md:p-10 shadow-xl border border-gray-100 relative overflow-hidden mx-2 sm:mx-0">
                     {/* Subtle Background Pattern */}
                     <div className="absolute top-0 right-0 w-64 h-64 bg-[#D4AF37]/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
                     
                     <div className="relative z-10 h-full flex flex-col">
-                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-2">
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 gap-4">
                             <div>
-                                <h2 className="text-xl md:text-3xl font-bold text-gray-900 leading-tight">
-                                    Investment <span className="text-[#D4AF37]">{selectedYear}</span>
+                                <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-gray-950 leading-tight uppercase tracking-tight">
+                                    Allocation <span className="text-gradient-gold">{selectedYear}</span>
                                 </h2>
-                                <p className="text-xs md:text-sm text-gray-500 mt-1 uppercase tracking-wider font-bold opacity-70">Capital Allocation Performance</p>
+                                <p className="text-[10px] md:text-xs text-gray-400 mt-1 uppercase tracking-[0.2em] font-black opacity-70">Metric: Monthly Disbursement ($)</p>
                             </div>
                         </div>
 

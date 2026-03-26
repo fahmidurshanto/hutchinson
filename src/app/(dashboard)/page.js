@@ -97,22 +97,22 @@ export default function DashboardHomePage() {
 
             <div className="w-full max-w-7xl mx-auto px-6 py-8 relative z-10">
                 {/* Welcome Header */}
-                <div className="mb-6 md:mb-10 text-center">
-                    <h1 className="text-2xl sm:text-3xl md:text-5xl font-black text-gray-900 mb-2 leading-tight">
-                        Welcome, {user?.name?.split(' ')[0] || 'User'}
+                <div className="mb-8 md:mb-12 text-center animate__animated animate__fadeIn">
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-950 mb-3 tracking-tight leading-[1.1]">
+                        Welcome, <span className="text-gradient-gold">{user?.name?.split(' ')[0] || 'User'}</span>
                     </h1>
-                    <p className="text-sm md:text-lg text-gray-600 font-medium">Here's your partnership overview</p>
+                    <p className="text-xs sm:text-sm md:text-lg text-gray-500 font-bold uppercase tracking-[0.3em] opacity-70">Strategic Partnership Overview</p>
                 </div>
 
                 {loading ? (
                     <div className="flex items-center justify-center py-20">
                         <div className="text-center">
-                            <div className="w-12 h-12 border-4 border-gray-200 border-t-black rounded-full animate-spin mx-auto mb-4"></div>
-                            <p className="text-gray-500 font-bold">Loading your dashboard...</p>
+                            <div className="w-12 h-12 border-4 border-gray-100 border-t-[#D4AF37] rounded-full animate-spin mx-auto mb-4 scale-75 md:scale-100"></div>
+                            <p className="text-[10px] md:text-sm text-gray-400 font-black uppercase tracking-widest">Initializing Secure Dashboard...</p>
                         </div>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 px-2 sm:px-0">
                         {/* Personal Information Card */}
                         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-200">
                             <div className="flex items-center justify-between mb-4">
@@ -207,44 +207,44 @@ export default function DashboardHomePage() {
 
                 {/* Quick Actions Section */}
                 {!loading && (
-                    <div className="mt-10 md:mt-16">
-                        <h2 className="text-lg md:text-xl font-black text-gray-900 mb-6 text-center md:text-left">Quick Actions</h2>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
+                    <div className="mt-12 md:mt-20 px-2 sm:px-0">
+                        <h2 className="text-[10px] md:text-xs font-black text-gray-400 mb-6 text-center md:text-left uppercase tracking-[0.3em]">Quick Strategic Actions</h2>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
                             <button 
                                 onClick={() => router.push('/personal')}
-                                className="p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors duration-200 text-center group cursor-pointer"
+                                className="p-4 sm:p-6 bg-white border border-gray-100 rounded-2xl hover:bg-gray-50 transition-all duration-300 text-center group cursor-pointer shadow-sm hover:shadow-md"
                             >
-                                <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform">
+                                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
                                     {UserIcon}
                                 </div>
-                                <span className="text-xs font-medium text-gray-700">View Profile</span>
+                                <span className="text-[10px] sm:text-xs font-black text-gray-700 uppercase tracking-widest">Profile</span>
                             </button>
                             <button 
                                 onClick={() => router.push('/reports')}
-                                className="p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors duration-200 text-center group cursor-pointer"
+                                className="p-4 sm:p-6 bg-white border border-gray-100 rounded-2xl hover:bg-gray-50 transition-all duration-300 text-center group cursor-pointer shadow-sm hover:shadow-md"
                             >
-                                <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform">
+                                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
                                     {FinancialIcon}
                                 </div>
-                                <span className="text-xs font-medium text-gray-700">Financial Details</span>
+                                <span className="text-[10px] sm:text-xs font-black text-gray-700 uppercase tracking-widest">Financial</span>
                             </button>
                             <button 
                                 onClick={() => router.push('/memberships')}
-                                className="p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors duration-200 text-center group cursor-pointer"
+                                className="p-4 sm:p-6 bg-white border border-gray-100 rounded-2xl hover:bg-gray-50 transition-all duration-300 text-center group cursor-pointer shadow-sm hover:shadow-md"
                             >
-                                <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform">
+                                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
                                     {MembershipIcon}
                                 </div>
-                                <span className="text-xs font-medium text-gray-700">Memberships</span>
+                                <span className="text-[10px] sm:text-xs font-black text-gray-700 uppercase tracking-widest">Partners</span>
                             </button>
                             <button 
                                 onClick={() => router.push('/documents')}
-                                className="p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors duration-200 text-center group cursor-pointer"
+                                className="p-4 sm:p-6 bg-white border border-gray-100 rounded-2xl hover:bg-gray-50 transition-all duration-300 text-center group cursor-pointer shadow-sm hover:shadow-md"
                             >
-                                <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform">
+                                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
                                     {DocumentIcon}
                                 </div>
-                                <span className="text-xs font-medium text-gray-700">Documents</span>
+                                <span className="text-[10px] sm:text-xs font-black text-gray-700 uppercase tracking-widest">Vault</span>
                             </button>
                         </div>
                     </div>

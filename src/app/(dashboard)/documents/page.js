@@ -78,20 +78,20 @@ export default function DocumentsPage() {
             </div>
 
             {/* Header Section */}
-            <div className="w-full text-center py-8 md:py-14 mb-6 animate__animated animate__fadeIn relative flex flex-col items-center justify-center min-h-[25vh]">
+            <div className="w-full text-center py-8 md:py-14 animate__animated animate__fadeIn relative flex flex-col items-center justify-center min-h-[15vh] md:min-h-[25vh]">
                 <div className="relative z-10 w-full px-4">
-                    <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-3 tracking-wide text-gradient-gold bg-clip-text uppercase">
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black mb-3 tracking-tight text-gradient-gold bg-clip-text uppercase leading-none">
                         Secure Vault
                     </h1>
-                    <p className="text-gray-500 text-base md:text-lg font-medium mb-8">
-                        Access and manage your sensitive document repository.
+                    <p className="text-[10px] sm:text-xs md:text-base text-gray-400 font-bold uppercase tracking-[0.3em] mb-8 opacity-70">
+                        Strategic Document Repository • Encrypted
                     </p>
 
                     <button
                         onClick={handleUploadClick}
-                        className="px-8 py-3 bg-gradient-gold rounded-full text-black font-black text-xs uppercase tracking-widest shadow-xl hover:scale-105 transition-all flex items-center gap-2 mx-auto cursor-pointer"
+                        className="px-8 py-3.5 bg-gradient-gold rounded-full text-black font-black text-[10px] sm:text-xs uppercase tracking-widest shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center gap-2 mx-auto cursor-pointer"
                     >
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                         </svg>
                         Upload Document

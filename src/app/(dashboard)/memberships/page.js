@@ -67,45 +67,51 @@ export default function MembershipsPage() {
             </div>
 
             {/* Header Section */}
-            <div className="w-full text-center py-8 md:py-14 mb-4 md:mb-10 animate__animated animate__fadeIn relative flex flex-col items-center justify-center min-h-[25vh]">
+            <div className="w-full text-center py-8 md:py-14 animate__animated animate__fadeIn relative flex flex-col items-center justify-center min-h-[15vh] md:min-h-[25vh]">
                 <div className="relative z-10 w-full px-4">
-                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-4 tracking-tighter text-gradient-gold bg-clip-text uppercase leading-none">
-                        Partnerships
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black mb-4 tracking-tight text-gradient-gold bg-clip-text uppercase leading-none">
+                        Strategic Partners
                     </h1>
-                    <p className="text-gray-500 text-base md:text-xl font-medium max-w-2xl mx-auto">
-                        A dual-categorized overview of your primary entities and strategic third-party alliances.
+                    <p className="text-[10px] sm:text-xs md:text-base text-gray-400 font-bold uppercase tracking-[0.3em] max-w-2xl mx-auto opacity-70">
+                        Dual-Categorized Entity Overview • Excellence & Trust
                     </p>
                 </div>
             </div>
 
             {/* Side-by-Side Content Section */}
-            <div className="w-full max-w-7xl px-4 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 lg:gap-20 animate__animated animate__fadeInUp relative z-10">
+            <div className="w-full max-w-7xl px-2 sm:px-4 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 lg:gap-20 animate__animated animate__fadeInUp relative z-10 pb-20">
 
                 {/* Primary Column */}
                 <div className="flex flex-col">
-                    <div className="flex items-center gap-4 sm:gap-6 mb-6 md:mb-12">
-                        <div className="h-[3px] w-8 sm:w-12 bg-[#D4AF37] rounded-full"></div>
-                        <h2 className="text-xl sm:text-2xl font-black text-gray-900 tracking-[0.2em] uppercase">
+                    <div className="flex items-center gap-4 sm:gap-6 mb-6 md:mb-10">
+                        <div className="h-[2px] w-6 sm:w-10 bg-[#D4AF37] rounded-full"></div>
+                        <h2 className="text-sm sm:text-lg font-black text-gray-900 tracking-[0.3em] uppercase">
                             Primary
                         </h2>
                         <div className="h-px flex-1 bg-gradient-to-r from-gray-200 to-transparent"></div>
                     </div>
-                    <div className="flex flex-col">
+                    <div className="flex flex-col space-y-3 sm:space-y-4">
                         {primaryTiers.map((tier, idx) => renderTierCard(tier, idx))}
+                        {primaryTiers.length === 0 && (
+                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest text-center py-10 bg-gray-50/50 rounded-2xl border-2 border-dashed border-gray-100">No primary entities recorded</p>
+                        )}
                     </div>
                 </div>
 
                 {/* 3rd Party Column */}
                 <div className="flex flex-col">
-                    <div className="flex items-center gap-4 sm:gap-6 mb-6 md:mb-12">
-                        <div className="h-[3px] w-8 sm:w-12 bg-gray-400 rounded-full"></div>
-                        <h2 className="text-xl sm:text-2xl font-black text-gray-900 tracking-[0.2em] uppercase">
+                    <div className="flex items-center gap-4 sm:gap-6 mb-6 md:mb-10">
+                        <div className="h-[2px] w-6 sm:w-10 bg-gray-400 rounded-full"></div>
+                        <h2 className="text-sm sm:text-lg font-black text-gray-900 tracking-[0.3em] uppercase">
                             3rd Party
                         </h2>
                         <div className="h-px flex-1 bg-gradient-to-r from-gray-200 to-transparent"></div>
                     </div>
-                    <div className="flex flex-col">
+                    <div className="flex flex-col space-y-3 sm:space-y-4">
                         {thirdPartyTiers.map((tier, idx) => renderTierCard(tier, idx))}
+                        {thirdPartyTiers.length === 0 && (
+                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest text-center py-10 bg-gray-50/50 rounded-2xl border-2 border-dashed border-gray-100">No third-party alliances recorded</p>
+                        )}
                     </div>
                 </div>
             </div>

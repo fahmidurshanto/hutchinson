@@ -21,7 +21,7 @@ export default function TopNav() {
     };
 
     return (
-        <header className="fixed top-0 left-0 w-full z-50 flex flex-col">
+        <header className="fixed top-0 left-0 w-full z-40 flex flex-col">
             <DesktopTopNav {...commonProps} />
             <TabletTopNav {...commonProps} />
             <MobileTopNav {...commonProps} />
