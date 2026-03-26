@@ -122,23 +122,106 @@ export default function UserManagement() {
     };
 
     return (
-        <div className="w-full space-y-6 animate__animated animate__fadeIn">
-            {/* Header */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 px-1 sm:px-0">
-                <div>
-                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 uppercase tracking-tight">Partners</h1>
-                    <p className="text-gray-500 text-xs sm:text-sm font-medium mt-1">Manage accounts and permissions.</p>
+        <>
+            {/* Modal */}
+            {isModalOpen && (
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate__animated animate__fadeIn">
+                    <div className="bg-white rounded-[2rem] shadow-2xl border-2 border-[#D4AF37]/30 w-full max-w-2xl overflow-hidden animate__animated animate__zoomIn flex flex-col max-h-[90vh]">
+                        <div className="bg-gradient-gold py-4 sm:py-5 px-6 sm:px-8 flex items-center justify-between shrink-0">
+                            <h3 className="text-black font-black uppercase tracking-widest text-[10px] sm:text-xs">
+                                Partner Registration
+                            </h3>
+                            <button onClick={handleCloseModal} className="text-black hover:scale-110 transition-transform cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 sm:w-5 sm:h-5">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div className="overflow-y-auto custom-scrollbar p-6 sm:p-10">
+                            <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-10">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12">
+                                    {/* Personal Info */}
+                                    <div className="space-y-6 sm:space-y-8">
+                                        <h4 className="text-[10px] sm:text-[12px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100 pb-2">Identity Details</h4>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                                            <div>
+                                                <label className="block text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-1.5 sm:mb-2">First Name</label>
+                                                <input required type="text" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" value={formData.firstName} onChange={(e) => setFormData({ ...formData, firstName: e.target.value })} />
+                                            </div>
+                                            <div>
+                                                <label className="block text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-1.5 sm:mb-2">Last Name</label>
+                                                <input required type="text" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" value={formData.lastName} onChange={(e) => setFormData({ ...formData, lastName: e.target.value })} />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="block text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-1.5 sm:mb-2">Gender</label>
+                                            <select className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black cursor-pointer" value={formData.gender} onChange={(e) => setFormData({ ...formData, gender: e.target.value })}>
+                                                <option value="male">Male</option>
+                                                <option value="female">Female</option>
+                                                <option value="other">Other</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="block text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-1.5 sm:mb-2">NRIC / Passport No.</label>
+                                            <input required type="text" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" placeholder="S1234567A" value={formData.nric} onChange={(e) => setFormData({ ...formData, nric: e.target.value })} />
+                                        </div>
+                                        <div>
+                                            <label className="block text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-1.5 sm:mb-2">Nationality</label>
+                                            <input required type="text" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" placeholder="Singaporean" value={formData.nationality} onChange={(e) => setFormData({ ...formData, nationality: e.target.value })} />
+                                        </div>
+                                    </div>
+
+                                    {/* Contact & Security */}
+                                    <div className="space-y-6 sm:space-y-8">
+                                        <h4 className="text-[10px] sm:text-[12px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100 pb-2">Account Credentials</h4>
+                                        <div>
+                                            <label className="block text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-1.5 sm:mb-2">Corporate Email</label>
+                                            <input required type="email" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" placeholder="partner@company.com" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
+                                        </div>
+                                        <div>
+                                            <label className="block text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-1.5 sm:mb-2">Phone Number</label>
+                                            <input required type="tel" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" placeholder="+65 8888 8888" value={formData.Phone} onChange={(e) => setFormData({ ...formData, Phone: e.target.value })} />
+                                        </div>
+                                        <div className="md:col-span-2">
+                                            <label className="block text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-1.5 sm:mb-2">Address</label>
+                                            <textarea required rows={2} className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black resize-none" placeholder="Enter full address" value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} />
+                                        </div>
+                                        <div>
+                                            <label className="block text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-1.5 sm:mb-2">Security Key (Password)</label>
+                                            <input required type="password" underline className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" placeholder="Min. 6 chars" value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    className="w-full py-4 sm:py-5 bg-gradient-gold text-black font-black uppercase tracking-widest rounded-xl shadow-lg hover:shadow-gold-500/40 hover:brightness-110 active:scale-[0.98] transition-all cursor-pointer mt-2 sm:mt-4 text-xs sm:text-sm"
+                                >
+                                    Finalize Registration
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-                <button
-                    onClick={() => handleOpenModal()}
-                    className="cursor-pointer w-full sm:w-auto px-6 py-3.5 sm:py-3 rounded-xl bg-gradient-gold text-black font-black text-xs uppercase tracking-widest shadow-lg hover:shadow-gold-500/30 hover:scale-[1.02] transition-all flex items-center justify-center sm:justify-start gap-2"
-                >
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                    </svg>
-                    Register User
-                </button>
-            </div>
+            )}
+
+            <div className="w-full space-y-6 animate__animated animate__fadeIn">
+                {/* Header */}
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 px-2 sm:px-0">
+                    <div>
+                        <h1 className="text-3xl sm:text-4xl font-black text-gray-900 uppercase tracking-tight leading-none mb-1">Partners</h1>
+                        <p className="text-gray-500 text-[10px] sm:text-xs font-bold uppercase tracking-widest mt-1 opacity-70">Privilege & Access Management</p>
+                    </div>
+                    <button
+                        onClick={() => handleOpenModal()}
+                        className="cursor-pointer w-full sm:w-auto px-6 py-3.5 sm:py-3 rounded-xl bg-gradient-gold text-black font-black text-[10px] sm:text-xs uppercase tracking-widest shadow-lg hover:shadow-gold-500/30 hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
+                    >
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                        Register Partner
+                    </button>
+                </div>
 
             {/* Search */}
             <div className="relative group px-1 sm:px-0">
@@ -244,87 +327,7 @@ export default function UserManagement() {
                 </div>
             </div>
 
-            {/* Modal */}
-            {isModalOpen && (
-                <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate__animated animate__fadeIn">
-                    <div className="bg-white rounded-[2rem] shadow-2xl border-2 border-[#D4AF37]/30 w-full max-w-2xl overflow-hidden animate__animated animate__zoomIn flex flex-col max-h-[90vh]">
-                        <div className="bg-gradient-gold py-4 sm:py-5 px-6 sm:px-8 flex items-center justify-between shrink-0">
-                            <h3 className="text-black font-black uppercase tracking-widest text-xs sm:text-sm">
-                                Register Partner
-                            </h3>
-                            <button onClick={handleCloseModal} className="text-black hover:scale-110 transition-transform cursor-pointer">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 sm:w-5 sm:h-5">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
-                        </div>
-                        <div className="overflow-y-auto custom-scrollbar p-6 sm:p-10">
-                            <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-                                    {/* Personal Info */}
-                                    <div className="space-y-4 sm:space-y-6">
-                                        <h4 className="text-[10px] sm:text-[12px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100 pb-2">Identity Details</h4>
-                                        <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                                            <div>
-                                                <label className="block text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-1.5 sm:mb-2">First Name</label>
-                                                <input required type="text" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" value={formData.firstName} onChange={(e) => setFormData({ ...formData, firstName: e.target.value })} />
-                                            </div>
-                                            <div>
-                                                <label className="block text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-1.5 sm:mb-2">Last Name</label>
-                                                <input required type="text" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" value={formData.lastName} onChange={(e) => setFormData({ ...formData, lastName: e.target.value })} />
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <label className="block text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-1.5 sm:mb-2">Gender</label>
-                                            <select className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black cursor-pointer" value={formData.gender} onChange={(e) => setFormData({ ...formData, gender: e.target.value })}>
-                                                <option value="male">Male</option>
-                                                <option value="female">Female</option>
-                                                <option value="other">Other</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label className="block text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-1.5 sm:mb-2">NRIC / Passport No.</label>
-                                            <input required type="text" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" placeholder="S1234567A" value={formData.nric} onChange={(e) => setFormData({ ...formData, nric: e.target.value })} />
-                                        </div>
-                                        <div>
-                                            <label className="block text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-1.5 sm:mb-2">Nationality</label>
-                                            <input required type="text" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" placeholder="Singaporean" value={formData.nationality} onChange={(e) => setFormData({ ...formData, nationality: e.target.value })} />
-                                        </div>
-                                    </div>
-
-                                    {/* Contact & Security */}
-                                    <div className="space-y-4 sm:space-y-6">
-                                        <h4 className="text-[10px] sm:text-[12px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100 pb-2">Corporate Contact</h4>
-                                        <div>
-                                            <label className="block text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-1.5 sm:mb-2">Corporate Email</label>
-                                            <input required type="email" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" placeholder="partner@company.com" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
-                                        </div>
-                                        <div>
-                                            <label className="block text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-1.5 sm:mb-2">Phone Number</label>
-                                            <input required type="tel" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" placeholder="+65 8888 8888" value={formData.Phone} onChange={(e) => setFormData({ ...formData, Phone: e.target.value })} />
-                                        </div>
-                                        <div className="md:col-span-2">
-                                            <label className="block text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-1.5 sm:mb-2">Address</label>
-                                            <textarea required rows={2} className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black resize-none" placeholder="Enter full address" value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} />
-                                        </div>
-                                        <div>
-                                            <label className="block text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-1.5 sm:mb-2">Security Key (Password)</label>
-                                            <input required type="password" underline className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" placeholder="Min. 6 chars" value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <button
-                                    type="submit"
-                                    className="w-full py-4 sm:py-5 bg-gradient-gold text-black font-black uppercase tracking-widest rounded-xl shadow-lg hover:shadow-gold-500/40 hover:brightness-110 active:scale-[0.98] transition-all cursor-pointer mt-2 sm:mt-4 text-xs sm:text-sm"
-                                >
-                                    Finalize Registration
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
+    </>
     );
 }

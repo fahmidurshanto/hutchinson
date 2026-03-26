@@ -25,10 +25,10 @@ export default function AdminOverview() {
     return (
         <div className="w-full space-y-8 animate__animated animate__fadeIn">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-2 sm:px-0">
                 <div>
-                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 uppercase tracking-tight">Admin Dashboard</h1>
-                    <p className="text-gray-500 text-xs sm:text-sm font-medium mt-1">Welcome, here's what's happening today.</p>
+                    <h1 className="text-3xl sm:text-4xl font-black text-gray-900 uppercase tracking-tight leading-none mb-1">Admin Panel</h1>
+                    <p className="text-gray-500 text-[10px] sm:text-xs font-bold uppercase tracking-widest mt-1 opacity-70">Privilege & Infrastructure Management</p>
                 </div>
                 <div className="hidden sm:flex items-center gap-2 text-sm text-gray-500 font-bold bg-white px-4 py-2 rounded-full shadow-sm border border-gray-100">
                     <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>

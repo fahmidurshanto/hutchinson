@@ -129,6 +129,7 @@ export default function AdminDocumentsPage() {
 
             {/* Content Section */}
             <div className="w-full max-w-4xl px-4 animate__animated animate__fadeInUp relative z-10 space-y-10">
+                {categories.map((category, gIdx) => (
                     <div key={gIdx} className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
                         <div className="bg-gray-50 px-5 sm:px-8 py-4 sm:py-5 border-b border-gray-100 flex items-center gap-3 sm:gap-4">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 sm:w-5 h-5 text-[#D4AF37]">

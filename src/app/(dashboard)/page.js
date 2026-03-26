@@ -209,7 +209,7 @@ export default function DashboardHomePage() {
                 {!loading && (
                     <div className="mt-10 md:mt-16">
                         <h2 className="text-lg md:text-xl font-black text-gray-900 mb-6 text-center md:text-left">Quick Actions</h2>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
                             <button 
                                 onClick={() => router.push('/personal')}
                                 className="p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors duration-200 text-center group cursor-pointer"

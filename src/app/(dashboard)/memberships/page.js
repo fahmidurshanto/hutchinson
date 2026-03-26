@@ -69,7 +69,7 @@ export default function MembershipsPage() {
             {/* Header Section */}
             <div className="w-full text-center py-8 md:py-14 mb-4 md:mb-10 animate__animated animate__fadeIn relative flex flex-col items-center justify-center min-h-[25vh]">
                 <div className="relative z-10 w-full px-4">
-                    <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-4 tracking-tighter text-gradient-gold bg-clip-text uppercase">
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-4 tracking-tighter text-gradient-gold bg-clip-text uppercase leading-none">
                         Partnerships
                     </h1>
                     <p className="text-gray-500 text-base md:text-xl font-medium max-w-2xl mx-auto">
@@ -79,7 +79,7 @@ export default function MembershipsPage() {
             </div>
 
             {/* Side-by-Side Content Section */}
-            <div className="w-full max-w-7xl px-4 grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20 animate__animated animate__fadeInUp relative z-10">
+            <div className="w-full max-w-7xl px-4 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 lg:gap-20 animate__animated animate__fadeInUp relative z-10">
 
                 {/* Primary Column */}
                 <div className="flex flex-col">
