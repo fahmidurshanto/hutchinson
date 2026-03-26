@@ -57,9 +57,12 @@ export default function AdminUserReportsPage({ params }) {
                 
                 const availableYears = Object.keys(data);
                 if (availableYears.length > 0) {
-                    setYears(availableYears.sort((a,b) => b-a)); // descending
-                    if (!availableYears.includes(selectedYear)) {
-                        setSelectedYear(availableYears[availableYears.length - 1]);
+                    setYears(prev => {
+                        const merged = Array.from(new Set([...prev, ...availableYears]));
+                        return merged.sort((a, b) => b - a);
+                    });
+                    if (!availableYears.includes(selectedYear) && !years.includes(selectedYear)) {
+                        setSelectedYear(availableYears[0]);
                     }
                 } else {
                     setYears([new Date().getFullYear().toString()]);
@@ -182,13 +185,36 @@ export default function AdminUserReportsPage({ params }) {
                         Select Year
                         <button 
                             className="text-[#D4AF37] hover:text-[#b38b22] p-1 rounded-full hover:bg-[#D4AF37]/10 transition-colors"
-                            onClick={() => {
-                                const newYear = prompt("Enter a new year to track (e.g., 2026):");
-                                if (newYear && !isNaN(newYear) && newYear.length === 4) {
-                                    if (!years.includes(newYear)) {
-                                        setYears(prev => [...prev, newYear].sort((a,b) => b-a));
+                            onClick={async () => {
+                                const { value: newYear } = await Swal.fire({
+                                    title: 'Add Strategic Year',
+                                    text: 'Enter a new year to track investment disbursements (e.g., 2026):',
+                                    input: 'number',
+                                    inputPlaceholder: 'YYYY',
+                                    showCancelButton: true,
+                                    confirmButtonColor: '#D4AF37',
+                                    cancelButtonColor: '#d33',
+                                    confirmButtonText: 'Add Year',
+                                    background: '#ffffff',
+                                    customClass: {
+                                        title: 'text-black font-black uppercase tracking-widest text-lg',
+                                        confirmButton: 'px-8 py-3 rounded-full font-black uppercase tracking-widest text-xs',
+                                        cancelButton: 'px-8 py-3 rounded-full font-black uppercase tracking-widest text-xs'
+                                    },
+                                    inputValidator: (value) => {
+                                        if (!value || value.length !== 4 || isNaN(value)) {
+                                            return 'Please enter a valid 4-digit year.';
+                                        }
+                                        if (years.includes(value.toString())) {
+                                            return 'Year already exists in the records.';
+                                        }
                                     }
-                                    setSelectedYear(newYear);
+                                });
+
+                                if (newYear) {
+                                    const yearStr = newYear.toString();
+                                    setYears(prev => [...prev, yearStr].sort((a, b) => b - a));
+                                    setSelectedYear(yearStr);
                                 }
                             }}
                             title="Add Year"
