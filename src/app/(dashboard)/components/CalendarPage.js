@@ -185,8 +185,8 @@ export default function CalendarPage({ isAdmin = false }) {
 
     return (
         <div className="w-full h-full space-y-8 animate__animated animate__fadeIn relative overflow-visible">
-            {/* Global Watermark - Premium Shimmering Gold */}
-            <div className="absolute left-0 top-[220px] -translate-x-[35%] -translate-y-1/2 w-[1400px] h-[1400px] opacity-[0.25] pointer-events-none z-0 flex items-center justify-center">
+            {/* Global Watermark - hidden on mobile/tablet to avoid overflow and prioritize performance */}
+            <div className="hidden xl:block absolute left-0 top-[220px] -translate-x-[35%] -translate-y-1/2 w-[1400px] h-[1400px] opacity-[0.25] pointer-events-none z-0 flex items-center justify-center">
                 <img 
                     src="/lion.png" 
                     alt="" 
@@ -195,13 +195,13 @@ export default function CalendarPage({ isAdmin = false }) {
             </div>
 
             {/* Header Section */}
-            <div className="w-full text-center py-6 relative flex flex-col items-center justify-center min-h-[15vh]">
+            <div className="w-full text-center py-6 relative flex flex-col items-center justify-center min-h-[10vh] px-4">
                 <div className="relative z-10 w-full">
-                    <h1 className="text-3xl md:text-4xl font-bold mb-2 tracking-wide text-gradient-gold bg-clip-text">
+                    <h1 className="text-2xl md:text-4xl font-bold mb-2 tracking-wide text-gradient-gold bg-clip-text uppercase">
                         SCHEDULES
                     </h1>
-                    <p className="text-gray-500 text-sm font-medium">
-                        Manage your appointments, meeting summaries, and upcoming schedules.
+                    <p className="text-gray-500 text-xs md:text-sm font-medium">
+                        Manage appointments and upcoming events.
                     </p>
                 </div>
             </div>
@@ -209,30 +209,30 @@ export default function CalendarPage({ isAdmin = false }) {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* Left: Calendar Component */}
                 <div className="lg:col-span-8 bg-white rounded-2xl shadow-2xl border-2 border-[#D4AF37]/30 overflow-hidden">
-                    <div className="bg-gradient-gold px-6 py-4 flex items-center justify-between border-b border-[#b38b22]/30">
-                        <h2 className="text-black font-black text-sm tracking-widest uppercase">Monthly Schedule</h2>
-                        <div className="flex items-center gap-4">
+                    <div className="bg-gradient-gold px-4 sm:px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#b38b22]/30 gap-2">
+                        <h2 className="text-black font-black text-xs sm:text-sm tracking-widest uppercase">Monthly Schedule</h2>
+                        <div className="flex items-center gap-3 sm:gap-4">
                             <div className="flex items-center gap-1.5">
-                                <span className="w-2.5 h-2.5 rounded-full bg-[#10b981]"></span>
-                                <span className="text-[10px] text-black font-bold uppercase">Meetings</span>
+                                <span className="w-2 rounded-full bg-[#10b981] aspect-square"></span>
+                                <span className="text-[9px] sm:text-[10px] text-black font-bold uppercase">Meetings</span>
                             </div>
                             <div className="flex items-center gap-1.5">
-                                <span className="w-2.5 h-2.5 rounded-full bg-[#3b82f6]"></span>
-                                <span className="text-[10px] text-black font-bold uppercase">Tasks</span>
+                                <span className="w-2 rounded-full bg-[#3b82f6] aspect-square"></span>
+                                <span className="text-[9px] sm:text-[10px] text-black font-bold uppercase">Tasks</span>
                             </div>
                         </div>
                     </div>
-                    <div className="p-6 calendar-container">
+                    <div className="p-2 sm:p-6 calendar-container overflow-x-auto">
                         <FullCalendar
                             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-                            initialView="dayGridMonth"
+                            initialView={typeof window !== 'undefined' && window.innerWidth < 768 ? 'dayGridDay' : 'dayGridMonth'}
                             headerToolbar={{
-                                left: 'prev,next today',
+                                left: 'prev,next',
                                 center: 'title',
-                                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                                right: typeof window !== 'undefined' && window.innerWidth < 768 ? 'today' : 'dayGridMonth,timeGridWeek,timeGridDay'
                             }}
                             events={events}
-                            height="550px"
+                            height={typeof window !== 'undefined' && window.innerWidth < 768 ? '450px' : '550px'}
                             eventTextColor="#000000"
                             dayMaxEvents={true}
                             selectable={isAdmin}
@@ -286,14 +286,14 @@ export default function CalendarPage({ isAdmin = false }) {
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate__animated animate__fadeIn">
                     <div className="bg-white rounded-3xl shadow-2xl border-2 border-[#D4AF37]/30 w-full max-w-md overflow-hidden animate__animated animate__zoomIn">
                         <div className="bg-gradient-gold py-4 px-6 flex items-center justify-between">
-                            <h3 className="text-black font-black uppercase tracking-widest text-sm">Add New Schedule</h3>
+                            <h3 className="text-black font-black uppercase tracking-widest text-xs sm:text-sm">New Schedule</h3>
                             <button onClick={() => setIsModalOpen(false)} className="text-black hover:scale-110 transition-transform">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 sm:w-5 sm:h-5">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                             </button>
                         </div>
-                        <form onSubmit={handleAddEvent} className="p-8 space-y-5">
+                        <form onSubmit={handleAddEvent} className="p-6 sm:p-8 space-y-4 sm:space-y-5">
                             {/* Event Title */}
                             <div>
                                 <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-2">Event Title</label>
@@ -423,11 +423,16 @@ export default function CalendarPage({ isAdmin = false }) {
                     font-family: inherit;
                 }
                 .calendar-container .fc-toolbar-title {
-                    font-size: 1.1rem !important;
+                    font-size: 0.9rem !important;
                     font-weight: 800 !important;
                     text-transform: uppercase;
                     letter-spacing: 0.05em;
                     color: #A67C00;
+                }
+                @media (min-width: 640px) {
+                    .calendar-container .fc-toolbar-title {
+                        font-size: 1.1rem !important;
+                    }
                 }
                 .calendar-container .fc-button-primary {
                     background-color: #ffffff !important;

@@ -32,9 +32,9 @@ export default function MembershipsPage() {
     }, [user?.id]);
 
     const renderTierCard = (tier, idx) => (
-        <div key={idx} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex items-center justify-between px-6 py-5 w-full mb-4 hover:shadow-md hover:border-gray-200 transition-all duration-300 group">
-            <h3 className="text-sm font-black text-gray-900 tracking-tight uppercase leading-tight">{tier.name}</h3>
-            <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border shrink-0 ${tier.status === 'active' ? 'bg-green-50 text-green-600 border-green-100' : 'bg-gray-50 text-gray-400 border-gray-100'}`}>
+        <div key={idx} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 w-full mb-4 hover:shadow-md hover:border-gray-200 transition-all duration-300 group gap-3">
+            <h3 className="text-xs sm:text-sm font-black text-gray-900 tracking-tight uppercase leading-tight truncate">{tier.name}</h3>
+            <span className={`px-3 sm:px-4 py-1.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-widest border shrink-0 ${tier.status === 'active' ? 'bg-green-50 text-green-600 border-green-100' : 'bg-gray-50 text-gray-400 border-gray-100'}`}>
                 {tier.status}
             </span>
         </div>
@@ -57,8 +57,8 @@ export default function MembershipsPage() {
 
     return (
         <div className="w-full h-full flex flex-col items-center relative overflow-visible pb-20">
-            {/* Global Watermark - Premium Shimmering Gold */}
-            <div className="absolute left-0 top-1/2 -translate-x-[35%] -translate-y-1/2 w-[1400px] h-[1400px] opacity-[0.25] pointer-events-none z-0 flex items-center justify-center">
+            {/* Global Watermark - hidden on mobile/tablet to avoid overflow and prioritize performance */}
+            <div className="hidden xl:block absolute left-0 top-1/2 -translate-x-[35%] -translate-y-1/2 w-[1400px] h-[1400px] opacity-[0.25] pointer-events-none z-0 flex items-center justify-center">
                 <img
                     src="/lion.png"
                     alt=""
@@ -67,9 +67,9 @@ export default function MembershipsPage() {
             </div>
 
             {/* Header Section */}
-            <div className="w-full text-center py-8 md:py-14 mb-10 animate__animated animate__fadeIn relative flex flex-col items-center justify-center min-h-[30vh]">
+            <div className="w-full text-center py-8 md:py-14 mb-4 md:mb-10 animate__animated animate__fadeIn relative flex flex-col items-center justify-center min-h-[25vh]">
                 <div className="relative z-10 w-full px-4">
-                    <h1 className="text-4xl md:text-6xl font-bold mb-4 tracking-tighter text-gradient-gold bg-clip-text uppercase">
+                    <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-4 tracking-tighter text-gradient-gold bg-clip-text uppercase">
                         Partnerships
                     </h1>
                     <p className="text-gray-500 text-base md:text-xl font-medium max-w-2xl mx-auto">
@@ -83,9 +83,9 @@ export default function MembershipsPage() {
 
                 {/* Primary Column */}
                 <div className="flex flex-col">
-                    <div className="flex items-center gap-6 mb-12">
-                        <div className="h-[3px] w-12 bg-[#D4AF37] rounded-full"></div>
-                        <h2 className="text-2xl font-black text-gray-900 tracking-[0.2em] uppercase">
+                    <div className="flex items-center gap-4 sm:gap-6 mb-6 md:mb-12">
+                        <div className="h-[3px] w-8 sm:w-12 bg-[#D4AF37] rounded-full"></div>
+                        <h2 className="text-xl sm:text-2xl font-black text-gray-900 tracking-[0.2em] uppercase">
                             Primary
                         </h2>
                         <div className="h-px flex-1 bg-gradient-to-r from-gray-200 to-transparent"></div>
@@ -97,9 +97,9 @@ export default function MembershipsPage() {
 
                 {/* 3rd Party Column */}
                 <div className="flex flex-col">
-                    <div className="flex items-center gap-6 mb-12">
-                        <div className="h-[3px] w-12 bg-gray-400 rounded-full"></div>
-                        <h2 className="text-2xl font-black text-gray-900 tracking-[0.2em] uppercase">
+                    <div className="flex items-center gap-4 sm:gap-6 mb-6 md:mb-12">
+                        <div className="h-[3px] w-8 sm:w-12 bg-gray-400 rounded-full"></div>
+                        <h2 className="text-xl sm:text-2xl font-black text-gray-900 tracking-[0.2em] uppercase">
                             3rd Party
                         </h2>
                         <div className="h-px flex-1 bg-gradient-to-r from-gray-200 to-transparent"></div>

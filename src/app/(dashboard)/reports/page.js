@@ -87,22 +87,22 @@ export default function ReportsPage() {
     }
 
     return (
-        <div className="w-full max-w-7xl mx-auto p-4 md:p-8 animate__animated animate__fadeIn">
-            <div className="flex flex-col md:flex-row gap-8 min-h-[500px]">
+        <div className="w-full max-w-7xl mx-auto p-4 md:p-8 animate__animated animate__fadeIn pb-12">
+            <div className="flex flex-col lg:flex-row gap-6 md:gap-10">
                 
-                {/* Left Column: Year Selection */}
-                <div className="w-full md:w-48 flex flex-col gap-3">
-                    <h3 className="text-lg font-bold text-gray-800 mb-2 border-b-2 border-[#D4AF37]/20 pb-2">
+                {/* Left Column: Year Selection - Horizontal scroll on mobile, Vertical on Desktop */}
+                <div className="w-full lg:w-48 flex flex-row lg:flex-col gap-3 overflow-x-auto no-scrollbar pb-2 lg:pb-0">
+                    <h3 className="hidden lg:block text-lg font-bold text-gray-800 mb-2 border-b-2 border-[#D4AF37]/20 pb-2">
                         Select Year
                     </h3>
                     {years.map((year) => (
                         <button
                             key={year}
                             onClick={() => setSelectedYear(year)}
-                            className={`px-6 py-4 rounded-xl font-bold text-sm tracking-widest transition-all duration-300 shadow-sm
+                            className={`px-6 py-3 lg:py-4 rounded-xl font-bold text-xs lg:text-sm tracking-widest transition-all duration-300 shadow-sm whitespace-nowrap
                                 ${selectedYear === year 
-                                    ? 'bg-gradient-gold text-white scale-105' 
-                                    : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-100 hover:border-[#D4AF37]/30'
+                                    ? 'bg-gradient-gold text-white scale-105 z-10' 
+                                    : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-100'
                                 }`}
                                 style={{
                                     background: selectedYear === year ? 'linear-gradient(135deg, #e6c875 0%, #d4af37 50%, #b38b22 100%)' : ''
@@ -119,14 +119,13 @@ export default function ReportsPage() {
                     <div className="absolute top-0 right-0 w-64 h-64 bg-[#D4AF37]/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
                     
                     <div className="relative z-10 h-full flex flex-col">
-                        <div className="flex justify-between items-center mb-10">
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-2">
                             <div>
-                                <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
-                                    Investment Analysis <span className="text-[#D4AF37]">{selectedYear}</span>
+                                <h2 className="text-xl md:text-3xl font-bold text-gray-900 leading-tight">
+                                    Investment <span className="text-[#D4AF37]">{selectedYear}</span>
                                 </h2>
-                                <p className="text-gray-500 mt-1">Monthly performance and capital allocation</p>
+                                <p className="text-xs md:text-sm text-gray-500 mt-1 uppercase tracking-wider font-bold opacity-70">Capital Allocation Performance</p>
                             </div>
-
                         </div>
 
                         <div className="flex-1 min-h-[350px]">
@@ -148,14 +147,16 @@ export default function ReportsPage() {
                                             dataKey="month" 
                                             axisLine={false} 
                                             tickLine={false} 
-                                            tick={{ fill: '#9ca3af', fontSize: 12, fontWeight: 600 }}
+                                            tick={{ fill: '#9ca3af', fontSize: 10, fontWeight: 700 }}
                                             dy={10}
+                                            interval={0} // Show all months
                                         />
                                         <YAxis 
                                             axisLine={false} 
                                             tickLine={false} 
-                                            tick={{ fill: '#9ca3af', fontSize: 12, fontWeight: 600 }}
+                                            tick={{ fill: '#9ca3af', fontSize: 10, fontWeight: 700 }}
                                             tickFormatter={(value) => `$${value/1000}k`}
+                                            width={40}
                                         />
                                         <Tooltip content={<CustomTooltip />} cursor={{ fill: '#f9fafb' }} />
                                         <Bar 

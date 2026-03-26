@@ -86,8 +86,8 @@ export default function DashboardHomePage() {
 
     return (
         <div className="w-full h-full flex flex-col items-center relative overflow-visible">
-            {/* Global Watermark */}
-            <div className="absolute left-0 top-[260px] -translate-x-[35%] -translate-y-1/2 w-[1400px] h-[1400px] opacity-[0.25] pointer-events-none z-0 flex items-center justify-center">
+            {/* Global Watermark - hidden on mobile/tablet to avoid overflow and prioritize performance */}
+            <div className="hidden xl:block absolute left-0 top-1/2 -translate-x-[35%] -translate-y-1/2 w-[1400px] h-[1400px] opacity-[0.25] pointer-events-none z-0">
                 <img
                     src="/lion.png"
                     alt=""
@@ -97,11 +97,11 @@ export default function DashboardHomePage() {
 
             <div className="w-full max-w-7xl mx-auto px-6 py-8 relative z-10">
                 {/* Welcome Header */}
-                <div className="mb-8 text-center">
-                    <h1 className="text-4xl font-black text-gray-900 mb-2">
+                <div className="mb-6 md:mb-10 text-center">
+                    <h1 className="text-2xl sm:text-3xl md:text-5xl font-black text-gray-900 mb-2 leading-tight">
                         Welcome, {user?.name?.split(' ')[0] || 'User'}
                     </h1>
-                    <p className="text-gray-600 font-medium">Here's your partnership overview</p>
+                    <p className="text-sm md:text-lg text-gray-600 font-medium">Here's your partnership overview</p>
                 </div>
 
                 {loading ? (
@@ -207,9 +207,9 @@ export default function DashboardHomePage() {
 
                 {/* Quick Actions Section */}
                 {!loading && (
-                    <div className="mt-8">
-                        <h2 className="text-lg font-black text-gray-900 mb-4">Quick Actions</h2>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="mt-10 md:mt-16">
+                        <h2 className="text-lg md:text-xl font-black text-gray-900 mb-6 text-center md:text-left">Quick Actions</h2>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
                             <button 
                                 onClick={() => router.push('/personal')}
                                 className="p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors duration-200 text-center group cursor-pointer"

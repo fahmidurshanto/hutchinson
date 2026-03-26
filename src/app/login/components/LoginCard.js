@@ -5,15 +5,15 @@ export default function LoginCard() {
     return (
         <div className="w-full max-w-[380px] mx-auto rounded-lg p-[3px] bg-gradient-to-b from-[#b19057] via-[#e5cf96] to-[#967131] shadow-[0_20px_50px_rgba(0,0,0,0.15)] animate__animated animate__zoomIn animate__fast">
             <div className="bg-white rounded-[5px] w-full overflow-hidden relative shadow-inner flex flex-col pt-8">
-                <div className="px-8 sm:px-10 pb-6 relative z-10 bg-white">
+                <div className="px-6 sm:px-10 pb-6 relative z-10 bg-white">
                     <div className="flex flex-col items-center mb-6">
-                        <div className="w-20 h-20 mb-4 flex items-center justify-center">
+                        <div className="w-16 h-16 sm:w-20 sm:h-20 mb-4 flex items-center justify-center">
                             <img src="/hutchinson-logo.png" alt="Hutchinson APAC Ltd." className="w-full h-full object-contain" />
                         </div>
-                        <h1 className="text-[20px] leading-tight font-bold text-center text-black mb-2 mt-1 uppercase tracking-tight">
+                        <h1 className="text-[18px] sm:text-[20px] leading-tight font-bold text-center text-black mb-2 mt-1 uppercase tracking-tight">
                             WELCOME TO THE<br />PARTNERSHIP PORTAL
                         </h1>
-                        <p className="text-[13px] text-center text-black font-medium leading-snug">
+                        <p className="text-[12px] sm:text-[13px] text-center text-black font-medium leading-snug">
                             Please enter your corporate credentials to continue.
                         </p>
                     </div>

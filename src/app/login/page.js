@@ -5,8 +5,8 @@ export default function Page() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center relative p-4 bg-white overflow-hidden">
 
-      {/* Premium Shimmering Gold Watermark - Bottom Right (Mirrored Design) */}
-      <div className="absolute right-0 bottom-0 translate-x-[10%] translate-y-[25%] w-[1050px] h-[1050px] opacity-[0.35] pointer-events-none z-0 flex items-center justify-center">
+      {/* Global Watermark - hidden on mobile/tablet to avoid overflow and prioritize performance */}
+      <div className="hidden xl:block absolute right-0 bottom-0 translate-x-[10%] translate-y-[25%] w-[1050px] h-[1050px] opacity-[0.35] pointer-events-none z-0 flex items-center justify-center">
         <img 
             src="/lion.png" 
             alt="" 

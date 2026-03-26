@@ -58,7 +58,7 @@ export default function DashboardModal({ isOpen, onClose, title, icon, children,
                             </div>
 
                             {/* Body */}
-                            <div className="px-6 py-4">
+                            <div className="px-6 py-4 max-h-[calc(100vh-200px)] overflow-y-auto custom-scrollbar">
                                 {children}
                             </div>
 

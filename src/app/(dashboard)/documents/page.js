@@ -68,8 +68,8 @@ export default function DocumentsPage() {
                 onChange={handleFileChange}
             />
 
-            {/* Global Watermark - Premium Shimmering Gold */}
-            <div className="absolute left-0 top-1/2 -translate-x-[35%] -translate-y-1/2 w-[1400px] h-[1400px] opacity-[0.25] pointer-events-none z-0 flex items-center justify-center">
+            {/* Global Watermark - hidden on mobile/tablet to avoid overflow and prioritize performance */}
+            <div className="hidden xl:block absolute left-0 top-1/2 -translate-x-[35%] -translate-y-1/2 w-[1400px] h-[1400px] opacity-[0.25] pointer-events-none z-0 flex items-center justify-center">
                 <img
                     src="/lion.png"
                     alt=""
@@ -79,8 +79,8 @@ export default function DocumentsPage() {
 
             {/* Header Section */}
             <div className="w-full text-center py-8 md:py-14 mb-6 animate__animated animate__fadeIn relative flex flex-col items-center justify-center min-h-[25vh]">
-                <div className="relative z-10 w-full">
-                    <h1 className="text-3xl md:text-5xl font-bold mb-3 tracking-wide text-gradient-gold bg-clip-text uppercase">
+                <div className="relative z-10 w-full px-4">
+                    <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-3 tracking-wide text-gradient-gold bg-clip-text uppercase">
                         Secure Vault
                     </h1>
                     <p className="text-gray-500 text-base md:text-lg font-medium mb-8">
@@ -113,33 +113,33 @@ export default function DocumentsPage() {
                             const isViewed = !isAdmin && doc.hasUserSeen;
 
                             return (
-                                <div key={dIdx} className="p-6 flex items-center justify-between hover:bg-gray-50 transition-colors group">
-                                    <div className="flex items-center gap-5">
-                                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all
+                                <div key={dIdx} className="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between hover:bg-gray-50 transition-colors group gap-4">
+                                    <div className="flex items-center gap-3 sm:gap-5">
+                                        <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center transition-all flex-shrink-0
                                             ${isViewed ? 'bg-gray-100 text-gray-300' : 'bg-gray-50 text-gray-400 group-hover:bg-gradient-gold group-hover:text-black'}`}>
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 sm:w-6 sm:h-6">
                                                 <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
                                             </svg>
                                         </div>
-                                        <div>
-                                            <p className={`font-bold tracking-tight transition-colors ${isViewed ? 'text-gray-300' : 'text-gray-900 group-hover:text-[#A67C00]'}`}>{doc.name}</p>
-                                            <p className="text-[10px] font-black text-gray-400 uppercase mt-1">
+                                        <div className="min-w-0 flex-1">
+                                            <p className={`font-bold tracking-tight truncate transition-colors ${isViewed ? 'text-gray-300' : 'text-gray-900 group-hover:text-[#A67C00]'}`}>{doc.name}</p>
+                                            <p className="text-[9px] sm:text-[10px] font-black text-gray-400 uppercase mt-0.5 sm:mt-1 truncate">
                                                 {doc.date} • {doc.size}
                                                 {isViewed && <span className="ml-2 text-red-300">• VIEWED</span>}
                                             </p>
                                         </div>
                                     </div>
-
-                                    <div className="flex items-center gap-2">
+                                    
+                                    <div className="flex items-center sm:justify-end">
                                         <button
                                             disabled={isViewed}
                                             onClick={() => handleView(doc)}
-                                            className={`px-6 py-2 rounded-lg font-black text-[10px] uppercase tracking-widest transition-all
+                                            className={`w-full sm:w-auto px-6 py-2 rounded-lg font-black text-[10px] uppercase tracking-widest transition-all text-center
                                                 ${isViewed
                                                     ? 'bg-gray-100 text-gray-300 border border-gray-100 cursor-not-allowed'
                                                     : 'bg-white text-black border-2 border-gray-100 hover:border-[#D4AF37] hover:shadow-md cursor-pointer'}`}
                                         >
-                                            {isViewed ? 'Viewed' : 'View'}
+                                            {isViewed ? 'Viewed' : 'View Content'}
                                         </button>
                                     </div>
                                 </div>

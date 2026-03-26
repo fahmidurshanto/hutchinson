@@ -76,8 +76,8 @@ export default function ActivitiesPage() {
 
     return (
         <div className="w-full h-full flex flex-col items-center relative overflow-visible">
-            {/* Global Watermark - Premium Shimmering Gold */}
-            <div className="absolute left-0 top-[240px] -translate-x-[35%] -translate-y-1/2 w-[1400px] h-[1400px] opacity-[0.25] pointer-events-none z-0 flex items-center justify-center">
+            {/* Global Watermark - hidden on mobile/tablet to avoid overflow and prioritize performance */}
+            <div className="hidden xl:block absolute left-0 top-[240px] -translate-x-[35%] -translate-y-1/2 w-[1400px] h-[1400px] opacity-[0.25] pointer-events-none z-0 flex items-center justify-center">
                 <img
                     src="/lion.png"
                     alt=""
@@ -86,28 +86,26 @@ export default function ActivitiesPage() {
             </div>
 
             {/* Header Section */}
-            <div className="w-full text-center py-8 md:py-14 mb-6 animate__animated animate__fadeIn relative flex flex-col items-center justify-center min-h-[20vh]">
+            <div className="w-full text-center py-6 md:py-14 mb-2 animate__animated animate__fadeIn relative flex flex-col items-center justify-center min-h-[15vh] px-4">
                 <div className="relative z-10 w-full">
-                    <h1 className="text-3xl md:text-5xl font-bold mb-3 tracking-wide text-gradient-gold bg-clip-text uppercase">
-                        Admin Activities Panel
+                    <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-3 tracking-wide text-gradient-gold bg-clip-text uppercase">
+                        Activities Panel
                     </h1>
-                    <p className="text-gray-500 text-base md:text-lg font-medium">
-                        Monitor and oversee all historical, current, and upcoming corporate engagements.
+                    <p className="text-gray-500 text-xs sm:text-sm md:text-lg font-medium">
+                        Monitor historical, current, and upcoming corporate engagements.
                     </p>
                 </div>
             </div>
 
-            {/* Tabs Navigation */}
-            <div className="w-full max-w-4xl mb-12 flex justify-center animate__animated animate__fadeIn">
-                <div className="bg-white p-2 rounded-2xl border-2 border-gray-50 flex gap-2 shadow-2xl overflow-hidden relative">
-                    {/* Active tab slide background effect could be added here for extra polish */}
+            <div className="w-full max-w-4xl mb-8 sm:mb-12 flex justify-center animate__animated animate__fadeIn px-4">
+                <div className="bg-white p-1.5 sm:p-2 rounded-2xl border-2 border-gray-50 flex gap-1 sm:gap-2 shadow-2xl overflow-x-auto no-scrollbar relative w-full sm:w-auto">
                     {tabs.map((tab) => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
-                            className={`px-10 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-500 relative z-10
+                            className={`flex-1 sm:flex-none px-4 sm:px-10 py-3 sm:py-4 rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-widest transition-all duration-500 relative z-10 whitespace-nowrap
                                 ${activeTab === tab.id
-                                    ? 'bg-gradient-gold text-black shadow-lg scale-[1.05]'
+                                    ? 'bg-gradient-gold text-black shadow-lg scale-[1.02] sm:scale-[1.05]'
                                     : 'text-gray-400 hover:text-gray-700 hover:bg-gray-50'}`}
                         >
                             {tab.label}
@@ -129,28 +127,28 @@ export default function ActivitiesPage() {
                                 {/* Metallic Edge Accent */}
                                 <div className="sm:w-3 bg-gradient-to-b from-[#fcfcfc] via-[#cecece] to-[#8a8a8a] shadow-inner"></div>
 
-                                <div className="flex-1 p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-8">
-                                    <div className="flex-1">
+                                <div className="flex-1 p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 sm:gap-8">
+                                    <div className="flex-1 w-full sm:w-auto">
                                         <div className="flex items-center gap-4 mb-3">
-                                            <div className="px-4 py-1.5 bg-green-50 text-green-600 text-[9px] font-black uppercase tracking-widest rounded-full border border-green-100 flex items-center gap-2 shadow-sm">
-                                                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                                            <div className="px-3 sm:px-4 py-1 sm:py-1.5 bg-green-50 text-green-600 text-[8px] sm:text-[9px] font-black uppercase tracking-widest rounded-full border border-green-100 flex items-center gap-2 shadow-sm">
+                                                <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500 animate-pulse"></span>
                                                 {activity.status}
                                             </div>
-                                            <div className="text-[10px] text-[#A67C00] font-black uppercase tracking-[0.2em]">{activity.time}</div>
+                                            <div className="text-[9px] sm:text-[10px] text-[#A67C00] font-black uppercase tracking-[0.2em]">{activity.time}</div>
                                         </div>
-                                        <h3 className="text-2xl font-black text-gray-950 tracking-tight group-hover:text-[#A67C00] transition-colors mb-2 uppercase">
+                                        <h3 className="text-xl sm:text-2xl font-black text-gray-950 tracking-tight group-hover:text-[#A67C00] transition-colors mb-2 uppercase">
                                             {activity.title}
                                         </h3>
-                                        <p className="text-gray-500 text-sm font-bold italic leading-relaxed">
+                                        <p className="text-gray-500 text-xs sm:text-sm font-bold italic leading-relaxed">
                                             "{activity.description}"
                                         </p>
                                     </div>
 
-                                    <div className="flex flex-col items-end gap-3 shrink-0">
-                                        <div className="text-right bg-gray-50/50 px-4 py-3 rounded-xl border border-gray-50 min-w-[140px]">
-                                            <div className="text-[9px] text-gray-400 font-black uppercase tracking-[0.2em] mb-1">Assigned To</div>
-                                            <div className="text-gray-950 font-black text-sm tracking-tight truncate max-w-[120px]" title={activity.assignedTo}>{activity.assignedTo}</div>
-                                            <div className="mt-2 text-[#D4AF37] font-black text-xs tracking-tight">{activity.date}</div>
+                                    <div className="flex flex-col items-start sm:items-end gap-3 shrink-0 w-full sm:w-auto">
+                                        <div className="text-left sm:text-right bg-gray-50/50 px-4 py-3 rounded-xl border border-gray-50 w-full sm:min-w-[140px]">
+                                            <div className="text-[8px] sm:text-[9px] text-gray-400 font-black uppercase tracking-[0.2em] mb-1">Assigned To</div>
+                                            <div className="text-gray-950 font-black text-xs sm:text-sm tracking-tight truncate max-w-[200px] sm:max-w-[120px]" title={activity.assignedTo}>{activity.assignedTo}</div>
+                                            <div className="mt-2 text-[#D4AF37] font-black text-[10px] sm:text-xs tracking-tight">{activity.date}</div>
                                         </div>
                                     </div>
                                 </div>

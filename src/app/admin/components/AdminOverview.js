@@ -25,10 +25,10 @@ export default function AdminOverview() {
     return (
         <div className="w-full space-y-8 animate__animated animate__fadeIn">
             {/* Header */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900 uppercase tracking-tight">Admin Dashboard</h1>
-                    <p className="text-gray-500 font-medium mt-1">Welcome, here&apos;s what&apos;s happening today.</p>
+                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 uppercase tracking-tight">Admin Dashboard</h1>
+                    <p className="text-gray-500 text-xs sm:text-sm font-medium mt-1">Welcome, here's what's happening today.</p>
                 </div>
                 <div className="hidden sm:flex items-center gap-2 text-sm text-gray-500 font-bold bg-white px-4 py-2 rounded-full shadow-sm border border-gray-100">
                     <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
@@ -37,23 +37,23 @@ export default function AdminOverview() {
             </div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-xl hover:border-[#D4AF37]/30 transition-all group hover:scale-[1.02]">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+                <div className="bg-white rounded-2xl p-5 sm:p-6 border border-gray-100 shadow-xl hover:border-[#D4AF37]/30 transition-all group hover:scale-[1.02]">
                     <div className="flex items-center justify-between mb-4">
-                        <span className="text-2xl">👥</span>
-                        <span className="text-[10px] font-black uppercase px-3 py-1 rounded-full bg-green-50 text-green-600 border border-green-100">Live</span>
+                        <span className="text-xl sm:text-2xl">👥</span>
+                        <span className="text-[9px] sm:text-[10px] font-black uppercase px-3 py-1 rounded-full bg-green-50 text-green-600 border border-green-100">Live</span>
                     </div>
-                    <p className="text-3xl font-black text-gray-900 mb-1">{totalUsers}</p>
-                    <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Total Users</p>
+                    <p className="text-2xl sm:text-3xl font-black text-gray-900 mb-1">{totalUsers}</p>
+                    <p className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest">Total Users</p>
                 </div>
 
-                <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-xl hover:border-[#D4AF37]/30 transition-all group hover:scale-[1.02]">
+                <div className="bg-white rounded-2xl p-5 sm:p-6 border border-gray-100 shadow-xl hover:border-[#D4AF37]/30 transition-all group hover:scale-[1.02]">
                     <div className="flex items-center justify-between mb-4">
-                        <span className="text-2xl">🟢</span>
-                        <span className="text-[10px] font-black uppercase px-3 py-1 rounded-full bg-green-50 text-green-600 border border-green-100">Live</span>
+                        <span className="text-xl sm:text-2xl">🟢</span>
+                        <span className="text-[9px] sm:text-[10px] font-black uppercase px-3 py-1 rounded-full bg-green-50 text-green-600 border border-green-100">Live</span>
                     </div>
-                    <p className="text-3xl font-black text-gray-900 mb-1">{activeSessions}</p>
-                    <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Active Users</p>
+                    <p className="text-2xl sm:text-3xl font-black text-gray-900 mb-1">{activeSessions}</p>
+                    <p className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest">Active Users</p>
                 </div>
             </div>
 

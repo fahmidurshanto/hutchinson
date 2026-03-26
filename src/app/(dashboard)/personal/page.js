@@ -64,8 +64,8 @@ export default function PersonalPage() {
 
     return (
         <div className="w-full h-full flex flex-col items-center relative overflow-visible">
-            {/* Global Watermark - Premium Shimmering Gold */}
-            <div className="absolute left-0 top-1/2 -translate-x-[35%] -translate-y-1/2 w-[1400px] h-[1400px] opacity-[0.25] pointer-events-none z-0 flex items-center justify-center">
+            {/* Global Watermark - hidden on mobile/tablet to avoid overflow and prioritize performance */}
+            <div className="hidden xl:block absolute left-0 top-1/2 -translate-x-[35%] -translate-y-1/2 w-[1400px] h-[1400px] opacity-[0.25] pointer-events-none z-0 flex items-center justify-center">
                 <img
                     src="/lion.png"
                     alt=""
@@ -75,11 +75,11 @@ export default function PersonalPage() {
 
             {/* Header Section */}
             <div className="w-full text-center py-6 md:py-10 mb-2 animate__animated animate__fadeIn relative flex flex-col items-center justify-center">
-                <div className="relative z-10 w-full">
-                    <h1 className="text-3xl md:text-5xl font-black mb-2 tracking-tight text-gradient-gold bg-clip-text uppercase">
+                <div className="relative z-10 w-full px-4">
+                    <h1 className="text-2xl sm:text-3xl md:text-5xl font-black mb-2 tracking-tight text-gradient-gold bg-clip-text uppercase">
                         Personal Profile
                     </h1>
-                    <p className="text-gray-500 text-sm md:text-base font-bold uppercase tracking-widest opacity-70">
+                    <p className="text-[10px] md:text-base text-gray-500 font-bold uppercase tracking-widest opacity-70">
                         Strategic Identity Management • Precision & Trust
                     </p>
                 </div>
@@ -91,25 +91,25 @@ export default function PersonalPage() {
 
                     {/* Left Column - Summary & Overview */}
                     <div className="lg:col-span-1 space-y-6">
-                        <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-xl flex flex-col items-center text-center">
-                            <div className="w-32 h-32 rounded-full bg-gradient-gold flex items-center justify-center text-black font-black text-4xl shadow-2xl mb-6 uppercase border-4 border-white">
+                        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-100 shadow-xl flex flex-col items-center text-center">
+                            <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-gradient-gold flex items-center justify-center text-black font-black text-2xl sm:text-4xl shadow-2xl mb-6 uppercase border-4 border-white">
                                 {user.firstName ? (user.firstName[0] + (user.lastName ? user.lastName[0] : '')) : (user.name ? user.name[0] : 'U')}
                             </div>
-                            <h2 className="text-2xl font-black text-gray-950 uppercase tracking-tight">
+                            <h2 className="text-xl sm:text-2xl font-black text-gray-950 uppercase tracking-tight">
                                 {user.firstName ? `${user.firstName} ${user.lastName}` : user.name}
                             </h2>
-                            <p className="text-gray-400 font-bold mt-1 text-sm">{user.email}</p>
+                            <p className="text-gray-400 font-bold mt-1 text-xs sm:text-sm">{user.email}</p>
 
-                            <div className="w-full flex justify-center mt-8">
-                                <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100 min-w-[140px]">
-                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Status</p>
+                            <div className="w-full flex justify-center mt-6 sm:mt-8">
+                                <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100 min-w-[120px] sm:min-w-[140px]">
+                                    <p className="text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Status</p>
                                     <span className="text-xs font-black text-green-600 uppercase border-b border-green-100">Active</span>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-xl">
-                            <h3 className="text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] mb-6 border-b border-gray-50 pb-2">Quick Overview</h3>
+                        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-100 shadow-xl">
+                            <h3 className="text-[10px] sm:text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] mb-4 sm:mb-6 border-b border-gray-50 pb-2">Quick Overview</h3>
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center text-sm">
                                     <span className="text-gray-400 font-bold">Member Since</span>
@@ -130,52 +130,52 @@ export default function PersonalPage() {
                     {/* Right Column - Detailed Info & Activity */}
                     <div className="lg:col-span-2 space-y-8">
                         <div className="bg-white rounded-3xl border border-gray-100 shadow-xl overflow-hidden">
-                            <div className="px-8 py-6 bg-gray-50/50 border-b border-gray-100 flex items-center justify-between">
-                                <h3 className="text-[11px] font-black text-gray-900 uppercase tracking-widest">Personal Information</h3>
+                            <div className="px-6 sm:px-8 py-5 sm:py-6 bg-gray-50/50 border-b border-gray-100 flex items-center justify-between">
+                                <h3 className="text-[10px] sm:text-[11px] font-black text-gray-900 uppercase tracking-widest">Personal Information</h3>
                                 <button
                                     onClick={() => setIsRequestingUpdate(true)}
-                                    className="text-[10px] font-black text-[#D4AF37] border-b border-[#D4AF37]/30 uppercase tracking-widest hover:text-[#A67C00] transition-colors"
+                                    className="text-[9px] sm:text-[10px] font-black text-[#D4AF37] border-b border-[#D4AF37]/30 uppercase tracking-widest hover:text-[#A67C00] transition-colors"
                                 >
                                     Request Update
                                 </button>
                             </div>
-                            <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="p-6 sm:p-8 grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
                                 <div>
-                                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">First Name</label>
-                                    <p className="text-base text-gray-950 font-bold border-b border-gray-50 pb-1">{user.firstName || user.name?.split(' ')[0]}</p>
+                                    <label className="block text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 sm:mb-2">First Name</label>
+                                    <p className="text-sm sm:text-base text-gray-950 font-bold border-b border-gray-50 pb-1">{user.firstName || user.name?.split(' ')[0]}</p>
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Last Name</label>
-                                    <p className="text-base text-gray-950 font-bold border-b border-gray-50 pb-1">{user.lastName || user.name?.split(' ').slice(1).join(' ')}</p>
+                                    <label className="block text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 sm:mb-2">Last Name</label>
+                                    <p className="text-sm sm:text-base text-gray-950 font-bold border-b border-gray-50 pb-1">{user.lastName || user.name?.split(' ').slice(1).join(' ')}</p>
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Email</label>
-                                    <p className="text-base text-gray-950 font-bold border-b border-gray-50 pb-1">{user.email}</p>
+                                    <label className="block text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 sm:mb-2">Email Address</label>
+                                    <p className="text-sm sm:text-base text-gray-950 font-bold border-b border-gray-50 pb-1 truncate">{user.email}</p>
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Contact Number</label>
-                                    <p className="text-base text-gray-950 font-bold border-b border-gray-50 pb-1">{user.phone || 'N/A'}</p>
+                                    <label className="block text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 sm:mb-2">Contact Number</label>
+                                    <p className="text-sm sm:text-base text-gray-950 font-bold border-b border-gray-50 pb-1">{user.phone || 'N/A'}</p>
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">NRIC / Passport</label>
-                                    <p className="text-base text-gray-950 font-bold border-b border-gray-50 pb-1">{user.nric || 'N/A'}</p>
+                                    <label className="block text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 sm:mb-2">NRIC / Passport</label>
+                                    <p className="text-sm sm:text-base text-gray-950 font-bold border-b border-gray-50 pb-1">{user.nric || 'N/A'}</p>
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Nationality</label>
-                                    <p className="text-base text-gray-950 font-bold border-b border-gray-50 pb-1">{user.nationality || 'N/A'}</p>
+                                    <label className="block text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 sm:mb-2">Nationality</label>
+                                    <p className="text-sm sm:text-base text-gray-950 font-bold border-b border-gray-50 pb-1">{user.nationality || 'N/A'}</p>
                                 </div>
                                 <div className="md:col-span-2">
-                                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Residential Address</label>
-                                    <p className="text-base text-gray-950 font-bold border-b border-gray-50 pb-1">{user.address || 'N/A'}</p>
+                                    <label className="block text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 sm:mb-2">Residential Address</label>
+                                    <p className="text-sm sm:text-base text-gray-950 font-bold border-b border-gray-50 pb-1">{user.address || 'N/A'}</p>
                                 </div>
                             </div>
                         </div>
 
                         <div className="bg-white rounded-3xl border border-gray-100 shadow-xl overflow-hidden">
-                            <div className="px-8 py-6 bg-gray-50/50 border-b border-gray-100">
-                                <h3 className="text-[11px] font-black text-gray-900 uppercase tracking-widest">Account Activity</h3>
+                            <div className="px-6 sm:px-8 py-5 sm:py-6 bg-gray-50/50 border-b border-gray-100">
+                                <h3 className="text-[10px] sm:text-[11px] font-black text-gray-900 uppercase tracking-widest">Account Activity</h3>
                             </div>
-                            <div className="p-8">
+                            <div className="p-6 sm:p-8">
                                 <div className="space-y-6 max-h-[400px] overflow-y-auto pr-4 custom-scrollbar">
                                     {user.activities && user.activities.length > 0 ? (
                                         user.activities.map(activity => (
@@ -215,42 +215,42 @@ export default function PersonalPage() {
             {isRequestingUpdate && (
                 <div className="fixed inset-0 bg-black/70 backdrop-blur-md z-[100] flex items-center justify-center p-4 animate__animated animate__fadeIn">
                     <div className="bg-white rounded-[2rem] shadow-2xl border-2 border-[#D4AF37]/50 w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col animate__animated animate__zoomIn">
-                        <div className="bg-gradient-gold px-8 py-6 flex items-center justify-between border-b border-[#b38b22]/30">
+                        <div className="bg-gradient-gold px-6 sm:px-8 py-4 sm:py-6 flex items-center justify-between border-b border-[#b38b22]/30">
                             <div>
-                                <h2 className="text-black font-black text-lg tracking-widest uppercase">Request Profile Update</h2>
-                                <p className="text-[10px] text-black/60 font-black uppercase tracking-widest mt-1">Strategic verification protocol active</p>
+                                <h2 className="text-black font-black text-base sm:text-lg tracking-widest uppercase">Request Update</h2>
+                                <p className="text-[8px] sm:text-[10px] text-black/60 font-black uppercase tracking-widest mt-1">Strategic verification active</p>
                             </div>
                             <button onClick={() => setIsRequestingUpdate(false)} className="bg-black/10 hover:bg-black/20 p-2 rounded-full transition-colors group">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5 text-black group-hover:rotate-90 transition-transform">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 sm:w-5 sm:h-5 text-black group-hover:rotate-90 transition-transform">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                             </button>
                         </div>
 
-                        <form onSubmit={handleRequestSubmit} className="flex-1 overflow-y-auto p-10 space-y-10 custom-scrollbar">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-[#A67C00] uppercase tracking-widest">First Name</label>
+                        <form onSubmit={handleRequestSubmit} className="flex-1 overflow-y-auto p-6 sm:p-10 space-y-6 sm:space-y-10 custom-scrollbar">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 sm:gap-x-12 gap-y-5 sm:gap-y-8">
+                                <div className="space-y-1.5 sm:space-y-2">
+                                    <label className="text-[9px] sm:text-[10px] font-black text-[#A67C00] uppercase tracking-widest">First Name</label>
                                     <input
                                         type="text"
-                                        className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black"
+                                        className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black"
                                         value={updateData.firstName}
                                         onChange={(e) => setUpdateData({ ...updateData, firstName: e.target.value })}
                                     />
                                 </div>
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-[#A67C00] uppercase tracking-widest">Last Name</label>
+                                <div className="space-y-1.5 sm:space-y-2">
+                                    <label className="text-[9px] sm:text-[10px] font-black text-[#A67C00] uppercase tracking-widest">Last Name</label>
                                     <input
                                         type="text"
-                                        className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black"
+                                        className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black"
                                         value={updateData.lastName}
                                         onChange={(e) => setUpdateData({ ...updateData, lastName: e.target.value })}
                                     />
                                 </div>
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-[#A67C00] uppercase tracking-widest">Gender</label>
+                                <div className="space-y-1.5 sm:space-y-2">
+                                    <label className="text-[9px] sm:text-[10px] font-black text-[#A67C00] uppercase tracking-widest">Gender</label>
                                     <select
-                                        className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black appearance-none"
+                                        className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black appearance-none"
                                         value={updateData.gender}
                                         onChange={(e) => setUpdateData({ ...updateData, gender: e.target.value })}
                                     >
@@ -261,64 +261,64 @@ export default function PersonalPage() {
                                         <option value="Prefer not to say">Prefer not to say</option>
                                     </select>
                                 </div>
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-[#A67C00] uppercase tracking-widest">Contact Number</label>
+                                <div className="space-y-1.5 sm:space-y-2">
+                                    <label className="text-[9px] sm:text-[10px] font-black text-[#A67C00] uppercase tracking-widest">Contact Number</label>
                                     <input
                                         type="tel"
-                                        className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black"
+                                        className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black"
                                         value={updateData.phone}
                                         onChange={(e) => setUpdateData({ ...updateData, phone: e.target.value })}
                                     />
                                 </div>
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-[#A67C00] uppercase tracking-widest">Email Address</label>
+                                <div className="space-y-1.5 sm:space-y-2">
+                                    <label className="text-[9px] sm:text-[10px] font-black text-[#A67C00] uppercase tracking-widest">Email Address</label>
                                     <input
                                         type="email"
-                                        className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black"
+                                        className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black"
                                         value={updateData.email}
                                         onChange={(e) => setUpdateData({ ...updateData, email: e.target.value })}
                                     />
                                 </div>
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-[#A67C00] uppercase tracking-widest">NRIC</label>
+                                <div className="space-y-1.5 sm:space-y-2">
+                                    <label className="text-[9px] sm:text-[10px] font-black text-[#A67C00] uppercase tracking-widest">NRIC</label>
                                     <input
                                         type="text"
-                                        className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black"
+                                        className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black"
                                         value={updateData.nric}
                                         onChange={(e) => setUpdateData({ ...updateData, nric: e.target.value })}
                                     />
                                 </div>
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-[#A67C00] uppercase tracking-widest">Nationality</label>
+                                <div className="space-y-1.5 sm:space-y-2">
+                                    <label className="text-[9px] sm:text-[10px] font-black text-[#A67C00] uppercase tracking-widest">Nationality</label>
                                     <input
                                         type="text"
-                                        className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black"
+                                        className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black"
                                         value={updateData.nationality}
                                         onChange={(e) => setUpdateData({ ...updateData, nationality: e.target.value })}
                                     />
                                 </div>
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-[#A67C00] uppercase tracking-widest">Registered Address</label>
+                                <div className="space-y-1.5 sm:space-y-2">
+                                    <label className="text-[9px] sm:text-[10px] font-black text-[#A67C00] uppercase tracking-widest">Registered Address</label>
                                     <textarea
                                         rows={2}
-                                        className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black resize-none"
+                                        className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black resize-none"
                                         value={updateData.address}
                                         onChange={(e) => setUpdateData({ ...updateData, address: e.target.value })}
                                     />
                                 </div>
                             </div>
 
-                            <div className="pt-4 flex flex-col md:flex-row gap-6">
+                            <div className="pt-2 sm:pt-4 flex flex-col md:flex-row gap-4 sm:gap-6">
                                 <button
                                     type="submit"
-                                    className="flex-1 py-5 bg-gradient-gold text-black font-black uppercase tracking-widest rounded-xl shadow-lg hover:shadow-gold-500/40 hover:brightness-110 active:scale-[0.98] transition-all cursor-pointer"
+                                    className="flex-1 py-4 sm:py-5 bg-gradient-gold text-black font-black uppercase tracking-widest rounded-xl shadow-lg hover:shadow-gold-500/40 hover:brightness-110 active:scale-[0.98] transition-all cursor-pointer text-xs sm:text-sm"
                                 >
-                                    Submit Request to Strategic Admin
+                                    Submit Profile Update Request
                                 </button>
                                 <button
                                     type="button"
                                     onClick={() => setIsRequestingUpdate(false)}
-                                    className="px-12 py-5 bg-gray-100 text-gray-500 font-black uppercase tracking-widest rounded-xl hover:bg-gray-200 transition-all cursor-pointer"
+                                    className="px-6 md:px-12 py-4 sm:py-5 bg-gray-100 text-gray-500 font-black uppercase tracking-widest rounded-xl hover:bg-gray-200 transition-all cursor-pointer text-xs sm:text-sm"
                                 >
                                     Cancel
                                 </button>

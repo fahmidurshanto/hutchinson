@@ -3,9 +3,9 @@ import Footer from '../../components/layout/Footer';
 
 export default function AdminLayout({ children }) {
     return (
-        <div className="min-h-screen bg-[#f8f9fa] flex flex-col">
+        <div className="min-h-screen bg-[#f8f9fa] flex flex-col overflow-x-hidden">
             <AdminTopNav />
-            <main className="pt-24 transition-all duration-300 flex-1">
+            <main className="pt-24 md:pt-32 lg:pt-[100px] transition-all duration-300 flex-1">
                 <div className="p-4 md:p-8 lg:p-12 w-full max-w-7xl mx-auto">
                     {children}
                 </div>
