@@ -220,7 +220,7 @@ export default function AdminUserReportsPage({ params }) {
                 <div className="flex-1 bg-white rounded-3xl p-6 md:p-10 shadow-xl border border-gray-100 relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-[#D4AF37]/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
                     
-                    <div className="relative z-10 h-full flex flex-col">
+                    <div className="relative z-10 flex flex-col">
                         <div className="flex justify-between items-center mb-10">
                             <div>
                                 <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
@@ -230,7 +230,7 @@ export default function AdminUserReportsPage({ params }) {
                             </div>
                         </div>
 
-                        <div className="flex-1 min-h-[350px]">
+                        <div className="w-full h-[350px] md:h-[450px]">
                             {loading ? (
                                 <div className="w-full h-full flex items-center justify-center">
                                     <div className="w-8 h-8 border-4 border-gray-200 border-t-[#D4AF37] rounded-full animate-spin"></div>

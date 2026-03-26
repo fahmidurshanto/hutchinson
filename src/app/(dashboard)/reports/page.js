@@ -2,13 +2,13 @@
 import React, { useState, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import NotFound from '@/components/ui/NotFound';
-import { 
-    BarChart, 
-    Bar, 
-    XAxis, 
-    YAxis, 
-    CartesianGrid, 
-    Tooltip, 
+import {
+    BarChart,
+    Bar,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
     ResponsiveContainer,
     Cell
 } from 'recharts';
@@ -41,7 +41,7 @@ export default function ReportsPage() {
 
     useEffect(() => {
         setIsMounted(true);
-        if (user?.id) { 
+        if (user?.id) {
             setLoading(true);
             fetchInvestmentReports(user.id)
                 .then(res => {
@@ -49,7 +49,7 @@ export default function ReportsPage() {
                         setReportsData(res.data);
                         const availableYears = Object.keys(res.data);
                         if (availableYears.length > 0) {
-                            setYears(availableYears.sort((a,b) => b-a)); // descending
+                            setYears(availableYears.sort((a, b) => b - a)); // descending
                             if (!availableYears.includes(selectedYear)) {
                                 setSelectedYear(availableYears[availableYears.length - 1]);
                             }
@@ -92,7 +92,7 @@ export default function ReportsPage() {
             <div className="w-full text-center py-8 md:py-14 animate__animated animate__fadeIn relative flex flex-col items-center justify-center min-h-[15vh] md:min-h-[25vh]">
                 <div className="relative z-10 w-full px-4">
                     <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black mb-4 tracking-tight text-gradient-gold bg-clip-text uppercase leading-none">
-                        Capital Reports
+                        Reports
                     </h1>
                     <p className="text-[10px] sm:text-xs md:text-base text-gray-400 font-bold uppercase tracking-[0.3em] max-w-2xl mx-auto opacity-70">
                         Strategic Investment Analytics • Allocation Performance
@@ -101,7 +101,7 @@ export default function ReportsPage() {
             </div>
 
             <div className="flex flex-col lg:flex-row gap-6 md:gap-10 mt-4 md:mt-8">
-                
+
                 {/* Left Column: Year Selection - Horizontal scroll on mobile, Vertical on Desktop */}
                 <div className="w-full lg:w-48 flex flex-row lg:flex-col gap-2 sm:gap-3 overflow-x-auto no-scrollbar pb-4 lg:pb-0 px-2 sm:px-0">
                     <h3 className="hidden lg:block text-[11px] font-black text-gray-400 uppercase tracking-widest mb-4 border-b border-gray-100 pb-3">
@@ -112,8 +112,8 @@ export default function ReportsPage() {
                             key={year}
                             onClick={() => setSelectedYear(year)}
                             className={`px-5 sm:px-6 py-2.5 sm:py-3.5 lg:py-4 rounded-xl font-black text-[10px] sm:text-xs tracking-widest transition-all duration-300 shadow-sm whitespace-nowrap border
-                                ${selectedYear === year 
-                                    ? 'bg-gradient-gold text-black border-[#D4AF37] scale-105 z-10' 
+                                ${selectedYear === year
+                                    ? 'bg-gradient-gold text-black border-[#D4AF37] scale-105 z-10'
                                     : 'bg-white text-gray-400 hover:bg-gray-50 border-gray-100'
                                 }`}
                         >
@@ -126,8 +126,8 @@ export default function ReportsPage() {
                 <div className="flex-1 bg-white rounded-[1.5rem] md:rounded-[2rem] p-5 sm:p-8 md:p-10 shadow-xl border border-gray-100 relative overflow-hidden mx-2 sm:mx-0">
                     {/* Subtle Background Pattern */}
                     <div className="absolute top-0 right-0 w-64 h-64 bg-[#D4AF37]/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
-                    
-                    <div className="relative z-10 h-full flex flex-col">
+
+                    <div className="relative z-10 flex flex-col">
                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 gap-4">
                             <div>
                                 <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-gray-950 leading-tight uppercase tracking-tight">
@@ -137,7 +137,7 @@ export default function ReportsPage() {
                             </div>
                         </div>
 
-                        <div className="flex-1 min-h-[350px]">
+                        <div className="w-full h-[350px] md:h-[450px]">
                             {isMounted && (
                                 <ResponsiveContainer width="100%" height="100%">
                                     <BarChart
@@ -152,24 +152,24 @@ export default function ReportsPage() {
                                             </linearGradient>
                                         </defs>
                                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-                                        <XAxis 
-                                            dataKey="month" 
-                                            axisLine={false} 
-                                            tickLine={false} 
+                                        <XAxis
+                                            dataKey="month"
+                                            axisLine={false}
+                                            tickLine={false}
                                             tick={{ fill: '#9ca3af', fontSize: 10, fontWeight: 700 }}
                                             dy={10}
                                             interval={0} // Show all months
                                         />
-                                        <YAxis 
-                                            axisLine={false} 
-                                            tickLine={false} 
+                                        <YAxis
+                                            axisLine={false}
+                                            tickLine={false}
                                             tick={{ fill: '#9ca3af', fontSize: 10, fontWeight: 700 }}
-                                            tickFormatter={(value) => `$${value/1000}k`}
+                                            tickFormatter={(value) => `$${value / 1000}k`}
                                             width={40}
                                         />
                                         <Tooltip content={<CustomTooltip />} cursor={{ fill: '#f9fafb' }} />
-                                        <Bar 
-                                            dataKey="amount" 
+                                        <Bar
+                                            dataKey="amount"
                                             radius={[10, 10, 0, 0]}
                                             animationDuration={1500}
                                         >
