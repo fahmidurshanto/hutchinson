@@ -1,25 +1,61 @@
 "use client";
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
+import api from '@/lib/api';
 
 export default function AdminOverview() {
     const { userList } = useAppContext();
+    const [schedules, setSchedules] = useState([]);
+
+    // Fetch schedules to display in Recent Activity
+    useEffect(() => {
+        const fetchSchedules = async () => {
+            try {
+                const res = await api.get('/schedule/admin/all');
+                if (res.data.success) {
+                    setSchedules(res.data.data);
+                }
+            } catch (err) {
+                console.error("Failed to fetch schedules for Overview", err);
+            }
+        };
+        fetchSchedules();
+    }, []);
 
     // Real computed stats
     const totalUsers = userList?.length ?? 0;
     const activeSessions = userList?.filter(u => (u.status || u.Status || '').toLowerCase() === 'active').length ?? 0;
 
-    // Aggregate all activities from all users, sort newest first, take top 5
-    const recentActivity = (userList || [])
-        .flatMap(u =>
-            (u.activities || []).map(act => ({
-                user: u.name || `${u.firstName || ''} ${u.lastName || ''}`.trim() || u.email,
-                action: act.description || act.title || 'Performed an action',
-                time: act.time ? `${act.date} ${act.time}` : act.date || '',
-                id: act.id || 0,
-            }))
-        )
-        .sort((a, b) => b.id - a.id)
+    // Aggregate ephemeral activities (like doc uploads, profile updates)
+    const ephemeralActivities = (userList || []).flatMap(u =>
+        (u.activities || []).map(act => ({
+            user: u.name || `${u.firstName || ''} ${u.lastName || ''}`.trim() || u.email,
+            action: act.description || act.title || 'Performed an action',
+            time: act.time ? `${act.date} ${act.time}` : act.date || '',
+            timestamp: act.id || 0, // act.id is Data.now() timestamp from AppContext.js logActivity
+            id: act.id || 0,
+        }))
+    );
+
+    // Aggregate schedule activities
+    const scheduleActivities = schedules.map(sch => {
+        const schDate = new Date(sch.createdAt || sch.time);
+        const userStr = sch.user 
+            ? (sch.user.name || `${sch.user.firstName || ''} ${sch.user.lastName || ''}`.trim() || sch.user.email)
+            : 'Unknown User';
+            
+        return {
+            user: userStr,
+            action: `Scheduled a ${sch.type}: ${sch.title}`,
+            time: schDate.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }) + ' ' + schDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+            timestamp: schDate.getTime(),
+            id: sch._id,
+        };
+    });
+
+    // Merge all activities, sort newest first, take top 5
+    const recentActivity = [...ephemeralActivities, ...scheduleActivities]
+        .sort((a, b) => b.timestamp - a.timestamp)
         .slice(0, 5);
 
     return (
