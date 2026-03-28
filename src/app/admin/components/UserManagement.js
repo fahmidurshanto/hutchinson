@@ -205,129 +205,139 @@ export default function UserManagement() {
                 </div>
             )}
 
-            <div className="w-full space-y-6 animate__animated animate__fadeIn">
-                {/* Header */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 px-2 sm:px-0">
-                    <div>
-                        <h1 className="text-3xl sm:text-4xl font-black text-gray-900 uppercase tracking-tight leading-none mb-1">Partners</h1>
-                        <p className="text-gray-500 text-[10px] sm:text-xs font-bold uppercase tracking-widest mt-1 opacity-70">Privilege & Access Management</p>
+            <div className="w-full animate__animated animate__fadeIn relative overflow-hidden">
+                {/* Global Watermark */}
+                <div className="hidden xl:block absolute left-0 top-[400px] -translate-x-[35%] -translate-y-1/2 w-[1400px] h-[1400px] opacity-[0.25] pointer-events-none z-0 flex items-center justify-center">
+                    <img
+                        src="/lion.png"
+                        alt=""
+                        className="w-full h-full object-contain filter drop-shadow-[0_0_30px_rgba(212,175,55,0.3)] saturate-[2] brightness-[1.1] sepia-[0.5]"
+                    />
+                </div>
+
+                <div className="relative z-10 w-full space-y-6">
+                    {/* Header */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 px-2 sm:px-0">
+                        <div>
+                            <h1 className="text-3xl sm:text-4xl font-black text-gray-900 uppercase tracking-tight leading-none mb-1">Partners</h1>
+                            <p className="text-gray-500 text-[10px] sm:text-xs font-bold uppercase tracking-widest mt-1 opacity-70">Privilege & Access Management</p>
+                        </div>
+                        <button
+                            onClick={() => handleOpenModal()}
+                            className="cursor-pointer w-full sm:w-auto px-6 py-3.5 sm:py-3 rounded-xl bg-gradient-gold text-black font-black text-[10px] sm:text-xs uppercase tracking-widest shadow-lg hover:shadow-gold-500/30 hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
+                        >
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                            </svg>
+                            Register Partner
+                        </button>
                     </div>
-                    <button
-                        onClick={() => handleOpenModal()}
-                        className="cursor-pointer w-full sm:w-auto px-6 py-3.5 sm:py-3 rounded-xl bg-gradient-gold text-black font-black text-[10px] sm:text-xs uppercase tracking-widest shadow-lg hover:shadow-gold-500/30 hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
-                    >
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+
+                    {/* Search */}
+                    <div className="relative group px-1 sm:px-0">
+                        <svg className="absolute left-5 sm:left-6 top-1/2 -translate-y-1/2 w-4 sm:w-5 h-4 sm:h-5 text-gray-400 group-focus-within:text-[#D4AF37] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                         </svg>
-                        Register Partner
-                    </button>
-                </div>
+                        <input
+                            type="text"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            placeholder="Search partners..."
+                            className="w-full pl-12 sm:pl-16 pr-6 py-3.5 sm:py-5 rounded-2xl bg-white border-2 border-gray-50 text-gray-950 font-bold text-xs sm:text-sm placeholder-gray-400 focus:outline-none focus:border-[#D4AF37] transition-all shadow-xl"
+                        />
+                    </div>
 
-            {/* Search */}
-            <div className="relative group px-1 sm:px-0">
-                <svg className="absolute left-5 sm:left-6 top-1/2 -translate-y-1/2 w-4 sm:w-5 h-4 sm:h-5 text-gray-400 group-focus-within:text-[#D4AF37] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                </svg>
-                <input
-                    type="text"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search partners..."
-                    className="w-full pl-12 sm:pl-16 pr-6 py-3.5 sm:py-5 rounded-2xl bg-white border-2 border-gray-50 text-gray-950 font-bold text-xs sm:text-sm placeholder-gray-400 focus:outline-none focus:border-[#D4AF37] transition-all shadow-xl"
-                />
-            </div>
-
-            {/* Users Table */}
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-2xl overflow-hidden min-h-[400px] flex flex-col">
-                <div className="overflow-x-auto flex-1">
-                    <table className="w-full text-sm">
-                        <thead>
-                            <tr className="border-b border-gray-50 bg-gray-50/50">
-                                <th className="text-left px-4 sm:px-6 py-4 sm:py-5 text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Partner</th>
-                                <th className="text-left px-4 sm:px-6 py-4 sm:py-5 text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Status</th>
-                                <th className="text-left px-4 sm:px-6 py-4 sm:py-5 text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] hidden md:table-cell">Joined</th>
-                                <th className="text-right px-4 sm:px-6 py-4 sm:py-5 text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-50 relative">
-                            {isLoadingUsers ? (
-                                <tr>
-                                    <td colSpan="4" className="px-6 py-20 text-center">
-                                        <div className="flex flex-col items-center justify-center gap-4">
-                                            <div className="w-12 h-12 border-4 border-[#D4AF37] border-t-transparent rounded-full animate-spin"></div>
-                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] animate-pulse">Syncing with Vault...</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ) : filtered.length > 0 ? (
-                                filtered.map((u) => (
-                                    <tr
-                                        key={u._id || u.id}
-                                        onClick={() => router.push(`/admin/users/${u._id || u.id}`)}
-                                        className="hover:bg-gray-50/80 transition-colors group cursor-pointer"
-                                    >
-                                        <td className="px-4 sm:px-6 py-4 sm:py-5">
-                                            <div className="flex items-center gap-3 sm:gap-4">
-                                                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-silver text-gray-700 flex items-center justify-center font-black text-[10px] sm:text-xs flex-shrink-0 shadow-sm border border-gray-100 uppercase">
-                                                    {u.firstName ? (u.firstName[0] + (u.lastName ? u.lastName[0] : '')) : (u.name ? u.name[0] : 'U')}
-                                                </div>
-                                                <div className="min-w-0">
-                                                    <p className="text-xs sm:text-sm text-gray-950 font-bold group-hover:text-[#A67C00] transition-colors truncate">{u.firstName ? `${u.firstName} ${u.lastName}` : u.name}</p>
-                                                    <p className="text-gray-400 text-[10px] sm:text-[11px] font-medium truncate">{u.email}</p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-4 sm:px-6 py-4">
-                                            <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    toggleStatus(u);
-                                                }}
-                                                className={`inline-flex items-center gap-1 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[8px] sm:text-[10px] font-black uppercase tracking-tighter transition-all hover:scale-105 active:scale-95 ${statusStyles[u.status]}`}
-                                            >
-                                                <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-current animate-pulse"></span>
-                                                {u.status}
-                                            </button>
-                                        </td>
-                                        <td className="px-4 sm:px-6 py-4 text-gray-500 font-bold text-xs sm:text-sm hidden md:table-cell">{u.joined || new Date(u.createdAt).toLocaleDateString()}</td>
-                                        <td className="px-4 sm:px-6 py-4 text-right">
-                                            <div className="flex items-center justify-end gap-2">
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        handleDelete(u._id || u.id, u.firstName || u.name);
-                                                    }}
-                                                    className="cursor-pointer text-gray-400 hover:text-red-500 transition-colors p-2 hover:bg-white rounded-lg border border-transparent hover:border-gray-100 shadow-sm hover:shadow"
-                                                    title="Delete User"
-                                                >
-                                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                    </svg>
-                                                </button>
-                                            </div>
-                                        </td>
+                    {/* Users Table */}
+                    <div className="bg-white rounded-2xl border border-gray-100 shadow-2xl overflow-hidden min-h-[400px] flex flex-col">
+                        <div className="overflow-x-auto flex-1">
+                            <table className="w-full text-sm">
+                                <thead>
+                                    <tr className="border-b border-gray-50 bg-gray-50/50">
+                                        <th className="text-left px-4 sm:px-6 py-4 sm:py-5 text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Partner</th>
+                                        <th className="text-left px-4 sm:px-6 py-4 sm:py-5 text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Status</th>
+                                        <th className="text-left px-4 sm:px-6 py-4 sm:py-5 text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] hidden md:table-cell">Joined</th>
+                                        <th className="text-right px-4 sm:px-6 py-4 sm:py-5 text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Actions</th>
                                     </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td colSpan="4" className="px-6 py-20 text-center">
-                                        <div className="flex flex-col items-center justify-center gap-4 opacity-40">
-                                            <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center border-2 border-dashed border-gray-200">
-                                                <svg className="w-8 h-8 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-2.533-4.653 13.858 13.858 0 00-5.453-1.146 4.125 4.125 0 00-2.533 4.653 9.337 9.337 0 004.121.952 9.38 9.38 0 002.625-.372zm-7.243-7.243a4.125 4.125 0 015.656 0M9 10a1 1 0 112 0 1 1 0 01-2 0zm3.757-2.001a1 1 0 112 0 1 1 0 01-2 0zm-3-3a1 1 0 112 0 1 1 0 01-2 0z" />
-                                                </svg>
-                                            </div>
-                                            <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.4em]">No Partners Found</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
+                                </thead>
+                                <tbody className="divide-y divide-gray-50 relative">
+                                    {isLoadingUsers ? (
+                                        <tr>
+                                            <td colSpan="4" className="px-6 py-20 text-center">
+                                                <div className="flex flex-col items-center justify-center gap-4">
+                                                    <div className="w-12 h-12 border-4 border-[#D4AF37] border-t-transparent rounded-full animate-spin"></div>
+                                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] animate-pulse">Syncing with Vault...</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ) : filtered.length > 0 ? (
+                                        filtered.map((u) => (
+                                            <tr
+                                                key={u._id || u.id}
+                                                onClick={() => router.push(`/admin/users/${u._id || u.id}`)}
+                                                className="hover:bg-gray-50/80 transition-colors group cursor-pointer"
+                                            >
+                                                <td className="px-4 sm:px-6 py-4 sm:py-5">
+                                                    <div className="flex items-center gap-3 sm:gap-4">
+                                                        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-silver text-gray-700 flex items-center justify-center font-black text-[10px] sm:text-xs flex-shrink-0 shadow-sm border border-gray-100 uppercase">
+                                                            {u.firstName ? (u.firstName[0] + (u.lastName ? u.lastName[0] : '')) : (u.name ? u.name[0] : 'U')}
+                                                        </div>
+                                                        <div className="min-w-0">
+                                                            <p className="text-xs sm:text-sm text-gray-950 font-bold group-hover:text-[#A67C00] transition-colors truncate">{u.firstName ? `${u.firstName} ${u.lastName}` : u.name}</p>
+                                                            <p className="text-gray-400 text-[10px] sm:text-[11px] font-medium truncate">{u.email}</p>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td className="px-4 sm:px-6 py-4">
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            toggleStatus(u);
+                                                        }}
+                                                        className={`inline-flex items-center gap-1 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[8px] sm:text-[10px] font-black uppercase tracking-tighter transition-all hover:scale-105 active:scale-95 ${statusStyles[u.status]}`}
+                                                    >
+                                                        <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-current animate-pulse"></span>
+                                                        {u.status}
+                                                    </button>
+                                                </td>
+                                                <td className="px-4 sm:px-6 py-4 text-gray-500 font-bold text-xs sm:text-sm hidden md:table-cell">{u.joined || new Date(u.createdAt).toLocaleDateString()}</td>
+                                                <td className="px-4 sm:px-6 py-4 text-right">
+                                                    <div className="flex items-center justify-end gap-2">
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleDelete(u._id || u.id, u.firstName || u.name);
+                                                            }}
+                                                            className="cursor-pointer text-gray-400 hover:text-red-500 transition-colors p-2 hover:bg-white rounded-lg border border-transparent hover:border-gray-100 shadow-sm hover:shadow"
+                                                            title="Delete User"
+                                                        >
+                                                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan="4" className="px-6 py-20 text-center">
+                                                <div className="flex flex-col items-center justify-center gap-4 opacity-40">
+                                                    <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center border-2 border-dashed border-gray-200">
+                                                        <svg className="w-8 h-8 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                                                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-2.533-4.653 13.858 13.858 0 00-5.453-1.146 4.125 4.125 0 00-2.533 4.653 9.337 9.337 0 004.121.952 9.38 9.38 0 002.625-.372zm-7.243-7.243a4.125 4.125 0 015.656 0M9 10a1 1 0 112 0 1 1 0 01-2 0zm3.757-2.001a1 1 0 112 0 1 1 0 01-2 0zm-3-3a1 1 0 112 0 1 1 0 01-2 0z" />
+                                                        </svg>
+                                                    </div>
+                                                    <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.4em]">No Partners Found</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
-
-        </div>
-    </>
+        </>
     );
 }

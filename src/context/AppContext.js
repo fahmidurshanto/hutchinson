@@ -196,7 +196,6 @@ export function AppProvider({ children }) {
         }
     };
 
-    // API: Fetch My Profile
     const fetchCurrentUser = async () => {
         try {
             const response = await api.get('/auth/me');
@@ -217,7 +216,13 @@ export function AppProvider({ children }) {
                 });
                 return data.user;
             }
-            throw new Error(data.message || 'Could not fetch profile');
+            
+            // If the interceptor handled a 401 and returned silent: true, exit gracefully
+            if (data.silent) return null;
+            
+            const err = new Error(data.message || 'Could not fetch profile');
+            err.data = data;
+            throw err;
         } catch (error) {
             // Only log if it's NOT a silent auth failure
             if (error?.data?.silent !== true && error?.response?.status !== 401) {
@@ -225,7 +230,6 @@ export function AppProvider({ children }) {
             }
             // Do not re-throw to prevent Red Screen overlay
         }
-
     };
 
     // API: Change Password

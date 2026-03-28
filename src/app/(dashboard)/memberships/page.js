@@ -103,7 +103,7 @@ export default function MembershipsPage() {
                     <div className="flex items-center gap-4 sm:gap-6 mb-6 md:mb-10">
                         <div className="h-[2px] w-6 sm:w-10 bg-gray-400 rounded-full"></div>
                         <h2 className="text-sm sm:text-lg font-black text-gray-900 tracking-[0.3em] uppercase">
-                            3rd Party
+                            3rd Party/Marketing Agents
                         </h2>
                         <div className="h-px flex-1 bg-gradient-to-r from-gray-200 to-transparent"></div>
                     </div>
