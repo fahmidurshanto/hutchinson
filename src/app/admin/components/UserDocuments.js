@@ -1,25 +1,34 @@
 "use client";
 
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import Swal from 'sweetalert2';
 
 export default function UserDocuments({ targetUserId, userName }) {
-    const { user, documents, addDocument, deleteDocument, viewDocument } = useAppContext();
+    const { user, documents, addDocument, deleteDocument, viewDocument, fetchUserDocuments } = useAppContext();
     const fileInputRef = useRef(null);
 
+    useEffect(() => {
+        if (targetUserId) {
+            fetchUserDocuments(targetUserId);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [targetUserId]);
+
     // Robust admin check
-    const isAdmin = user?.role?.toLowerCase() === 'admin' || 
-                    user?.role?.toLowerCase() === 'superadmin' || 
-                    (typeof window !== 'undefined' && window.location.pathname.includes('/admin'));
+    const isAdmin = user?.role?.toLowerCase() === 'admin' ||
+        user?.role?.toLowerCase() === 'superadmin' ||
+        (typeof window !== 'undefined' && window.location.pathname.includes('/admin'));
 
     // Mock filtering logic - in a real app, this would be an API call for this userId
     // For now, we'll try to match by userId if available, or show a subset for demo
     // If a document has a matching userId, we show it.
-    const userSpecificDocs = documents.filter(doc => 
-        String(doc.userId) === String(targetUserId) || 
+    const userSpecificDocs = documents.filter(doc =>
+        String(doc.userId) === String(targetUserId) ||
         (!doc.userId && String(targetUserId) === "1" && doc.category === 'Recent Reports') // Mock for Alexander Reed
     );
+
+    console.log("documents:", documents)
 
     const handleUploadClick = () => {
         fileInputRef.current?.click();
@@ -103,7 +112,7 @@ export default function UserDocuments({ targetUserId, userName }) {
     return (
         <div className="bg-white rounded-3xl border border-gray-100 shadow-xl overflow-hidden animate__animated animate__fadeIn">
             <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileChange} />
-            
+
             <div className="px-8 py-6 bg-gray-50/50 border-b border-gray-100 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <svg className="w-5 h-5 text-[#D4AF37]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -111,7 +120,7 @@ export default function UserDocuments({ targetUserId, userName }) {
                     </svg>
                     <h3 className="text-xs font-black text-gray-900 uppercase tracking-widest text-[11px]">Vault & Documents</h3>
                 </div>
-                <button 
+                <button
                     onClick={handleUploadClick}
                     className="px-4 py-2 bg-gradient-gold text-black rounded-lg text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all flex items-center gap-2"
                 >
@@ -149,20 +158,19 @@ export default function UserDocuments({ targetUserId, userName }) {
                                                     <p className="text-[10px] font-black text-gray-400 uppercase">{doc.date} • {doc.size}</p>
                                                 </div>
                                             </div>
-                                             <div className="flex items-center gap-2">
-                                                <button 
+                                            <div className="flex items-center gap-2">
+                                                <button
                                                     onClick={() => handleView(doc)}
                                                     disabled={!isAdmin && doc.hasUserSeen}
-                                                    className={`px-3 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-lg border transition-all ${
-                                                        !isAdmin && doc.hasUserSeen 
-                                                            ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed" 
+                                                    className={`px-3 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-lg border transition-all ${!isAdmin && doc.hasUserSeen
+                                                            ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
                                                             : "bg-white text-black border-gray-100 hover:border-[#D4AF37]"
-                                                    }`}
+                                                        }`}
                                                 >
                                                     {!isAdmin && doc.hasUserSeen ? 'Viewed' : 'View'}
                                                 </button>
                                                 {isAdmin && (
-                                                    <button 
+                                                    <button
                                                         onClick={() => handleDelete(doc.id)}
                                                         className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-all"
                                                     >

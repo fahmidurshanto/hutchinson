@@ -90,7 +90,7 @@ export function AppProvider({ children }) {
         try {
             const formData = new FormData();
             formData.append('file', file);
-            formData.append('userId', targetUserId || currentUser?.id || '69b2fe0f9f780f4730036dc5');
+            formData.append('userId', targetUserId || currentUser?.id);
 
             const response = await api.post('/document/upload', formData, {
                 headers: {
@@ -158,10 +158,6 @@ export function AppProvider({ children }) {
                 const url = window.URL.createObjectURL(blob);
                 window.open(url, '_blank');
 
-                // Mark as viewed locally if user is not admin
-                if (currentUser.role !== 'admin') {
-                    markAsViewedLocally(docId);
-                }
                 return true;
             }
             throw new Error('Could not open document');
@@ -169,15 +165,6 @@ export function AppProvider({ children }) {
             console.error('View error:', error);
             throw error;
         }
-    };
-
-    const markAsViewedLocally = (docId) => {
-        setDocuments(prev => prev.map(doc => {
-            if (String(doc.id) === String(docId)) {
-                return { ...doc, hasUserSeen: true };
-            }
-            return doc;
-        }));
     };
 
     // API: Register User (Admin Only)
@@ -218,10 +205,10 @@ export function AppProvider({ children }) {
                 });
                 return data.user;
             }
-            
+
             // If the interceptor handled a 401 and returned silent: true, exit gracefully
             if (data.silent) return null;
-            
+
             const err = new Error(data.message || 'Could not fetch profile');
             err.data = data;
             throw err;
@@ -351,7 +338,7 @@ export function AppProvider({ children }) {
     const fetchUserDocuments = async (userId) => {
         if (!userId) return;
         try {
-            const response = await api.get(`/document/user/${userId}`);
+            const response = await api.get(`/document/getall?id=${userId}`);
             const data = response.data;
             if (data.success) {
                 const mapped = data.documents.map(doc => ({
