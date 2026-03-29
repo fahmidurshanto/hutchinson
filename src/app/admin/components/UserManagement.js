@@ -36,7 +36,11 @@ export default function UserManagement() {
     const filtered = userList.filter(u =>
         (u.firstName + ' ' + u.lastName).toLowerCase().includes(search.toLowerCase()) ||
         u.email.toLowerCase().includes(search.toLowerCase())
-    );
+    ).sort((a, b) => {
+        const nameA = (a.firstName + ' ' + a.lastName).toLowerCase();
+        const nameB = (b.firstName + ' ' + b.lastName).toLowerCase();
+        return nameA.localeCompare(nameB);
+    });
 
     const handleOpenModal = () => {
         setFormData({
@@ -195,7 +199,7 @@ export default function UserManagement() {
                                             </div>
                                             <div>
                                                 <label className="block text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-gradient-gold mb-1.5 sm:mb-2">Security Key</label>
-                                                <input required type="password" underline className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" placeholder="Min. 6 chars" value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
+                                                <input required type="password" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" placeholder="Min. 6 chars" value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
                                             </div>
                                         </div>
 
