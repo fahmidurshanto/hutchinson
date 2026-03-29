@@ -7,11 +7,7 @@ import { useRouter } from 'next/navigation';
 import { useAppContext } from '@/context/AppContext';
 import { getFriendlyErrorMessage } from '@/lib/error-utils';
 
-const statusStyles = {
-    active: 'bg-green-50 text-green-600 border border-green-100',
-    pending: 'bg-amber-50 text-amber-600 border border-amber-100',
-    suspended: 'bg-red-50 text-red-600 border border-red-100',
-};
+
 
 export default function UserManagement() {
     const router = useRouter();
@@ -120,14 +116,7 @@ export default function UserManagement() {
         });
     };
 
-    const toggleStatus = (user) => {
-        if (user.role === 'admin') return; // Only one admin allowed, status locked
-        const statuses = ['active', 'pending', 'suspended'];
-        const currentIndex = statuses.indexOf(user.status);
-        const nextStatus = statuses[(currentIndex + 1) % statuses.length];
 
-        setUserList(userList.map(u => u.id === user.id ? { ...u, status: nextStatus } : u));
-    };
 
     return (
         <>
@@ -288,7 +277,7 @@ export default function UserManagement() {
                                 <thead>
                                     <tr className="border-b border-gray-50 bg-gray-50/50">
                                         <th className="text-left px-4 sm:px-6 py-4 sm:py-5 text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Partner</th>
-                                        <th className="text-left px-4 sm:px-6 py-4 sm:py-5 text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Status</th>
+
                                         <th className="text-left px-4 sm:px-6 py-4 sm:py-5 text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] hidden md:table-cell">Joined</th>
                                         <th className="text-left px-4 sm:px-6 py-4 sm:py-5 text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] hidden lg:table-cell">Passcode</th>
                                         <th className="text-right px-4 sm:px-6 py-4 sm:py-5 text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Actions</th>
@@ -322,18 +311,7 @@ export default function UserManagement() {
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td className="px-4 sm:px-6 py-4">
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            toggleStatus(u);
-                                                        }}
-                                                        className={`inline-flex items-center gap-1 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[8px] sm:text-[10px] font-black uppercase tracking-tighter transition-all hover:scale-105 active:scale-95 ${statusStyles[u.status]}`}
-                                                    >
-                                                        <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-current animate-pulse"></span>
-                                                        {u.status}
-                                                    </button>
-                                                </td>
+
                                                 <td className="px-4 sm:px-6 py-4 text-gray-500 font-bold text-xs sm:text-sm hidden md:table-cell">{u.joined || new Date(u.createdAt).toLocaleDateString()}</td>
                                                 <td className="px-4 sm:px-6 py-4 text-[#D4AF37] font-black text-[10px] sm:text-xs hidden lg:table-cell font-mono truncate max-w-[120px]" title={u.password}>
                                                     {u.password || '••••••'}
