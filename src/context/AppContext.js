@@ -212,7 +212,9 @@ export function AppProvider({ children }) {
                     gender: data.user.gender,
                     nric: data.user.nric,
                     address: data.user.address,
-                    nationality: data.user.nationality
+                    nationality: data.user.nationality,
+                    secondaryPhone: data.user.secondaryPhone,
+                    secondaryEmail: data.user.secondaryEmail
                 });
                 return data.user;
             }

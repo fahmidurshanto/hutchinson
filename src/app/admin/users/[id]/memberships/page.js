@@ -77,7 +77,7 @@ const AVAILABLE_MEMBERSHIPS = [
 // Edit Status Popup Modal
 function EditStatusModal({ tier, globalIdx, onClose, onConfirm }) {
     const newStatus = tier.status === 'active' ? 'inactive' : 'active';
-    const groupLabel = tier.type === 'primary' ? 'Primary' : '3rd Party';
+    const groupLabel = tier.type === 'primary' ? 'Primary' : 'Marketing Agent';
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center" onClick={onClose}>
@@ -198,13 +198,13 @@ function AddMembershipModal({ available, currentTiers, onClose, onAdd }) {
 
                 {/* Mode toggle tabs */}
                 <div className="flex bg-gray-100 rounded-xl p-1 gap-1">
-                    <button 
+                    <button
                         onClick={() => setMode('select')}
                         className={`flex-1 py-1.5 text-[10px] font-black uppercase tracking-[0.15em] rounded-lg transition-all ${mode === 'select' ? 'bg-white shadow-sm text-[#D4AF37]' : 'text-gray-500 hover:text-gray-700'}`}
                     >
                         From List
                     </button>
-                    <button 
+                    <button
                         onClick={() => setMode('custom')}
                         className={`flex-1 py-1.5 text-[10px] font-black uppercase tracking-[0.15em] rounded-lg transition-all ${mode === 'custom' ? 'bg-white shadow-sm text-[#D4AF37]' : 'text-gray-500 hover:text-gray-700'}`}
                     >
@@ -223,7 +223,7 @@ function AddMembershipModal({ available, currentTiers, onClose, onAdd }) {
                             >
                                 <option value="" disabled>Select a membership tier</option>
                                 {unusedTiers.map(t => (
-                                    <option key={t.name} value={t.name}>{t.name} ({t.type === 'primary' ? 'Primary' : '3rd Party'})</option>
+                                    <option key={t.name} value={t.name}>{t.name} ({t.type === 'primary' ? 'Primary' : 'Marketing Agent'})</option>
                                 ))}
                             </select>
                         </div>
@@ -247,7 +247,7 @@ function AddMembershipModal({ available, currentTiers, onClose, onAdd }) {
                                     onChange={e => setCustomType(e.target.value)}
                                 >
                                     <option value="primary">Primary</option>
-                                    <option value="third_party">3rd Party / Marketing Agent</option>
+                                    <option value="third_party">Marketing Agent</option>
                                 </select>
                             </div>
                         </div>
@@ -514,12 +514,12 @@ export default function MembershipsPage() {
                     </div>
                 </div>
 
-                {/* 3rd Party Column */}
+                {/* Marketing Agents Column */}
                 <div className="flex flex-col">
                     <div className="flex items-center gap-6 mb-12">
                         <div className="h-[3px] w-12 bg-gray-400 rounded-full"></div>
                         <h2 className="text-2xl font-black text-gray-900 tracking-[0.2em] uppercase">
-                            3rd Party/Marketing Agents
+                            Marketing Agents
                         </h2>
                         <div className="h-px flex-1 bg-gradient-to-r from-gray-200 to-transparent"></div>
                     </div>
