@@ -29,11 +29,10 @@ const DocumentIcon = (
 
 export default function DashboardHomePage() {
     const router = useRouter();
-    const { user, documents, fetchFinancialSummary, fetchEntities, fetchUserDocuments } = useAppContext();
+    const { user, documents, fetchFinancialSummary, fetchUserDocuments } = useAppContext();
     const [financialData, setFinancialData] = useState([]);
     const [totalDisbursement, setTotalDisbursement] = useState('USD 0');
-    const [primaryEntities, setPrimaryEntities] = useState([]);
-    const [thirdPartyEntities, setThirdPartyEntities] = useState([]);
+    const [memberships, setMemberships] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -41,19 +40,22 @@ export default function DashboardHomePage() {
             if (user?.id || user?._id) {
                 const userId = user._id || user.id;
                 try {
-                    const [financialRes, entitiesRes] = await Promise.all([
-                        fetchFinancialSummary(userId),
-                        fetchEntities(userId)
-                    ]);
-
+                    // Fetch financial data
+                    const financialRes = await fetchFinancialSummary(userId);
                     if (financialRes) {
                         setFinancialData(financialRes.data || []);
                         setTotalDisbursement(financialRes.totalDisbursement || 'USD 0');
                     }
 
-                    if (entitiesRes) {
-                        setPrimaryEntities(entitiesRes.primary || []);
-                        setThirdPartyEntities(entitiesRes.thirdParty || []);
+                    // Fetch real memberships from backend
+                    try {
+                        const { default: api } = await import('@/lib/api');
+                        const membershipRes = await api.get(`/user/memberships/${userId}`);
+                        if (membershipRes.data.success) {
+                            setMemberships(membershipRes.data.data || []);
+                        }
+                    } catch (err) {
+                        console.error('Memberships fetch error:', err);
                     }
                 } catch (error) {
                     console.error('Error loading user data:', error);
@@ -81,8 +83,11 @@ export default function DashboardHomePage() {
         return docDate > weekAgo;
     });
 
-    const activePrimaryEntities = primaryEntities.filter(e => e.status === 'Active').length;
-    const activeThirdPartyEntities = thirdPartyEntities.filter(e => e.status === 'Active').length;
+    // Compute real membership counts
+    const totalMemberships = memberships.length;
+    const activePrimary = memberships.filter(m => m.type === 'primary' && m.status === 'active').length;
+    const activeThirdParty = memberships.filter(m => m.type === 'third_party' && m.status === 'active').length;
+    const totalActive = activePrimary + activeThirdParty;
 
     return (
         <div className="w-full h-full flex flex-col items-center relative overflow-visible">
@@ -99,7 +104,7 @@ export default function DashboardHomePage() {
                 {/* Welcome Header */}
                 <div className="mb-8 md:mb-12 text-center animate__animated animate__fadeIn">
                     <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-950 mb-3 tracking-tight leading-[1.1]">
-                        Welcome, <span className="text-gradient-gold">{user?.name?.split(' ')[0] || 'User'}</span>
+                        Welcome, <span className="text-gradient-gold">{user?.firstName || 'User'}</span>
                     </h1>
                     <p className="text-xs sm:text-sm md:text-lg text-gray-500 font-bold uppercase tracking-[0.3em] opacity-70">Strategic Partnership Overview</p>
                 </div>
@@ -121,12 +126,14 @@ export default function DashboardHomePage() {
                                 </div>
                                 <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Profile</span>
                             </div>
-                            <h3 className="text-lg font-black text-gray-900 mb-1">{user?.name || 'N/A'}</h3>
+                            <h3 className="text-lg font-black text-gray-900 mb-1">
+                                {user?.firstName ? `${user.firstName} ${user.lastName || ''}` : 'N/A'}
+                            </h3>
                             <p className="text-sm text-gray-600 mb-3">{user?.email || 'N/A'}</p>
                             <div className="space-y-1">
                                 <div className="flex justify-between text-xs">
                                     <span className="text-gray-400">Phone:</span>
-                                    <span className="text-gray-700 font-medium">{user?.phone || 'N/A'}</span>
+                                    <span className="text-gray-700 font-medium">{user?.Phone || 'N/A'}</span>
                                 </div>
                                 <div className="flex justify-between text-xs">
                                     <span className="text-gray-400">Nationality:</span>
@@ -152,7 +159,9 @@ export default function DashboardHomePage() {
                                 </div>
                                 <div className="flex justify-between text-xs">
                                     <span className="text-gray-400">Status:</span>
-                                    <span className="text-green-600 font-medium">Active</span>
+                                    <span className={`font-medium capitalize ${user?.status === 'active' ? 'text-green-600' : 'text-amber-600'}`}>
+                                        {user?.status || 'Active'}
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -166,17 +175,17 @@ export default function DashboardHomePage() {
                                 <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Memberships</span>
                             </div>
                             <h3 className="text-2xl font-black text-gray-900 mb-1">
-                                {activePrimaryEntities + activeThirdPartyEntities}
+                                {totalMemberships}
                             </h3>
                             <p className="text-sm text-gray-600 mb-3">Total Memberships</p>
                             <div className="space-y-1">
                                 <div className="flex justify-between text-xs">
                                     <span className="text-gray-400">Primary:</span>
-                                    <span className="text-gray-700 font-medium">{activePrimaryEntities} active</span>
+                                    <span className="text-gray-700 font-medium">{activePrimary} active</span>
                                 </div>
                                 <div className="flex justify-between text-xs">
                                     <span className="text-gray-400">3rd Party:</span>
-                                    <span className="text-gray-700 font-medium">{activeThirdPartyEntities} active</span>
+                                    <span className="text-gray-700 font-medium">{activeThirdParty} active</span>
                                 </div>
                             </div>
                         </div>
@@ -198,7 +207,9 @@ export default function DashboardHomePage() {
                                 </div>
                                 <div className="flex justify-between text-xs">
                                     <span className="text-gray-400">Vault:</span>
-                                    <span className="text-gray-700 font-medium">Active</span>
+                                    <span className={`font-medium capitalize ${user?.status === 'active' ? 'text-green-600' : 'text-amber-600'}`}>
+                                        {user?.status || 'Active'}
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -235,7 +246,7 @@ export default function DashboardHomePage() {
                                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
                                     {MembershipIcon}
                                 </div>
-                                <span className="text-[10px] sm:text-xs font-black text-gray-700 uppercase tracking-widest">Partners</span>
+                                <span className="text-[10px] sm:text-xs font-black text-gray-700 uppercase tracking-widest">Memberships</span>
                             </button>
                             <button 
                                 onClick={() => router.push('/documents')}
