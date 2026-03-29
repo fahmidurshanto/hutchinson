@@ -147,17 +147,17 @@ export default function UserDetailPage({ params }) {
                                         <h4 className="text-[10px] sm:text-[12px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100 pb-2">Identity Details</h4>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                                             <div>
-                                                <label className="block text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-1.5 sm:mb-2">First Name</label>
+                                                <label className="block text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-gradient-gold mb-1.5 sm:mb-2">First Name</label>
                                                 <input required type="text" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3.5 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" value={formData.firstName} onChange={(e) => setFormData({ ...formData, firstName: e.target.value })} />
                                             </div>
                                             <div>
-                                                <label className="block text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-1.5 sm:mb-2">Last Name</label>
+                                                <label className="block text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-gradient-gold mb-1.5 sm:mb-2">Last Name</label>
                                                 <input required type="text" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3.5 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" value={formData.lastName} onChange={(e) => setFormData({ ...formData, lastName: e.target.value })} />
                                             </div>
                                         </div>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                                             <div>
-                                                <label className="block text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-1.5 sm:mb-2">Gender</label>
+                                                <label className="block text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-gradient-gold mb-1.5 sm:mb-2">Gender</label>
                                                 <select className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3.5 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black cursor-pointer" value={formData.gender} onChange={(e) => setFormData({ ...formData, gender: e.target.value })}>
                                                     <option value="male">Male</option>
                                                     <option value="female">Female</option>
@@ -165,16 +165,16 @@ export default function UserDetailPage({ params }) {
                                                 </select>
                                             </div>
                                             <div>
-                                                <label className="block text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-1.5 sm:mb-2">Nationality</label>
+                                                <label className="block text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-gradient-gold mb-1.5 sm:mb-2">Nationality</label>
                                                 <input required type="text" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3.5 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" value={formData.nationality} onChange={(e) => setFormData({ ...formData, nationality: e.target.value })} />
                                             </div>
                                         </div>
                                         <div>
-                                            <label className="block text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-1.5 sm:mb-2">NRIC / Passport No.</label>
+                                            <label className="block text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-gradient-gold mb-1.5 sm:mb-2">NRIC / Passport No.</label>
                                             <input required type="text" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3.5 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" value={formData.nric} onChange={(e) => setFormData({ ...formData, nric: e.target.value })} />
                                         </div>
                                         <div>
-                                            <label className="block text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-1.5 sm:mb-2">Full Address</label>
+                                            <label className="block text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-gradient-gold mb-1.5 sm:mb-2">Full Address</label>
                                             <textarea required rows="2" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black resize-none" value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} />
                                         </div>
                                     </div>
@@ -182,7 +182,7 @@ export default function UserDetailPage({ params }) {
                                     <div className="space-y-6 sm:space-y-8">
                                         <h4 className="text-[10px] sm:text-[12px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100 pb-2">Status & Contact</h4>
                                         <div>
-                                            <label className="block text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-1.5 sm:mb-2">Account Status</label>
+                                            <label className="block text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-gradient-gold mb-1.5 sm:mb-2">Account Status</label>
                                             <select className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3.5 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black cursor-pointer" value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value })}>
                                                 <option value="active">Active</option>
                                                 <option value="pending">Pending</option>
@@ -190,20 +190,20 @@ export default function UserDetailPage({ params }) {
                                             </select>
                                         </div>
                                         <div>
-                                            <label className="block text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-1.5 sm:mb-2">Email Address</label>
+                                            <label className="block text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-gradient-gold mb-1.5 sm:mb-2">Email Address</label>
                                             <input required type="email" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3.5 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
                                         </div>
                                         <div>
-                                            <label className="block text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-1.5 sm:mb-2">Phone Number</label>
+                                            <label className="block text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-gradient-gold mb-1.5 sm:mb-2">Phone Number</label>
                                             <input required type="tel" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3.5 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" value={formData.Phone} onChange={(e) => setFormData({ ...formData, Phone: e.target.value })} />
                                         </div>
                                         <div className="flex flex-col space-y-4 sm:space-y-6">
                                             <div>
-                                                <label className="block text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-1.5 sm:mb-2">Secondary Email</label>
+                                                <label className="block text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-gradient-gold mb-1.5 sm:mb-2">Secondary Email</label>
                                                 <input type="email" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3.5 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" value={formData.secondaryEmail} onChange={(e) => setFormData({ ...formData, secondaryEmail: e.target.value })} />
                                             </div>
                                             <div>
-                                                <label className="block text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-[#D4AF37] mb-1.5 sm:mb-2">Secondary Phone</label>
+                                                <label className="block text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-gradient-gold mb-1.5 sm:mb-2">Secondary Phone</label>
                                                 <input type="tel" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3.5 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" value={formData.secondaryPhone} onChange={(e) => setFormData({ ...formData, secondaryPhone: e.target.value })} />
                                             </div>
                                         </div>
@@ -348,41 +348,41 @@ export default function UserDetailPage({ params }) {
                             </div>
                             <div className="p-6 sm:p-8 grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
                                 <div>
-                                    <label className="block text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 sm:mb-2 text-gradient-gold">First Name</label>
+                                    <label className="block text-[9px] sm:text-[10px] font-black text-gradient-gold uppercase tracking-widest mb-1.5 sm:mb-2">First Name</label>
                                     <p className="text-sm sm:text-base text-gray-950 font-black">{user.firstName || user.name?.split(' ')[0]}</p>
                                 </div>
                                 <div>
-                                    <label className="block text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 sm:mb-2">Last Name</label>
+                                    <label className="block text-[9px] sm:text-[10px] font-black text-gradient-gold uppercase tracking-widest mb-1.5 sm:mb-2">Last Name</label>
                                     <p className="text-sm sm:text-base text-gray-950 font-black">{user.lastName || user.name?.split(' ').slice(1).join(' ')}</p>
                                 </div>
                                 <div>
-                                    <label className="block text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 sm:mb-2">Email Address</label>
+                                    <label className="block text-[9px] sm:text-[10px] font-black text-gradient-gold uppercase tracking-widest mb-1.5 sm:mb-2">Email Address</label>
                                     <p className="text-sm sm:text-base text-gray-950 font-black truncate">{user.email}</p>
                                 </div>
                                 <div>
-                                    <label className="block text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 sm:mb-2">Contact Number</label>
+                                    <label className="block text-[9px] sm:text-[10px] font-black text-gradient-gold uppercase tracking-widest mb-1.5 sm:mb-2">Contact Number</label>
                                     <p className="text-sm sm:text-base text-gray-950 font-black">{user.Phone || 'N/A'}</p>
                                 </div>
                                 <div className="sm:col-span-2 flex flex-col sm:flex-row gap-6 sm:gap-12 border-t border-gray-50 pt-4">
                                     <div className="flex-1">
-                                        <label className="block text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 sm:mb-2 text-gradient-gold">Secondary Email</label>
+                                        <label className="block text-[9px] sm:text-[10px] font-black text-gradient-gold uppercase tracking-widest mb-1.5 sm:mb-2">Secondary Email</label>
                                         <p className="text-sm sm:text-base text-gray-950 font-black truncate">{user.secondaryEmail || 'N/A'}</p>
                                     </div>
                                     <div className="flex-1">
-                                        <label className="block text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 sm:mb-2">Secondary Phone</label>
+                                        <label className="block text-[9px] sm:text-[10px] font-black text-gradient-gold uppercase tracking-widest mb-1.5 sm:mb-2">Secondary Phone</label>
                                         <p className="text-sm sm:text-base text-gray-950 font-black">{user.secondaryPhone || 'N/A'}</p>
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="block text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 sm:mb-2">NRIC / Passport</label>
+                                    <label className="block text-[9px] sm:text-[10px] font-black text-gradient-gold uppercase tracking-widest mb-1.5 sm:mb-2">NRIC / Passport</label>
                                     <p className="text-sm sm:text-base text-gray-950 font-black">{user.nric || 'N/A'}</p>
                                 </div>
                                 <div>
-                                    <label className="block text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 sm:mb-2">Nationality</label>
+                                    <label className="block text-[9px] sm:text-[10px] font-black text-gradient-gold uppercase tracking-widest mb-1.5 sm:mb-2">Nationality</label>
                                     <p className="text-sm sm:text-base text-gray-950 font-black">{user.nationality || 'N/A'}</p>
                                 </div>
                                 <div className="sm:col-span-2">
-                                    <label className="block text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 sm:mb-2">Residential Address</label>
+                                    <label className="block text-[9px] sm:text-[10px] font-black text-gradient-gold uppercase tracking-widest mb-1.5 sm:mb-2">Residential Address</label>
                                     <p className="text-xs sm:text-sm text-gray-600 font-bold leading-relaxed">{user.address || 'N/A'}</p>
                                 </div>
                                 <div className="sm:col-span-2 border-t border-gray-100 pt-6 mt-2">
