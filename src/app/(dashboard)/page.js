@@ -228,7 +228,7 @@ export default function DashboardHomePage() {
                                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
                                     {UserIcon}
                                 </div>
-                                <span className="text-[10px] sm:text-xs font-black text-gray-700 uppercase tracking-widest">Profile</span>
+                                <span className="text-[10px] sm:text-xs font-black text-gray-700 uppercase tracking-widest">Personal</span>
                             </button>
                             <button 
                                 onClick={() => router.push('/reports')}
@@ -237,7 +237,7 @@ export default function DashboardHomePage() {
                                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
                                     {FinancialIcon}
                                 </div>
-                                <span className="text-[10px] sm:text-xs font-black text-gray-700 uppercase tracking-widest">Financial</span>
+                                <span className="text-[10px] sm:text-xs font-black text-gray-700 uppercase tracking-widest">Reports</span>
                             </button>
                             <button 
                                 onClick={() => router.push('/memberships')}
@@ -255,7 +255,7 @@ export default function DashboardHomePage() {
                                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
                                     {DocumentIcon}
                                 </div>
-                                <span className="text-[10px] sm:text-xs font-black text-gray-700 uppercase tracking-widest">Vault</span>
+                                <span className="text-[10px] sm:text-xs font-black text-gray-700 uppercase tracking-widest">Documents</span>
                             </button>
                         </div>
                     </div>
