@@ -18,6 +18,7 @@ export function AppProvider({ children }) {
     const [userList, setUserList] = useState([]);
     const [isLoadingUsers, setIsLoadingUsers] = useState(false);
     const [activeTab, setActiveTab] = useState('DASHBOARD');
+    const [isAuthChecked, setIsAuthChecked] = useState(false);
     const [adminTab, setAdminTab] = useState('OVERVIEW');
 
     // Centralized Theme State (Monochrome)
@@ -334,9 +335,15 @@ export function AppProvider({ children }) {
         }
     };
 
-    // API: Fetch Documents for current user
+    // API: Fetch Documents for user (Admin Only as requested)
     const fetchUserDocuments = async (userId) => {
         if (!userId) return;
+        
+        // Prevent execution if user is not an admin
+        if (currentUser?.role !== 'admin' && currentUser?.role !== 'superadmin') {
+            return;
+        }
+
         try {
             const response = await api.get(`/document/getall?id=${userId}`);
             const data = response.data;
@@ -360,7 +367,11 @@ export function AppProvider({ children }) {
     useEffect(() => {
         // Initial load of user if session exists and not on login page
         if (pathname !== '/login') {
-            fetchCurrentUser().catch(() => { });
+            fetchCurrentUser()
+                .catch(() => { })
+                .finally(() => setIsAuthChecked(true));
+        } else {
+            setIsAuthChecked(true);
         }
     }, [pathname]);
 
@@ -402,7 +413,8 @@ export function AppProvider({ children }) {
             setAdminTab,
             theme,
             setTheme,
-            fetchUserDocuments
+            fetchUserDocuments,
+            isAuthChecked
         }}>
             {children}
         </AppContext.Provider>

@@ -4,11 +4,14 @@ import { useAppContext } from '@/context/AppContext';
 import api from '@/lib/api';
 
 export default function AdminOverview() {
-    const { userList } = useAppContext();
+    const { userList, user } = useAppContext();
     const [schedules, setSchedules] = useState([]);
 
     // Fetch schedules to display in Recent Activity
     useEffect(() => {
+        // Prevent calling if not fully loaded or not an admin
+        if (!user || (user.role !== 'admin' && user.role !== 'superadmin')) return;
+
         const fetchSchedules = async () => {
             try {
                 const res = await api.get('/schedule/admin/all');
@@ -20,7 +23,7 @@ export default function AdminOverview() {
             }
         };
         fetchSchedules();
-    }, []);
+    }, [user]);
 
     // Real computed stats
     const totalUsers = userList?.length ?? 0;

@@ -14,6 +14,7 @@ import {
 import Swal from 'sweetalert2';
 import api from '@/lib/api';
 import NotFound from '@/components/ui/NotFound';
+import { useAppContext } from '@/context/AppContext';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -35,6 +36,7 @@ export default function AdminUserReportsPage({ params }) {
     const router = useRouter();
     const resolvedParams = use(params);
     const userId = resolvedParams.id;
+    const { user } = useAppContext();
 
     const [reportsData, setReportsData] = useState({});
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
@@ -80,10 +82,14 @@ export default function AdminUserReportsPage({ params }) {
 
     useEffect(() => {
         setIsMounted(true);
-        if (userId) {
+        if (userId && user && (user.role === 'admin' || user.role === 'superadmin')) {
             fetchUserReports();
+        } else if (!user) {
+            // wait for user context to load
+        } else {
+            setLoading(false);
         }
-    }, [userId]);
+    }, [userId, user]);
 
     const handleEditClick = (monthStr, currentAmount) => {
         setEditingMonth(monthStr);

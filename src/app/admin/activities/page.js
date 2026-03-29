@@ -1,13 +1,17 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import api from '@/lib/api';
+import { useAppContext } from '@/context/AppContext';
 
 export default function ActivitiesPage() {
+    const { user } = useAppContext();
     const [activeTab, setActiveTab] = useState('present');
     const [activitiesData, setActivitiesData] = useState({ present: [], future: [], past: [] });
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
+        if (!user || (user.role !== 'admin' && user.role !== 'superadmin')) return;
+
         const fetchSchedules = async () => {
             try {
                 const res = await api.get('/schedule/admin/all');
@@ -65,7 +69,7 @@ export default function ActivitiesPage() {
         };
 
         fetchSchedules();
-    }, []);
+    }, [user]);
 
 
     const tabs = [

@@ -9,11 +9,11 @@ export default function UserDocuments({ targetUserId, userName }) {
     const fileInputRef = useRef(null);
 
     useEffect(() => {
-        if (targetUserId) {
+        if (targetUserId && user) {
             fetchUserDocuments(targetUserId);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [targetUserId]);
+    }, [targetUserId, user]);
 
     // Robust admin check
     const isAdmin = user?.role?.toLowerCase() === 'admin' ||

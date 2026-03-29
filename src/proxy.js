@@ -1,8 +1,24 @@
 import { NextResponse } from 'next/server';
 
+// Lightweight JWT payload decoder (no verification — that's the backend's job).
+// We only need the role claim to gate admin routes on the frontend.
+function decodeJwtPayload(token) {
+    try {
+        const parts = token.split('.');
+        if (parts.length !== 3) return null;
+        const payload = JSON.parse(
+            Buffer.from(parts[1], 'base64url').toString('utf-8')
+        );
+        return payload;
+    } catch {
+        return null;
+    }
+}
+
 // This proxy acts to protect your routes based on the refreshToken
 export function proxy(request) {
     const token = request.cookies.get('refreshToken')?.value;
+    const accessToken = request.cookies.get('accessToken')?.value;
     const { pathname } = request.nextUrl;
 
     const isPublicFile = pathname.match(/\.[^/]+$/);
@@ -36,6 +52,19 @@ export function proxy(request) {
     if (!token && !isLoginRoute) {
         return NextResponse.redirect(new URL('/login', request.url));
     }
+
+    // 3. Admin route protection — block non-admin users from /admin/*
+    const isAdminRoute = pathname.startsWith('/admin');
+
+    if (isAdminRoute && accessToken) {
+        const payload = decodeJwtPayload(accessToken);
+        if (!payload || (payload.role !== 'admin' && payload.role !== 'superadmin')) {
+            return NextResponse.redirect(new URL('/', request.url));
+        }
+    }
+
+    // If admin route but no accessToken yet (token might be refreshing),
+    // let it through — the client-side guard in AdminLayout will handle it.
 
     // Otherwise, let them proceed normally
     return NextResponse.next();

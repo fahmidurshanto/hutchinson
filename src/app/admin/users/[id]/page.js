@@ -11,7 +11,7 @@ import NotFound from '@/components/ui/NotFound';
 
 export default function UserDetailPage({ params }) {
     const router = useRouter();
-    const { userList, updateUser, deleteUser } = useAppContext();
+    const { userList, updateUser, deleteUser, user: currentUser } = useAppContext();
     const resolvedParams = use(params);
     const userId = resolvedParams.id;
     const user = userList.find(u => String(u._id || u.id) === String(userId));
@@ -21,7 +21,7 @@ export default function UserDetailPage({ params }) {
     const [showPassword, setShowPassword] = useState(false);
 
     useEffect(() => {
-        if (!userId) return;
+        if (!userId || !currentUser) return;
         const fetchSchedules = async () => {
             try {
                 const res = await api.get(`/schedule/user/${userId}`);
@@ -35,7 +35,7 @@ export default function UserDetailPage({ params }) {
             }
         };
         fetchSchedules();
-    }, [userId]);
+    }, [userId, currentUser]);
 
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [formData, setFormData] = useState({

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import api from '@/lib/api';
 import NotFound from '@/components/ui/NotFound';
+import { useAppContext } from '@/context/AppContext';
 
 // No longer using hardcoded initialServices
 
@@ -110,6 +111,7 @@ function DeleteConfirmModal({ service, onClose, onConfirm }) {
 export default function ServicesPage() {
     const params = useParams();
     const userId = params.id;
+    const { user } = useAppContext();
     const [services, setServices] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isNotFound, setIsNotFound] = useState(false);
@@ -133,8 +135,14 @@ export default function ServicesPage() {
             }
         };
 
-        if (userId) fetchServices();
-    }, [userId]);
+        if (userId && user && (user.role === 'admin' || user.role === 'superadmin')) {
+            fetchServices();
+        } else if (!user) {
+            // Wait for user to load
+        } else {
+            setLoading(false);
+        }
+    }, [userId, user]);
 
     if (loading) {
         return (

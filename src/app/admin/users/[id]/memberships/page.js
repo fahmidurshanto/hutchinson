@@ -4,6 +4,7 @@ import { useParams } from 'next/navigation';
 import Swal from 'sweetalert2';
 import api from '@/lib/api';
 import NotFound from '@/components/ui/NotFound';
+import { useAppContext } from '@/context/AppContext';
 
 const AVAILABLE_MEMBERSHIPS = [
     {
@@ -284,6 +285,7 @@ function AddMembershipModal({ available, currentTiers, onClose, onAdd }) {
 export default function MembershipsPage() {
     const params = useParams();
     const userId = params.id;
+    const { user } = useAppContext();
     const [tiers, setTiers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isNotFound, setIsNotFound] = useState(false);
@@ -313,8 +315,14 @@ export default function MembershipsPage() {
             }
         };
 
-        if (userId) fetchTiers();
-    }, [userId]);
+        if (userId && user && (user.role === 'admin' || user.role === 'superadmin')) {
+            fetchTiers();
+        } else if (!user) {
+            // wait for user to load
+        } else {
+            setLoading(false);
+        }
+    }, [userId, user]);
 
     // Called when user confirms the status change in the popup
     const handleStatusChange = async (newStatus) => {
