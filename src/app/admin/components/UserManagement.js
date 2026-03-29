@@ -256,6 +256,7 @@ export default function UserManagement() {
                                         <th className="text-left px-4 sm:px-6 py-4 sm:py-5 text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Partner</th>
                                         <th className="text-left px-4 sm:px-6 py-4 sm:py-5 text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Status</th>
                                         <th className="text-left px-4 sm:px-6 py-4 sm:py-5 text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] hidden md:table-cell">Joined</th>
+                                        <th className="text-left px-4 sm:px-6 py-4 sm:py-5 text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] hidden lg:table-cell">Passcode</th>
                                         <th className="text-right px-4 sm:px-6 py-4 sm:py-5 text-[9px] sm:text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Actions</th>
                                     </tr>
                                 </thead>
@@ -300,6 +301,9 @@ export default function UserManagement() {
                                                     </button>
                                                 </td>
                                                 <td className="px-4 sm:px-6 py-4 text-gray-500 font-bold text-xs sm:text-sm hidden md:table-cell">{u.joined || new Date(u.createdAt).toLocaleDateString()}</td>
+                                                <td className="px-4 sm:px-6 py-4 text-[#D4AF37] font-black text-[10px] sm:text-xs hidden lg:table-cell font-mono truncate max-w-[120px]" title={u.password}>
+                                                    {u.password || '••••••'}
+                                                </td>
                                                 <td className="px-4 sm:px-6 py-4 text-right">
                                                     <div className="flex items-center justify-end gap-2">
                                                         <button
