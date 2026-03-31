@@ -52,14 +52,13 @@ export function AppProvider({ children }) {
             try {
                 const response = await api.get('/auth/logout');
                 const data = response.data;
-                console.log(data);
+                if (data.success) {
+                    router.push('/login');
+                }
             } catch (error) {
                 if (error.response?.status !== 401) {
                     logger.error('Logout error:', error);
                 }
-            } finally {
-                setCurrentUser(null);
-                router.push('/login');
             }
         }
         userLogout();
@@ -190,7 +189,7 @@ export function AppProvider({ children }) {
             const data = response.data;
             if (data.success) {
                 setCurrentUser({
-                    id: data.user.id,
+                    id: data.user._id,
                     firstName: data.user.firstName,
                     lastName: data.user.lastName,
                     name: `${data.user.firstName} ${data.user.lastName}`,
@@ -338,7 +337,7 @@ export function AppProvider({ children }) {
     // API: Fetch Documents for user (Admin Only as requested)
     const fetchUserDocuments = async (userId) => {
         if (!userId) return;
-        
+
         // Prevent execution if user is not an admin
         if (currentUser?.role !== 'admin' && currentUser?.role !== 'superadmin') {
             return;
