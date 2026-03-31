@@ -65,3 +65,25 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Global Interactive Element Styles */
+button, 
+[role="button"],
+[role="tab"],
+[role="menuitem"],
+[role="link"],
+a,
+select,
+input[type="submit"],
+input[type="button"],
+input[type="checkbox"],
+input[type="radio"],
+.cursor-pointer,
+.clickable {
+  cursor: pointer;
+}
+
+button:disabled,
+[role="button"]:disabled {
+  cursor: not-allowed;
+}
