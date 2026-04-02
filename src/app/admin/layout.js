@@ -45,7 +45,7 @@ export default function AdminLayout({ children }) {
 
             <AdminTopNav />
 
-            <main className="pt-24 md:pt-32 lg:pt-[100px] transition-all duration-300 flex-1 relative z-10">
+            <main className="pt-24 md:pt-32 lg:pt-[100px] transition-all duration-300 flex-1 relative">
                 <div className="p-4 sm:p-6 md:p-8 lg:p-12 w-full max-w-7xl mx-auto">
                     {children}
                 </div>
