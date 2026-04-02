@@ -142,16 +142,9 @@ export function AppProvider({ children }) {
     // API: View Document
     const viewDocument = async (docId) => {
         try {
-            // Note: window.open might be better for binary stream if backend serves file directly
-            // But we need to handle the "already seen" 403 response
             const response = await api.get(`/document/view/${docId}`, {
                 responseType: 'blob'
             });
-
-            if (response.status === 403) {
-                const data = await response.json();
-                throw new Error(data.message || 'Access Denied');
-            }
 
             if (response.status === 200) {
                 const blob = response.data;
@@ -162,7 +155,20 @@ export function AppProvider({ children }) {
             }
             throw new Error('Could not open document');
         } catch (error) {
-            console.error('View error:', error);
+            // Since responseType was 'blob', Axios returns the error message as a Blob too.
+            // We need to parse it back into text/JSON to see the real error message.
+            if (error.response?.data instanceof Blob) {
+                try {
+                    const text = await error.response.data.text();
+                    const data = JSON.parse(text);
+                    if (data.message) {
+                        error.message = data.message;
+                    }
+                } catch (e) {
+                    console.error('Error parsing blob error message:', e);
+                }
+            }
+            console.error('View error:', error.message);
             throw error;
         }
     };

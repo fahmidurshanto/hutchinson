@@ -188,6 +188,21 @@ export default function ServicesPage() {
         }
     };
 
+    const handleToggleStatus = async (serviceName) => {
+        try {
+            const response = await api.patch(`/user/user-services/${userId}`, {
+                serviceName
+            });
+
+            if (response.data.success) {
+                setServices(response.data.data);
+            }
+        } catch (error) {
+            console.error('[Toggle Status Error]', error);
+            alert(error.response?.data?.message || 'Failed to update status');
+        }
+    };
+
     return (
         <div className="w-full h-full flex flex-col items-center relative overflow-visible">
             {/* Global Watermark - Premium Shimmering Gold */}
@@ -250,14 +265,20 @@ export default function ServicesPage() {
 
                                 {/* Status badge + edit icon */}
                                 <div className="flex items-center gap-2">
-                                    <span className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest flex items-center gap-2 border shadow-sm
+                                    <button
+                                        onClick={() => handleToggleStatus(service.name)}
+                                        title={`Change status to ${service.status === 'Valid' ? 'Invalid' : 'Valid'}`}
+                                        className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 border shadow-sm transition-all active:scale-95 hover:scale-[1.02] cursor-pointer group/toggle
                                         ${service.status === 'Valid'
-                                            ? 'bg-green-50 text-green-600 border-green-100 shadow-green-900/5'
-                                            : 'bg-red-50 text-red-600 border-red-100 shadow-red-900/5'}`}
+                                            ? 'bg-green-50 text-green-600 border-green-100 shadow-green-900/5 hover:bg-green-100'
+                                            : 'bg-red-50 text-red-600 border-red-100 shadow-red-900/5 hover:bg-red-100'}`}
                                     >
                                         <span className={`w-1.5 h-1.5 rounded-full ${service.status === 'Valid' ? 'bg-green-600' : 'bg-red-600'}`}></span>
                                         {service.status}
-                                    </span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-3 h-3 opacity-40 group-hover/toggle:opacity-100 transition-all group-hover/toggle:rotate-180">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                                        </svg>
+                                    </button> 
 
                                     {/* Actions */}
                                     <div className="flex items-center gap-1">

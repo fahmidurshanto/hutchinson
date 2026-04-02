@@ -49,14 +49,13 @@ export default function DocumentsPage() {
         } catch (error) {
             Swal.fire({
                 title: 'Access Denied',
-                text: error.message,
+                text: error.message || 'You cannot view this document again.',
                 icon: 'error',
                 confirmButtonColor: '#000000',
                 confirmButtonText: 'Close'
             });
         }
     };
-
 
 
     return (
@@ -161,5 +160,4 @@ export default function DocumentsPage() {
         </div>
     );
 }
-;
 
