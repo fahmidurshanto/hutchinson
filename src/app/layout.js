@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Hutchinson Partnership Portal",
-  description: "Secure login for the Hutchinson APAC Ltd. Partnership Portal",
+  title: "Templeton Partnership Portal",
+  description: "Secure login for the Templeton Trust Fund Ltd. Partnership Portal",
 };
 
 export default function RootLayout({ children }) {
