@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import React from 'react';
 import Link from 'next/link';
 
@@ -9,20 +9,20 @@ export default function AdminTabletTopNav({ user, tabs, logout, pathname }) {
             <div className="relative w-full flex items-center h-12 bg-white shadow-lg overflow-visible">
                 <div className="absolute left-4 top-0 w-[140px] h-[80px] bg-white rounded-br-[2rem] flex items-center justify-center shadow-md z-40">
                     <img
-                        src="/templeton-logo.png"
-                        alt="Templeton"
+                        src="/hutchinson-logo.png"
+                        alt="Hutchinson"
                         className="w-[100px] h-[70px] object-contain"
                     />
                 </div>
 
                 <div className="flex-1 flex items-center justify-end pr-4 gap-3 h-full">
-                    <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-blue text-gray-900 text-[8px] font-black tracking-tighter">
+                    <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-gold text-gray-900 text-[8px] font-black tracking-tighter">
                         ADMIN
                     </span>
                     <span className="font-bold text-xs text-[#3a3a3a]">{user?.name}</span>
                     <button
                         onClick={logout}
-                        className="px-4 py-1.5 rounded-full bg-gradient-blue text-gray-900 text-[10px] font-bold shadow-sm"
+                        className="px-4 py-1.5 rounded-full bg-gradient-gold text-gray-900 text-[10px] font-bold shadow-sm"
                     >
                         Logout
                     </button>
@@ -43,7 +43,7 @@ export default function AdminTabletTopNav({ user, tabs, logout, pathname }) {
                             >
                                 <span className={`flex items-center h-full px-5 font-bold text-[10px] tracking-wider whitespace-nowrap border-b-[2px] transition-colors
                                     ${isActive
-                                        ? 'bg-[#1e232d] text-white border-[#2E5F9E]'
+                                        ? 'bg-[#1e232d] text-white border-[#D4AF37]'
                                         : 'text-[#4a4a4a] border-transparent'
                                     }`}
                                 >
