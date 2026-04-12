@@ -1,10 +1,10 @@
 "use client";
-import React, { useEffect, useState, use } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import api from '@/lib/api';
 import { getFriendlyErrorMessage } from '@/lib/error-utils';
 
-export default function VerifyPage() {
+function VerifyContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const userId = searchParams.get('id');
@@ -118,5 +118,17 @@ export default function VerifyPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function VerifyPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6 text-white overflow-hidden relative">
+                <div className="w-12 h-12 border-2 border-white/10 border-t-[#D4AF37] rounded-full animate-spin"></div>
+            </div>
+        }>
+            <VerifyContent />
+        </Suspense>
     );
 }
