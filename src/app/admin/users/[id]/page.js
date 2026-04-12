@@ -4,10 +4,13 @@ import { useRouter } from 'next/navigation';
 import { useAppContext } from '@/context/AppContext';
 import Swal from 'sweetalert2';
 import UserDocuments from '../../components/UserDocuments';
+import UserStageManagement from '../../components/UserStageManagement';
 import api from '@/lib/api';
 import logger from '@/lib/logger';
 import { getFriendlyErrorMessage } from '@/lib/error-utils';
 import NotFound from '@/components/ui/NotFound';
+import { QRCodeCanvas } from 'qrcode.react';
+import DashboardModal from '@/components/ui/DashboardModal';
 
 export default function UserDetailPage({ params }) {
     const router = useRouter();
@@ -19,6 +22,7 @@ export default function UserDetailPage({ params }) {
     const [schedules, setSchedules] = useState([]);
     const [schedulesLoading, setSchedulesLoading] = useState(true);
     const [showPassword, setShowPassword] = useState(false);
+    const [isQRModalOpen, setIsQRModalOpen] = useState(false);
 
     useEffect(() => {
         if (!userId || !currentUser) return;
@@ -255,6 +259,22 @@ export default function UserDetailPage({ params }) {
                             Reports
                         </button>
                         <button
+                            onClick={async () => {
+                                setIsQRModalOpen(true);
+                                try {
+                                    await api.post(`/stage/generateqrcode/${userId}`);
+                                } catch (err) {
+                                    logger.error('Failed to notify server of QR generation:', err);
+                                }
+                            }}
+                            className="flex-1 sm:flex-none px-5 py-3 rounded-xl bg-black text-white font-black text-[10px] uppercase tracking-widest hover:bg-gray-800 shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                        >
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM14.625 3.75c-.621 0-1.125.504-1.125 1.125v4.5c0 .621.504 1.125 1.125 1.125h4.5c.621 0 1.125-.504 1.125-1.125v-4.5c0-.621-.504-1.125-1.125-1.125h-4.5zM14.625 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5z" />
+                            </svg>
+                            QR Code
+                        </button>
+                        <button
                             onClick={handleEdit}
                             className="flex-1 sm:flex-none px-5 py-3 rounded-xl bg-white border border-gray-200 text-black font-black text-[10px] uppercase tracking-widest hover:border-[#D4AF37] hover:bg-gray-50 shadow-sm transition-all flex items-center justify-center gap-2"
                         >
@@ -474,6 +494,11 @@ export default function UserDetailPage({ params }) {
                             userName={user.firstName ? `${user.firstName} ${user.lastName}` : user.name}
                         />
 
+                        <UserStageManagement
+                            userId={userId}
+                            userName={user.firstName ? `${user.firstName} ${user.lastName}` : user.name}
+                        />
+
                         {/* Schedules Section */}
                         <div className="bg-white rounded-3xl border border-gray-100 shadow-xl overflow-hidden">
                             <div className="px-6 sm:px-8 py-5 sm:py-6 bg-gray-50/50 border-b border-gray-100 flex items-center justify-between">
@@ -521,6 +546,38 @@ export default function UserDetailPage({ params }) {
                 </div>
 
             </div>
+
+            <DashboardModal
+                isOpen={isQRModalOpen}
+                onClose={() => setIsQRModalOpen(false)}
+                title="Verification QR Code"
+                icon={<span>📱</span>}
+            >
+                <div className="flex flex-col items-center justify-center py-8 space-y-6">
+                    <div className="p-4 bg-white rounded-3xl shadow-xl border border-gray-100">
+                        <QRCodeCanvas
+                            value={`${typeof window !== 'undefined' ? window.location.origin : ''}/verify?id=${userId}`}
+                            size={200}
+                            level="H"
+                            includeMargin={true}
+                            imageSettings={{
+                                src: "/logo.png",
+                                x: undefined,
+                                y: undefined,
+                                height: 40,
+                                width: 40,
+                                excavate: true,
+                            }}
+                        />
+                    </div>
+                    <div className="text-center space-y-2">
+                        <p className="text-xs font-black text-gray-900 uppercase tracking-widest">Client Verification Key</p>
+                        <p className="text-[10px] font-bold text-gray-400 max-w-[200px] leading-relaxed">
+                            Scan this code to verify the client's identity and enable stage tracking visibility.
+                        </p>
+                    </div>
+                </div>
+            </DashboardModal>
         </>
     );
 }

@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppContext } from '../../context/AppContext';
+import api from '@/lib/api';
 
 const UserIcon = (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6 text-gray-900">
@@ -33,6 +34,7 @@ export default function DashboardHomePage() {
     const [financialData, setFinancialData] = useState([]);
     const [totalDisbursement, setTotalDisbursement] = useState('USD 0');
     const [memberships, setMemberships] = useState([]);
+    const [stages, setStages] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -54,8 +56,14 @@ export default function DashboardHomePage() {
                         if (membershipRes.data.success) {
                             setMemberships(membershipRes.data.data || []);
                         }
+
+                        // Fetch stages
+                        const stageRes = await api.get(`/stage/user/${userId}`);
+                        if (stageRes.data.success) {
+                            setStages(stageRes.data.stage || []);
+                        }
                     } catch (err) {
-                        console.error('Memberships fetch error:', err);
+                        console.error('Data fetch error:', err);
                     }
                 } catch (error) {
                     console.error('Error loading user data:', error);
@@ -210,6 +218,54 @@ export default function DashboardHomePage() {
                                     <span className={`font-medium capitalize ${user?.status === 'active' ? 'text-green-600' : 'text-amber-600'}`}>
                                         {user?.status || 'Active'}
                                     </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Journey Progress Section */}
+                {!loading && stages.length > 0 && (
+                    <div className="mt-12 md:mt-16 animate__animated animate__fadeIn">
+                        <div className="bg-white rounded-[2rem] p-8 md:p-10 shadow-xl border border-gray-50 relative overflow-hidden">
+                            <h2 className="text-[10px] font-black text-gray-950 uppercase tracking-[0.3em] mb-12 flex items-center gap-3">
+                                <span className="w-8 h-[2px] bg-[#D4AF37]"></span>
+                                Your Partnership Journey
+                            </h2>
+
+                            <div className="overflow-x-auto pb-8 no-scrollbar">
+                                <div className="min-w-[800px] flex items-start relative px-4 gap-4">
+                                    {/* Line */}
+                                    <div className="absolute top-[35px] left-0 w-full h-[2px] bg-gray-100 rounded-full"></div>
+                                    <div 
+                                        className="absolute top-[35px] left-0 h-[3px] bg-gradient-to-r from-[#D4AF37]/40 to-[#D4AF37] rounded-full z-0 transition-all duration-1000" 
+                                        style={{ width: `${Math.min(((stages.filter(s => s.status === 'processed').length + 1) / stages.length) * 100, 100)}%` }}
+                                    ></div>
+
+                                    {stages.sort((a,b) => a.sequence - b.sequence).map((stage, idx) => (
+                                        <div key={stage._id} className="flex flex-col items-center flex-1 relative z-10">
+                                            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-xl mb-4 transition-all duration-500 shadow-md border
+                                                ${stage.status === 'active' ? 'bg-gradient-gold text-black animate-pulse ring-4 ring-[#D4AF37]/20 scale-105 border-transparent' : 
+                                                  stage.status === 'processed' ? 'bg-black text-white border-transparent' : 'bg-white text-gray-300 border-gray-100'}
+                                            `}>
+                                                {stage.status === 'processed' ? '✓' : (idx + 1)}
+                                            </div>
+                                            <div className="text-center">
+                                                <p className={`text-[11px] font-black uppercase tracking-tight leading-tight mb-1 ${stage.status === 'active' ? 'text-gray-950' : 'text-gray-400'}`}>
+                                                    {stage.name}
+                                                </p>
+                                                <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+                                                    {stage.status}
+                                                </p>
+                                            </div>
+                                            {stage.status === 'active' && stage.remark && (
+                                                <div className="absolute top-full mt-6 left-1/2 -translate-x-1/2 w-[200px] bg-gray-50 p-3 rounded-xl border border-gray-100 shadow-lg text-left">
+                                                    <p className="text-[9px] font-black text-[#D4AF37] uppercase mb-1">{stage.remarkLabel || 'Update'}:</p>
+                                                    <p className="text-[10px] font-bold text-gray-700 leading-relaxed font-italic">"{stage.remark}"</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                         </div>

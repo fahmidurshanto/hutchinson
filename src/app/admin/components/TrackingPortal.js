@@ -1,5 +1,8 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import api from '@/lib/api';
+import Swal from 'sweetalert2';
+import { getFriendlyErrorMessage } from '@/lib/error-utils';
 import DashboardModal from '../../../components/ui/DashboardModal';
 
 const initialStages = [
@@ -82,11 +85,81 @@ export default function TrackingPortal() {
     const [stages, setStages] = useState(initialStages);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingStage, setEditingStage] = useState(null);
+    const [globalStages, setGlobalStages] = useState([]);
+    const [isGlobalModalOpen, setIsGlobalModalOpen] = useState(false);
+    const [newGlobalName, setNewGlobalName] = useState('');
+    const [editingGlobal, setEditingGlobal] = useState(null);
+
     const [transactionInfo, setTransactionInfo] = useState({
         id: "HAF-49382",
         total: "[Confidential]",
         lastUpdate: new Date().toLocaleString()
     });
+
+    useEffect(() => {
+        fetchGlobalStages();
+    }, []);
+
+    const fetchGlobalStages = async () => {
+        try {
+            const res = await api.get('/stage/getall');
+            if (res.data.success) {
+                setGlobalStages(res.data.data || []);
+            }
+        } catch (err) {
+            console.error('Failed to fetch global stages:', err);
+        }
+    };
+
+    const handleAddGlobal = async () => {
+        try {
+            await api.post('/stage/add', { name: newGlobalName });
+            Swal.fire('Added', 'Global stage created.', 'success');
+            setNewGlobalName('');
+            fetchGlobalStages();
+        } catch (error) {
+            Swal.fire('Error', getFriendlyErrorMessage(error), 'error');
+        }
+    };
+
+    const handleEditGlobal = async (oldName) => {
+        const { value: newName } = await Swal.fire({
+            title: 'Edit Global Stage',
+            input: 'text',
+            inputValue: oldName,
+            showCancelButton: true
+        });
+
+        if (newName && newName !== oldName) {
+            try {
+                await api.put('/stage/edit', { oldName, newName });
+                Swal.fire('Updated', 'Global stage updated.', 'success');
+                fetchGlobalStages();
+            } catch (error) {
+                Swal.fire('Error', getFriendlyErrorMessage(error), 'error');
+            }
+        }
+    };
+
+    const handleDeleteGlobal = async (name) => {
+        const result = await Swal.fire({
+            title: 'Delete Global Stage?',
+            text: `Remove "${name}" from the system master list?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33'
+        });
+
+        if (result.isConfirmed) {
+            try {
+                await api.delete('/stage/delete', { data: { name } });
+                Swal.fire('Deleted', 'Global stage removed.', 'success');
+                fetchGlobalStages();
+            } catch (error) {
+                Swal.fire('Error', getFriendlyErrorMessage(error), 'error');
+            }
+        }
+    };
 
     // Form state for Add/Edit
     const [formData, setFormData] = useState({
@@ -135,6 +208,12 @@ export default function TrackingPortal() {
                         </p>
                     </div>
                     <div className="flex flex-wrap items-center gap-4">
+                        <button 
+                            onClick={() => setIsGlobalModalOpen(true)}
+                            className="bg-white text-black border-2 border-black px-6 py-3 rounded-full text-xs font-black uppercase tracking-widest hover:bg-gray-50 transition-all shadow-md hover:scale-105 active:scale-95 flex items-center gap-2"
+                        >
+                            ⚙️ Master List
+                        </button>
                         <button 
                             onClick={() => handleOpenModal()}
                             className="bg-black text-white px-6 py-3 rounded-full text-xs font-black uppercase tracking-widest hover:bg-gray-800 transition-all shadow-xl hover:scale-105 active:scale-95 flex items-center gap-2"
@@ -369,6 +448,58 @@ export default function TrackingPortal() {
                         <div className="flex items-center gap-4 py-2">
                             <input type="checkbox" id="current" checked={formData.current} onChange={e => setFormData({...formData, current: e.target.checked})} className="w-5 h-5 rounded border-gray-100 text-[#D4AF37] focus:ring-[#D4AF37]/20" />
                             <label htmlFor="current" className="text-[11px] font-black text-gray-600 uppercase tracking-widest cursor-pointer">Set as Current Location</label>
+                        </div>
+                    </div>
+                </div>
+            </DashboardModal>
+
+            {/* Global Stage Manager Modal */}
+            <DashboardModal
+                isOpen={isGlobalModalOpen}
+                onClose={() => setIsGlobalModalOpen(false)}
+                title="Master Stage List Configuration"
+                icon={<span>⚙️</span>}
+            >
+                <div className="space-y-6">
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-relaxed">
+                        Define the master global stages that can be assigned to partners. These serve as templates for user journeys.
+                    </p>
+                    
+                    <div className="flex gap-2">
+                        <input 
+                            className="flex-1 px-4 py-2 rounded-xl border border-gray-100 bg-gray-50 text-sm font-bold text-black focus:border-[#D4AF37] outline-none"
+                            placeholder="New Stage Name..."
+                            value={newGlobalName}
+                            onChange={(e) => setNewGlobalName(e.target.value)}
+                        />
+                        <button 
+                            onClick={handleAddGlobal}
+                            className="px-4 py-2 bg-gradient-gold text-black rounded-xl text-[10px] font-black uppercase tracking-widest hover:brightness-110 shadow-md"
+                        >
+                            Add
+                        </button>
+                    </div>
+
+                    <div className="space-y-2 mt-6">
+                        <h4 className="text-[9px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-50 pb-2">All Global Stages</h4>
+                        <div className="max-h-[300px] overflow-y-auto pr-2 custom-scrollbar space-y-2">
+                            {globalStages.length === 0 ? (
+                                <p className="text-[10px] text-gray-300 italic py-4 text-center">No global stages defined.</p>
+                            ) : (
+                                globalStages.map((name, i) => (
+                                    <div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-white border border-transparent hover:border-gray-100 transition-all group">
+                                        <span className="text-xs font-black text-gray-800">{name}</span>
+                                        <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button onClick={() => handleEditGlobal(name)} className="text-gray-400 hover:text-[#D4AF37]">
+                                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                                            </button>
+                                            <button onClick={() => handleDeleteGlobal(name)} className="text-gray-400 hover:text-red-500">
+                                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
                         </div>
                     </div>
                 </div>
