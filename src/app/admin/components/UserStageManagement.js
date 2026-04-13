@@ -252,7 +252,35 @@ export default function UserStageManagement({ userId, userName }) {
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <label className="text-[10px] font-black text-gray-700 uppercase tracking-widest">Sequence</label>
-                            <input type="number" className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-sm font-bold text-black" value={formData.sequence} onChange={e => setFormData({...formData, sequence: parseInt(e.target.value)})} />
+                            <input 
+                                type="number" 
+                                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-sm font-bold text-black" 
+                                value={formData.sequence} 
+                                min={1}
+                                max={editingStage ? stages.length : stages.length + 1}
+                                onChange={e => {
+                                    let val = parseInt(e.target.value);
+                                    if (isNaN(val)) {
+                                        setFormData({...formData, sequence: ''});
+                                        return;
+                                    }
+                                    const maxVal = editingStage ? stages.length : stages.length + 1;
+                                    if (val > maxVal) {
+                                        val = maxVal;
+                                        Swal.fire({
+                                            toast: true,
+                                            position: 'top-end',
+                                            showConfirmButton: false,
+                                            timer: 3000,
+                                            timerProgressBar: true,
+                                            icon: 'warning',
+                                            title: `Sequence cannot exceed ${maxVal}`
+                                        });
+                                    }
+                                    if (val < 1) val = 1;
+                                    setFormData({...formData, sequence: val});
+                                }}
+                            />
                         </div>
                         <div className="space-y-2">
                             <label className="text-[10px] font-black text-gray-700 uppercase tracking-widest">Status</label>
