@@ -83,7 +83,11 @@ input[type="radio"],
   cursor: pointer;
 }
 
-button:disabled,
-[role="button"]:disabled {
-  cursor: not-allowed;
+/* Utility classes */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
