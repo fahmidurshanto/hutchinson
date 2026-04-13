@@ -11,6 +11,9 @@ export default function UserStageManagement({ userId, userName }) {
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingStage, setEditingStage] = useState(null);
+    const [isQRModalOpen, setIsQRModalOpen] = useState(false);
+    const [qrCodeData, setQrCodeData] = useState(null);
+    const [generatingQR, setGeneratingQR] = useState(false);
 
     const [formData, setFormData] = useState({
         stage: '',
@@ -21,6 +24,31 @@ export default function UserStageManagement({ userId, userName }) {
         status: 'upcoming',
         time: new Date().toISOString()
     });
+
+    const handleGenerateQR = async () => {
+        setGeneratingQR(true);
+        try {
+            const res = await api.post(`/stage/generateqrcode/${userId}`);
+            if (res.data.success) {
+                setQrCodeData(res.data);
+                setIsQRModalOpen(true);
+            }
+        } catch (error) {
+            Swal.fire('Error', getFriendlyErrorMessage(error), 'error');
+        } finally {
+            setGeneratingQR(false);
+        }
+    };
+
+    const handleDownloadQR = () => {
+        if (!qrCodeData?.qrCodeImage) return;
+        const link = document.createElement('a');
+        link.href = qrCodeData.qrCodeImage;
+        link.download = `verification-qr-${userName || userId}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
 
     useEffect(() => {
         if (userId) {
@@ -126,12 +154,24 @@ export default function UserStageManagement({ userId, userName }) {
                     <h3 className="text-[10px] sm:text-xs font-black text-gray-950 uppercase tracking-widest">User Journey Stages</h3>
                     <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider mt-0.5">Manage lifecycle for {userName}</p>
                 </div>
-                <button
-                    onClick={() => handleOpenModal()}
-                    className="px-4 py-2 bg-black text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-800 transition-all shadow-md"
-                >
-                    + Assign Stage
-                </button>
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={handleGenerateQR}
+                        disabled={generatingQR}
+                        className="px-4 py-2 bg-gradient-gold text-black rounded-xl text-[10px] font-black uppercase tracking-widest hover:brightness-110 transition-all shadow-md flex items-center gap-2 disabled:opacity-50"
+                    >
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                        </svg>
+                        {generatingQR ? 'Generating...' : 'Generate QR'}
+                    </button>
+                    <button
+                        onClick={() => handleOpenModal()}
+                        className="px-4 py-2 bg-black text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-800 transition-all shadow-md"
+                    >
+                        + Assign Stage
+                    </button>
+                </div>
             </div>
 
             <div className="p-6 sm:p-8">
@@ -245,6 +285,37 @@ export default function UserStageManagement({ userId, userName }) {
                         </div>
                     </div>
                 </form>
+            </DashboardModal>
+
+            <DashboardModal
+                isOpen={isQRModalOpen}
+                onClose={() => setIsQRModalOpen(false)}
+                title="Verification QR Code"
+                footer={
+                    <div className="flex gap-3">
+                        <button onClick={() => setIsQRModalOpen(false)} className="px-6 py-2 bg-gray-100 text-gray-500 rounded-lg text-xs font-black uppercase tracking-widest hover:bg-gray-200">Close</button>
+                        <button onClick={handleDownloadQR} className="px-6 py-2 bg-gradient-gold text-black rounded-lg text-xs font-black uppercase tracking-widest hover:brightness-110 shadow-lg flex items-center gap-2">
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            Download QR
+                        </button>
+                    </div>
+                }
+            >
+                <div className="flex flex-col items-center">
+                    <p className="text-[10px] text-gray-500 mb-4 text-center uppercase tracking-wider">Scan this QR code with {userName}'s device to enable stage visibility</p>
+                    {qrCodeData?.qrCodeImage && (
+                        <div className="p-4 bg-white border-2 border-gray-100 rounded-2xl shadow-lg">
+                            <img src={qrCodeData.qrCodeImage} alt="QR Code" className="w-64 h-64" />
+                        </div>
+                    )}
+                    <div className="w-full mt-4 p-3 bg-gray-50 rounded-xl">
+                        <p className="text-[9px] font-bold text-gray-400 uppercase mb-1">Encoded URL:</p>
+                        <p className="text-xs text-gray-600 break-all font-mono">{qrCodeData?.qrCodeUrl}</p>
+                    </div>
+                    <p className="text-[9px] text-gray-400 mt-4 uppercase tracking-wider">Share this QR code with the user to grant stage visibility access</p>
+                </div>
             </DashboardModal>
         </div>
     );

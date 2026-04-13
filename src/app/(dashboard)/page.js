@@ -28,6 +28,12 @@ const DocumentIcon = (
     </svg>
 );
 
+const TrackingIcon = (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6 text-gray-900">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
+    </svg>
+);
+
 export default function DashboardHomePage() {
     const router = useRouter();
     const { user, documents, fetchFinancialSummary, fetchUserDocuments } = useAppContext();
@@ -35,6 +41,7 @@ export default function DashboardHomePage() {
     const [totalDisbursement, setTotalDisbursement] = useState('USD 0');
     const [memberships, setMemberships] = useState([]);
     const [stages, setStages] = useState([]);
+    const [stageVisibility, setStageVisibility] = useState(false);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -57,10 +64,14 @@ export default function DashboardHomePage() {
                             setMemberships(membershipRes.data.data || []);
                         }
 
-                        // Fetch stages
-                        const stageRes = await api.get(`/stage/user/${userId}`);
-                        if (stageRes.data.success) {
-                            setStages(stageRes.data.stage || []);
+                        // Fetch stages only if user has verified via QR
+                        const meRes = await api.get('/auth/me');
+                        if (meRes.data.success && meRes.data.user.stageVisibility) {
+                            setStageVisibility(true);
+                            const stageRes = await api.get(`/stage/user/${userId}`);
+                            if (stageRes.data.success) {
+                                setStages(stageRes.data.stage || []);
+                            }
                         }
                     } catch (err) {
                         console.error('Data fetch error:', err);
@@ -225,7 +236,7 @@ export default function DashboardHomePage() {
                 )}
 
                 {/* Journey Progress Section */}
-                {!loading && stages.length > 0 && (
+                {!loading && stageVisibility && stages.length > 0 && (
                     <div className="mt-12 md:mt-16 animate__animated animate__fadeIn">
                         <div className="bg-white rounded-[2rem] p-8 md:p-10 shadow-xl border border-gray-50 relative overflow-hidden">
                             <h2 className="text-[10px] font-black text-gray-950 uppercase tracking-[0.3em] mb-12 flex items-center gap-3">
@@ -276,7 +287,7 @@ export default function DashboardHomePage() {
                 {!loading && (
                     <div className="mt-12 md:mt-20 px-2 sm:px-0">
                         <h2 className="text-[10px] md:text-xs font-black text-gray-400 mb-6 text-center md:text-left uppercase tracking-[0.3em]">Quick Strategic Actions</h2>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
+                        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-6">
                             <button 
                                 onClick={() => router.push('/personal')}
                                 className="p-4 sm:p-6 bg-white border border-gray-100 rounded-2xl hover:bg-gray-50 transition-all duration-300 text-center group cursor-pointer shadow-sm hover:shadow-md"
@@ -312,6 +323,15 @@ export default function DashboardHomePage() {
                                     {DocumentIcon}
                                 </div>
                                 <span className="text-[10px] sm:text-xs font-black text-gray-700 uppercase tracking-widest">Documents</span>
+                            </button>
+                            <button 
+                                onClick={() => router.push('/tracking')}
+                                className="p-4 sm:p-6 bg-white border border-gray-100 rounded-2xl hover:bg-gray-50 transition-all duration-300 text-center group cursor-pointer shadow-sm hover:shadow-md"
+                            >
+                                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+                                    {TrackingIcon}
+                                </div>
+                                <span className="text-[10px] sm:text-xs font-black text-gray-700 uppercase tracking-widest">Journey</span>
                             </button>
                         </div>
                     </div>

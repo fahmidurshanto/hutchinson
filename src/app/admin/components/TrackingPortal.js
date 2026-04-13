@@ -89,6 +89,13 @@ export default function TrackingPortal() {
     const [isGlobalModalOpen, setIsGlobalModalOpen] = useState(false);
     const [newGlobalName, setNewGlobalName] = useState('');
     const [editingGlobal, setEditingGlobal] = useState(null);
+    const [isQRModalOpen, setIsQRModalOpen] = useState(false);
+    const [qrCodeData, setQrCodeData] = useState(null);
+    const [selectedUserId, setSelectedUserId] = useState('');
+    const [selectedUserName, setSelectedUserName] = useState('');
+    const [generatingQR, setGeneratingQR] = useState(false);
+    const [allUsers, setAllUsers] = useState([]);
+    const [currentIndex, setCurrentIndex] = useState(0);
 
     const [transactionInfo, setTransactionInfo] = useState({
         id: "HAF-49382",
@@ -98,7 +105,19 @@ export default function TrackingPortal() {
 
     useEffect(() => {
         fetchGlobalStages();
+        fetchAllUsers();
     }, []);
+
+    const fetchAllUsers = async () => {
+        try {
+            const res = await api.get('/auth/users');
+            if (res.data.success) {
+                setAllUsers(res.data.users || []);
+            }
+        } catch (err) {
+            console.error('Failed to fetch users:', err);
+        }
+    };
 
     const fetchGlobalStages = async () => {
         try {
@@ -109,6 +128,51 @@ export default function TrackingPortal() {
         } catch (err) {
             console.error('Failed to fetch global stages:', err);
         }
+    };
+
+    const handleGenerateQR = async () => {
+        if (!selectedUserId) {
+            Swal.fire('Error', 'Please select a user first', 'error');
+            return;
+        }
+        
+        setGeneratingQR(true);
+        try {
+            const res = await api.post(`/stage/generateqrcode/${selectedUserId}`);
+            if (res.data.success) {
+                setQrCodeData(res.data);
+                setIsQRModalOpen(true);
+            }
+        } catch (error) {
+            Swal.fire('Error', getFriendlyErrorMessage(error), 'error');
+        } finally {
+            setGeneratingQR(false);
+        }
+    };
+
+    const handleDownloadQR = () => {
+        if (!qrCodeData?.qrCodeImage) return;
+        const link = document.createElement('a');
+        link.href = qrCodeData.qrCodeImage;
+        link.download = `verification-qr-${selectedUserName || selectedUserId}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
+    const slidesPerView = 5;
+    const maxIndex = Math.max(0, stages.length - slidesPerView);
+
+    const nextSlide = () => {
+        setCurrentIndex((prev) => Math.min(prev + 1, maxIndex));
+    };
+
+    const prevSlide = () => {
+        setCurrentIndex((prev) => Math.max(prev - 1, 0));
+    };
+
+    const goToSlide = (index) => {
+        setCurrentIndex(Math.min(index, maxIndex));
     };
 
     const handleAddGlobal = async () => {
@@ -220,6 +284,15 @@ export default function TrackingPortal() {
                         >
                             <span>+</span> Add Stage
                         </button>
+                        <button 
+                            onClick={() => setIsQRModalOpen(true)}
+                            className="flex items-center gap-3 bg-gradient-gold text-black px-5 py-3 rounded-full shadow-lg transition-all hover:brightness-105 active:scale-95"
+                        >
+                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                            </svg>
+                            <span className="text-sm font-black uppercase tracking-wider">QR Portal</span>
+                        </button>
                         <div className="flex items-center gap-3 bg-white px-5 py-3 rounded-full shadow-lg border border-gray-100 transition-all">
                             <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse ring-4 ring-green-100"></span>
                             <span className="text-sm font-black text-gray-700 uppercase tracking-wider">System Online</span>
@@ -231,127 +304,178 @@ export default function TrackingPortal() {
                 <div className="bg-white rounded-[40px] p-8 md:p-12 shadow-2xl border border-gray-50 relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-[#D4AF37]/5 to-transparent rounded-bl-full -z-0 opacity-50"></div>
                     
-                    <h2 className="text-xs font-black text-gray-950 uppercase tracking-[0.3em] mb-12 relative z-10 flex items-center gap-3">
+                    <h2 className="text-xs font-black text-gray-950 uppercase tracking-[0.3em] mb-8 relative z-10 flex items-center gap-3">
                         <span className="w-8 h-[2px] bg-[#D4AF37]"></span>
                         Live Ascrow Trust Fund Tracking {viewMode === 'detailed' && '& Detailed Activity Log'}
                     </h2>
 
-                    {/* Timeline Container - Horizontal Scroll */}
-                    <div className="relative z-10 overflow-x-auto pb-12 no-scrollbar">
-                        <div className="min-w-[1200px] flex items-start relative px-4 gap-4">
-                            
-                            {/* Connecting Line - Background */}
-                            <div className="absolute top-[44px] left-0 w-full h-1 bg-gray-100 rounded-full"></div>
-                            
-                            {/* Connecting Line - Progress (Green Gradient) */}
+                    {/* Carousel Container */}
+                    <div className="relative z-10">
+                        <div className="overflow-hidden">
                             <div 
-                                className="absolute top-[44px] left-0 h-1.5 bg-gradient-to-r from-green-300 via-green-500 to-green-600 rounded-full shadow-[0_0_15px_rgba(34,197,94,0.3)] z-0 transition-all duration-1000" 
-                                style={{ width: `${Math.min(stages.length * 14.28, 95)}%` }}
-                            ></div>
+                                className="flex transition-transform duration-500 ease-out"
+                                style={{ transform: `translateX(-${currentIndex * (100 / slidesPerView)}%)` }}
+                            >
+                                {stages.map((stage, idx) => (
+                                    <div 
+                                        key={stage.id} 
+                                        className="w-1/5 flex-shrink-0 px-2"
+                                    >
+                                        <div className={`rounded-2xl border p-4 transition-all duration-300 h-full relative ${
+                                            stage.current 
+                                                ? 'bg-gradient-to-br from-green-50 to-white border-green-200 shadow-lg' 
+                                                : 'bg-gray-50 border-gray-100'
+                                        }`}>
+                                            <div className="flex flex-col items-center text-center h-full">
+                                                {/* Icon */}
+                                                <div className={`w-14 h-14 rounded-xl flex items-center justify-center text-2xl mb-3 transition-all duration-500 shadow-md
+                                                    ${stage.current ? 'bg-gradient-gold text-black animate-pulse ring-4 ring-[#D4AF37]/20' : 'bg-white text-gray-400'}
+                                                `}>
+                                                    {stage.icon}
+                                                </div>
 
-                            {/* Stages */}
-                            {stages.map((stage, idx) => (
-                                <div key={stage.id} className="flex flex-col items-center w-[160px] relative z-10 group/stage">
-                                    
-                                    {/* Icon Container with Action Overlay */}
-                                    <div className="relative">
-                                        <div className={`w-20 h-20 rounded-2xl flex items-center justify-center text-3xl mb-6 transition-all duration-500 hover:scale-110 cursor-pointer shadow-lg
-                                            ${stage.current ? 'bg-gradient-gold text-black animate-pulse ring-4 ring-[#D4AF37]/20 scale-110' : 'bg-gray-50 text-gray-400'}
-                                        `}>
-                                            {stage.icon}
-                                        </div>
-                                        
-                                        {/* Action Buttons Overlay */}
-                                        <div className="absolute -top-2 -right-2 flex flex-col gap-1 opacity-0 group-hover/stage:opacity-100 transition-opacity z-20">
-                                            <button onClick={() => handleOpenModal(stage)} className="w-8 h-8 rounded-full bg-white shadow-md border border-gray-100 flex items-center justify-center text-xs hover:bg-gray-50">✏️</button>
-                                            <button onClick={() => handleDelete(stage.id)} className="w-8 h-8 rounded-full bg-white shadow-md border border-red-50 flex items-center justify-center text-xs hover:bg-red-50 text-red-500">🗑️</button>
-                                        </div>
-                                    </div>
-
-                                    {/* Title & Status */}
-                                    <div className="text-center space-y-3 mb-6">
-                                        <p className={`text-[13px] font-black leading-tight uppercase tracking-tight h-10 flex items-center justify-center px-2
-                                            ${stage.current ? 'text-gray-950' : 'text-gray-600'}
-                                        `}>
-                                            {stage.title}
-                                        </p>
-                                        
-                                        <div className="flex flex-col items-center gap-1.5">
-                                            <span className={`text-[9px] font-black uppercase px-3 py-1 rounded-full border tracking-widest
-                                                ${stage.current ? 'bg-green-600 text-white border-green-500' : 'bg-gray-100 text-gray-400 border-gray-200'}
-                                            `}>
-                                                {stage.status}
-                                            </span>
-                                            {stage.label && (
-                                                <span className="text-[9px] font-black uppercase px-3 py-0.5 rounded-full bg-green-100 text-green-700 border border-green-200 tracking-widest">
-                                                    {stage.label}
+                                                {/* Title & Status */}
+                                                <p className={`text-xs font-black uppercase tracking-tight mb-2 leading-tight ${stage.current ? 'text-gray-950' : 'text-gray-600'}`}>
+                                                    {stage.title}
+                                                </p>
+                                                
+                                                <span className={`inline-block text-[8px] font-black uppercase px-2 py-1 rounded-full tracking-widest mb-2
+                                                    ${stage.current ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-500'}
+                                                `}>
+                                                    {stage.status}
                                                 </span>
-                                            )}
-                                        </div>
-                                    </div>
+                                                {stage.label && (
+                                                    <span className="inline-block text-[8px] font-black uppercase px-2 py-0.5 rounded-full bg-green-100 text-green-700 tracking-widest mb-2">
+                                                        {stage.label}
+                                                    </span>
+                                                )}
 
-                                    {/* Vertical Divider */}
-                                    <div className="w-[1px] h-8 bg-gray-200 mb-6"></div>
-
-                                    {/* Date/Time */}
-                                    <div className="text-center space-y-1">
-                                        <p className={`text-[10px] font-black uppercase tracking-wider ${stage.current ? 'text-gray-950' : 'text-gray-400 opacity-80'}`}>
-                                            {stage.date}
-                                        </p>
-                                        <p className={`text-[10px] font-black tracking-wider ${stage.current ? 'text-gray-950 text-xs' : 'text-gray-400 opacity-60'}`}>
-                                            {stage.time}
-                                        </p>
-                                    </div>
-
-                                    {/* Detailed Remark Card */}
-                                    {viewMode === 'detailed' && (
-                                        <div className={`mt-8 p-4 rounded-xl text-left border transition-all duration-300 w-full min-h-[160px] flex flex-col justify-between
-                                            ${stage.current 
-                                                ? 'bg-green-50/50 border-green-200 shadow-xl shadow-green-900/5' 
-                                                : 'bg-white border-gray-100 border-dashed hover:border-gray-200'}
-                                        `}>
-                                            <div className="space-y-2">
-                                                <p className={`text-[10px] leading-relaxed font-bold ${stage.current ? 'text-green-900' : 'text-gray-600'}`}>
-                                                    {stage.remark}
+                                                {/* Date/Time */}
+                                                <p className={`text-[9px] font-black uppercase tracking-wider ${stage.current ? 'text-gray-600' : 'text-gray-400'}`}>
+                                                    {stage.date}
                                                 </p>
-                                                <p className={`text-[9px] font-black uppercase tracking-tight ${stage.current ? 'text-green-700' : 'text-gray-400'}`}>
-                                                    Remark: <span className="font-bold">{stage.remarkLabel}</span>
+                                                <p className={`text-[9px] font-black tracking-wider ${stage.current ? 'text-gray-600' : 'text-gray-400 opacity-60'}`}>
+                                                    {stage.time}
                                                 </p>
+
+                                                {/* Action Buttons */}
+                                                <div className="flex gap-2 mt-3">
+                                                    <button onClick={() => handleOpenModal(stage)} className="w-7 h-7 rounded-full bg-white shadow border border-gray-100 flex items-center justify-center text-[10px] hover:bg-gray-50 transition-all">✏️</button>
+                                                    <button onClick={() => handleDelete(stage.id)} className="w-7 h-7 rounded-full bg-white shadow border border-red-50 flex items-center justify-center text-[10px] hover:bg-red-50 text-red-500 transition-all">🗑️</button>
+                                                </div>
+
+                                                {/* Detailed Remark Card */}
+                                                {viewMode === 'detailed' && (
+                                                    <div className={`w-full mt-3 p-2 rounded-lg text-left ${
+                                                        stage.current 
+                                                            ? 'bg-green-100/50' 
+                                                            : 'bg-white/50'}
+                                                    `}>
+                                                        <p className={`text-[9px] leading-relaxed font-bold ${stage.current ? 'text-green-900' : 'text-gray-600'}`}>
+                                                            {stage.remark}
+                                                        </p>
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
-                                    )}
-                                </div>
-                            ))}
+                                    </div>
+                                ))}
+                            </div>
                         </div>
+
+                        {/* Navigation Arrows */}
+                        {stages.length > slidesPerView && (
+                            <>
+                                <button 
+                                    onClick={prevSlide}
+                                    disabled={currentIndex === 0}
+                                    className="absolute left-0 top-1/2 -translate-y-1/2 w-12 h-12 bg-white border border-gray-100 rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-all z-20 disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    <svg className="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                    </svg>
+                                </button>
+                                <button 
+                                    onClick={nextSlide}
+                                    disabled={currentIndex >= maxIndex}
+                                    className="absolute right-0 top-1/2 -translate-y-1/2 w-12 h-12 bg-white border border-gray-100 rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-all z-20 disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    <svg className="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </button>
+                            </>
+                        )}
                     </div>
 
+                    {/* Dot Indicators */}
+                    {stages.length > slidesPerView && (
+                        <div className="flex justify-center items-center gap-3 mt-6">
+                            <button 
+                                onClick={prevSlide}
+                                disabled={currentIndex === 0}
+                                className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-all disabled:opacity-50"
+                            >
+                                <svg className="w-4 h-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                </svg>
+                            </button>
+                            <div className="flex gap-2">
+                                {Array.from({ length: maxIndex + 1 }).map((_, idx) => (
+                                    <button
+                                        key={idx}
+                                        onClick={() => goToSlide(idx)}
+                                        className={`w-3 h-3 rounded-full transition-all ${
+                                            idx === currentIndex 
+                                                ? 'bg-[#D4AF37] w-8' 
+                                                : 'bg-gray-300 hover:bg-gray-400'
+                                        }`}
+                                    />
+                                ))}
+                            </div>
+                            <button 
+                                onClick={nextSlide}
+                                disabled={currentIndex >= maxIndex}
+                                className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-all disabled:opacity-50"
+                            >
+                                <svg className="w-4 h-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                </svg>
+                            </button>
+                        </div>
+                    )}
+
                     {/* Footer Section - Transaction Details */}
-                    <div className="mt-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-8 relative z-10">
+                    <div className="mt-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 relative z-10">
                         {/* Legend */}
-                        <div className="bg-gray-50/50 p-6 rounded-3xl border border-gray-100 flex flex-col gap-3 min-w-[200px]">
-                            <div className="flex items-center gap-3">
-                                <span className="w-3 h-3 rounded-full bg-green-500"></span>
-                                <span className="text-[10px] font-black text-gray-700 uppercase tracking-widest">Green = Active/Urgent</span>
+                        <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100 flex flex-wrap items-center gap-4">
+                            <div className="flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                                <span className="text-[10px] font-black text-gray-700 uppercase tracking-widest">Active</span>
                             </div>
-                            <div className="flex items-center gap-3">
-                                <span className="w-3 h-3 rounded-full bg-gray-300"></span>
-                                <span className="text-[10px] font-black text-gray-700 uppercase tracking-widest">Grey = Processed</span>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <span className="w-3 h-3 rounded-full bg-green-200"></span>
-                                <span className="text-[10px] font-black text-gray-700 uppercase tracking-widest">Light Green = Upcoming</span>
+                            <div className="flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full bg-gray-300"></span>
+                                <span className="text-[10px] font-black text-gray-700 uppercase tracking-widest">Processed</span>
                             </div>
                             
                             <button 
                                 onClick={() => setViewMode(v => v === 'simple' ? 'detailed' : 'simple')}
-                                className="mt-4 text-[9px] font-black text-[#D4AF37] uppercase tracking-[0.2em] hover:opacity-80 transition-opacity border-t border-gray-200 pt-3"
+                                className="text-[9px] font-black text-[#D4AF37] uppercase tracking-[0.2em] hover:opacity-80 transition-opacity"
                             >
                                 Toggle {viewMode === 'simple' ? 'Detailed' : 'Simple'} View
                             </button>
                         </div>
 
+                        <div className="flex items-center gap-3">
+                            <div className="bg-gradient-gold text-black px-4 py-2 rounded-full">
+                                <span className="text-xs font-black uppercase tracking-widest">
+                                    {Math.min(currentIndex * slidesPerView + 1, stages.length)}-{Math.min((currentIndex + 1) * slidesPerView, stages.length)} / {stages.length}
+                                </span>
+                            </div>
+                        </div>
+
                         {/* Transaction Info Box */}
-                        <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-xl min-w-full md:min-w-[400px] flex flex-col gap-3 relative overflow-hidden group/info">
+                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-xl min-w-full md:min-w-[300px] flex flex-col gap-2 relative overflow-hidden group/info">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-gray-50 -z-0 rounded-bl-full"></div>
                             <div className="relative z-10 space-y-4">
                                 <div className="flex justify-between items-center border-b border-gray-50 pb-2">
@@ -505,16 +629,105 @@ export default function TrackingPortal() {
                 </div>
             </DashboardModal>
 
-            {/* Custom Styles for hidden scrollbar */}
-            <style jsx>{`
-                .no-scrollbar::-webkit-scrollbar {
-                    display: none;
+            {/* QR Code Portal Modal */}
+            <DashboardModal
+                isOpen={isQRModalOpen}
+                onClose={() => setIsQRModalOpen(false)}
+                title="QR Code Generator"
+                icon={<span>📱</span>}
+                footer={
+                    <div className="flex gap-3">
+                        <button onClick={() => setIsQRModalOpen(false)} className="px-6 py-2 bg-gray-100 text-gray-500 rounded-lg text-xs font-black uppercase tracking-widest hover:bg-gray-200 transition-all">
+                            Close
+                        </button>
+                        {qrCodeData && (
+                            <button onClick={handleDownloadQR} className="px-6 py-2 bg-gradient-gold text-black rounded-lg text-xs font-black uppercase tracking-widest hover:brightness-110 shadow-lg flex items-center gap-2">
+                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                                Download QR
+                            </button>
+                        )}
+                    </div>
                 }
-                .no-scrollbar {
-                    -ms-overflow-style: none;
-                    scrollbar-width: none;
-                }
-            `}</style>
+            >
+                {!qrCodeData ? (
+                    <div className="space-y-6">
+                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-relaxed">
+                            Generate a QR code for a user to scan and enable stage visibility access.
+                        </p>
+                        
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black text-gray-700 uppercase tracking-widest">Select User</label>
+                            <select 
+                                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-sm font-bold text-black focus:ring-2 focus:ring-[#D4AF37]/20 outline-none"
+                                value={selectedUserId}
+                                onChange={(e) => {
+                                    const user = allUsers.find(u => u._id === e.target.value);
+                                    setSelectedUserId(e.target.value);
+                                    setSelectedUserName(user ? `${user.firstName} ${user.lastName}` : '');
+                                }}
+                            >
+                                <option value="">-- Select a user --</option>
+                                {allUsers.map(user => (
+                                    <option key={user._id} value={user._id}>
+                                        {user.firstName} {user.lastName} ({user.email})
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className="flex gap-3 pt-4">
+                            <button 
+                                onClick={handleGenerateQR}
+                                disabled={generatingQR || !selectedUserId}
+                                className="flex-1 py-3 bg-gradient-gold text-black rounded-xl text-xs font-black uppercase tracking-widest hover:brightness-110 shadow-lg flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {generatingQR ? (
+                                    <>
+                                        <div className="w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin"></div>
+                                        Generating...
+                                    </>
+                                ) : (
+                                    <>
+                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                                        </svg>
+                                        Generate QR Code
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="flex flex-col items-center">
+                        <div className="text-center mb-6">
+                            <p className="text-xs font-bold text-gray-600 uppercase tracking-wider">
+                                QR Code for: <span className="text-[#D4AF37]">{selectedUserName}</span>
+                            </p>
+                            <p className="text-[10px] text-gray-400 mt-1">Scan with user's device to grant stage visibility</p>
+                        </div>
+                        
+                        <div className="p-4 bg-white border-2 border-gray-100 rounded-2xl shadow-xl mb-4">
+                            <img src={qrCodeData.qrCodeImage} alt="QR Code" className="w-64 h-64" />
+                        </div>
+                        
+                        <div className="w-full p-3 bg-gray-50 rounded-xl mb-4">
+                            <p className="text-[9px] font-bold text-gray-400 uppercase mb-1">Encoded URL:</p>
+                            <p className="text-xs text-gray-600 break-all font-mono">{qrCodeData.qrCodeUrl}</p>
+                        </div>
+                        
+                        <button 
+                            onClick={() => setQrCodeData(null)}
+                            className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider hover:underline"
+                        >
+                            Generate for another user
+                        </button>
+                    </div>
+                )}
+            </DashboardModal>
+
+
         </>
     );
 }
