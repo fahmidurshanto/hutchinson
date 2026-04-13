@@ -1,5 +1,5 @@
 "use client";
-import React, { use, useState, useEffect } from 'react';
+import React, { use, useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppContext } from '@/context/AppContext';
 import Swal from 'sweetalert2';
@@ -23,6 +23,22 @@ export default function UserDetailPage({ params }) {
     const [schedulesLoading, setSchedulesLoading] = useState(true);
     const [showPassword, setShowPassword] = useState(false);
     const [isQRModalOpen, setIsQRModalOpen] = useState(false);
+    const qrRef = useRef(null);
+
+    const downloadQRCode = () => {
+        const canvas = qrRef.current?.querySelector('canvas');
+        if (canvas) {
+            const pngUrl = canvas
+                .toDataURL("image/png")
+                .replace("image/png", "image/octet-stream");
+            let downloadLink = document.createElement("a");
+            downloadLink.href = pngUrl;
+            downloadLink.download = `QR_${user.firstName || 'Client'}_${userId.slice(-6)}.png`;
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        }
+    };
 
     useEffect(() => {
         if (!userId || !currentUser) return;
@@ -554,7 +570,7 @@ export default function UserDetailPage({ params }) {
                 icon={<span>📱</span>}
             >
                 <div className="flex flex-col items-center justify-center py-8 space-y-6">
-                    <div className="p-4 bg-white rounded-3xl shadow-xl border border-gray-100">
+                    <div className="p-4 bg-white rounded-3xl shadow-xl border border-gray-100" ref={qrRef}>
                         <QRCodeCanvas
                             value={`${typeof window !== 'undefined' ? window.location.origin : ''}/verify?id=${userId}`}
                             size={200}
@@ -570,11 +586,23 @@ export default function UserDetailPage({ params }) {
                             }}
                         />
                     </div>
-                    <div className="text-center space-y-2">
-                        <p className="text-xs font-black text-gray-900 uppercase tracking-widest">Client Verification Key</p>
-                        <p className="text-[10px] font-bold text-gray-400 max-w-[200px] leading-relaxed">
-                            Scan this code to verify the client's identity and enable stage tracking visibility.
-                        </p>
+                    <div className="text-center space-y-4">
+                        <div className="space-y-2">
+                            <p className="text-xs font-black text-gray-900 uppercase tracking-widest">Client Verification Key</p>
+                            <p className="text-[10px] font-bold text-gray-400 max-w-[200px] leading-relaxed mx-auto">
+                                Scan this code to verify the client's identity and enable stage tracking visibility.
+                            </p>
+                        </div>
+                        
+                        <button
+                            onClick={downloadQRCode}
+                            className="w-full px-6 py-3 bg-black text-white rounded-xl text-[10px] font-black uppercase tracking-[0.2em] shadow-lg hover:bg-gray-800 transition-all flex items-center justify-center gap-2 group"
+                        >
+                            <svg className="w-4 h-4 text-[#D4AF37] group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M7.5 12L12 16.5m0 0L16.5 12M12 16.5V3" />
+                            </svg>
+                            Download QR Code
+                        </button>
                     </div>
                 </div>
             </DashboardModal>
