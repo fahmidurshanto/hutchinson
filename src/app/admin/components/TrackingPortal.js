@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import api from '@/lib/api';
 import Swal from 'sweetalert2';
 import { getFriendlyErrorMessage } from '@/lib/error-utils';
@@ -106,7 +107,19 @@ export default function TrackingPortal() {
     useEffect(() => {
         fetchGlobalStages();
         fetchAllUsers();
+        fetchLiveTracking();
     }, []);
+
+    const fetchLiveTracking = async () => {
+        try {
+            const res = await api.get('/stage/live');
+            if (res.data.success) {
+                setStages(res.data.data || []);
+            }
+        } catch (err) {
+            console.error('Failed to fetch live tracking:', err);
+        }
+    };
 
     const fetchAllUsers = async () => {
         try {
@@ -163,6 +176,32 @@ export default function TrackingPortal() {
     const slidesPerView = 5;
     const maxIndex = Math.max(0, stages.length - slidesPerView);
 
+    const handleCarouselDragEnd = async (result) => {
+        if (!result.destination) return;
+
+        const items = Array.from(stages);
+        const [reorderedItem] = items.splice(result.source.index, 1);
+        items.splice(result.destination.index, 0, reorderedItem);
+
+        // Update local state optimistically
+        setStages(items);
+
+        try {
+            await api.put('/stage/live', { stages: items });
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2000,
+                icon: 'success',
+                title: 'Live tracking order saved'
+            });
+        } catch (error) {
+            Swal.fire('Error', 'Failed to save new order', 'error');
+            fetchLiveTracking(); // Revert to server state
+        }
+    };
+
     const nextSlide = () => {
         setCurrentIndex((prev) => Math.min(prev + 1, maxIndex));
     };
@@ -205,6 +244,32 @@ export default function TrackingPortal() {
         }
     };
 
+    const handleGlobalDragEnd = async (result) => {
+        if (!result.destination) return;
+
+        const items = Array.from(globalStages);
+        const [reorderedItem] = items.splice(result.source.index, 1);
+        items.splice(result.destination.index, 0, reorderedItem);
+
+        // Update local state optimistically
+        setGlobalStages(items);
+
+        try {
+            await api.put('/stage/reorder', { stages: items });
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2000,
+                icon: 'success',
+                title: 'Master list reordered'
+            });
+        } catch (error) {
+            Swal.fire('Error', 'Failed to save new order', 'error');
+            fetchGlobalStages(); // Revert to server state
+        }
+    };
+
     const handleDeleteGlobal = async (name) => {
         const result = await Swal.fire({
             title: 'Delete Global Stage?',
@@ -241,20 +306,47 @@ export default function TrackingPortal() {
         setIsModalOpen(true);
     };
 
-    const handleSave = (e) => {
+    const handleSave = async (e) => {
         if (e && e.preventDefault) e.preventDefault();
+        
+        let newStages;
         if (editingStage) {
-            setStages(prev => prev.map(s => s.id === editingStage.id ? { ...formData, id: s.id } : s));
+            newStages = stages.map(s => s.id === editingStage.id ? { ...formData, id: s.id } : s);
         } else {
             const newId = stages.length > 0 ? Math.max(...stages.map(s => s.id)) + 1 : 1;
-            setStages(prev => [...prev, { ...formData, id: newId }]);
+            newStages = [...stages, { ...formData, id: newId }];
         }
+
+        setStages(newStages);
         setIsModalOpen(false);
+
+        try {
+            await api.put('/stage/live', { stages: newStages });
+        } catch (error) {
+            Swal.fire('Error', 'Failed to save stage changes to server', 'error');
+            fetchLiveTracking();
+        }
     };
 
-    const handleDelete = (id) => {
-        if (confirm("Are you sure you want to delete this stage?")) {
-            setStages(prev => prev.filter(s => s.id !== id));
+    const handleDelete = async (id) => {
+        const result = await Swal.fire({
+            title: 'Delete Stage?',
+            text: 'Are you sure you want to remove this stage from live tracking?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33'
+        });
+
+        if (result.isConfirmed) {
+            const newStages = stages.filter(s => s.id !== id);
+            setStages(newStages);
+            try {
+                await api.put('/stage/live', { stages: newStages });
+                Swal.fire('Deleted', 'Stage removed.', 'success');
+            } catch (error) {
+                Swal.fire('Error', 'Failed to delete stage from server', 'error');
+                fetchLiveTracking();
+            }
         }
     };
 
@@ -310,103 +402,127 @@ export default function TrackingPortal() {
                     </h2>
 
                     {/* Carousel Container */}
-                    <div className="relative z-10">
-                        <div className="overflow-hidden">
-                            <div 
-                                className="flex transition-transform duration-500 ease-out"
-                                style={{ transform: `translateX(-${currentIndex * (100 / slidesPerView)}%)` }}
-                            >
-                                {stages.map((stage, idx) => (
-                                    <div 
-                                        key={stage.id} 
-                                        className="w-1/5 flex-shrink-0 px-2"
-                                    >
-                                        <div className={`rounded-2xl border p-4 transition-all duration-300 h-full relative ${
-                                            stage.current 
-                                                ? 'bg-gradient-to-br from-green-50 to-white border-green-200 shadow-lg' 
-                                                : 'bg-gray-50 border-gray-100'
-                                        }`}>
-                                            <div className="flex flex-col items-center text-center h-full">
-                                                {/* Icon */}
-                                                <div className={`w-14 h-14 rounded-xl flex items-center justify-center text-2xl mb-3 transition-all duration-500 shadow-md
-                                                    ${stage.current ? 'bg-gradient-gold text-black animate-pulse ring-4 ring-[#D4AF37]/20' : 'bg-white text-gray-400'}
-                                                `}>
-                                                    {stage.icon}
-                                                </div>
+                    <DragDropContext onDragEnd={handleCarouselDragEnd}>
+                        <div className="relative z-10">
+                            <div className="overflow-hidden">
+                                <Droppable droppableId="carousel-stages" direction="horizontal">
+                                    {(provided) => (
+                                        <div 
+                                            {...provided.droppableProps}
+                                            ref={provided.innerRef}
+                                            className="flex transition-transform duration-500 ease-out"
+                                            style={{ transform: `translateX(-${currentIndex * (100 / slidesPerView)}%)` }}
+                                        >
+                                            {stages.map((stage, idx) => (
+                                                <Draggable key={stage.id} draggableId={String(stage.id)} index={idx}>
+                                                    {(provided, snapshot) => (
+                                                        <div 
+                                                            ref={provided.innerRef}
+                                                            {...provided.draggableProps}
+                                                            className="w-1/5 flex-shrink-0 px-2"
+                                                        >
+                                                            <div className={`rounded-2xl border p-4 transition-all duration-300 h-full relative ${
+                                                                stage.current 
+                                                                    ? 'bg-gradient-to-br from-green-50 to-white border-green-200 shadow-lg' 
+                                                                    : 'bg-gray-50 border-gray-100'
+                                                            } ${snapshot.isDragging ? 'shadow-2xl scale-105 border-[#D4AF37] z-50 bg-white ring-4 ring-[#D4AF37]/10' : ''}`}>
+                                                                <div className="flex flex-col items-center text-center h-full">
+                                                                    {/* Drag Handle */}
+                                                                    <div 
+                                                                        {...provided.dragHandleProps}
+                                                                        className="absolute top-2 left-2 text-gray-300 hover:text-[#D4AF37] cursor-grab active:cursor-grabbing p-1"
+                                                                    >
+                                                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 8h16M4 16h16" />
+                                                                        </svg>
+                                                                    </div>
 
-                                                {/* Title & Status */}
-                                                <p className={`text-xs font-black uppercase tracking-tight mb-2 leading-tight ${stage.current ? 'text-gray-950' : 'text-gray-600'}`}>
-                                                    {stage.title}
-                                                </p>
-                                                
-                                                <span className={`inline-block text-[8px] font-black uppercase px-2 py-1 rounded-full tracking-widest mb-2
-                                                    ${stage.current ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-500'}
-                                                `}>
-                                                    {stage.status}
-                                                </span>
-                                                {stage.label && (
-                                                    <span className="inline-block text-[8px] font-black uppercase px-2 py-0.5 rounded-full bg-green-100 text-green-700 tracking-widest mb-2">
-                                                        {stage.label}
-                                                    </span>
-                                                )}
+                                                                    {/* Icon */}
+                                                                    <div className={`w-14 h-14 rounded-xl flex items-center justify-center text-2xl mb-3 transition-all duration-500 shadow-md
+                                                                        ${stage.current ? 'bg-gradient-gold text-black animate-pulse ring-4 ring-[#D4AF37]/20' : 'bg-white text-gray-400'}
+                                                                    `}>
+                                                                        {stage.icon}
+                                                                    </div>
 
-                                                {/* Date/Time */}
-                                                <p className={`text-[9px] font-black uppercase tracking-wider ${stage.current ? 'text-gray-600' : 'text-gray-400'}`}>
-                                                    {stage.date}
-                                                </p>
-                                                <p className={`text-[9px] font-black tracking-wider ${stage.current ? 'text-gray-600' : 'text-gray-400 opacity-60'}`}>
-                                                    {stage.time}
-                                                </p>
+                                                                    {/* Title & Status */}
+                                                                    <p className={`text-xs font-black uppercase tracking-tight mb-2 leading-tight ${stage.current ? 'text-gray-950' : 'text-gray-600'}`}>
+                                                                        {stage.title}
+                                                                    </p>
+                                                                    
+                                                                    <span className={`inline-block text-[8px] font-black uppercase px-2 py-1 rounded-full tracking-widest mb-2
+                                                                        ${stage.current ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-500'}
+                                                                    `}>
+                                                                        {stage.status}
+                                                                    </span>
+                                                                    {stage.label && (
+                                                                        <span className="inline-block text-[8px] font-black uppercase px-2 py-0.5 rounded-full bg-green-100 text-green-700 tracking-widest mb-2">
+                                                                            {stage.label}
+                                                                        </span>
+                                                                    )}
 
-                                                {/* Action Buttons */}
-                                                <div className="flex gap-2 mt-3">
-                                                    <button onClick={() => handleOpenModal(stage)} className="w-7 h-7 rounded-full bg-white shadow border border-gray-100 flex items-center justify-center text-[10px] hover:bg-gray-50 transition-all">✏️</button>
-                                                    <button onClick={() => handleDelete(stage.id)} className="w-7 h-7 rounded-full bg-white shadow border border-red-50 flex items-center justify-center text-[10px] hover:bg-red-50 text-red-500 transition-all">🗑️</button>
-                                                </div>
+                                                                    {/* Date/Time */}
+                                                                    <p className={`text-[9px] font-black uppercase tracking-wider ${stage.current ? 'text-gray-600' : 'text-gray-400'}`}>
+                                                                        {stage.date}
+                                                                    </p>
+                                                                    <p className={`text-[9px] font-black tracking-wider ${stage.current ? 'text-gray-600' : 'text-gray-400 opacity-60'}`}>
+                                                                        {stage.time}
+                                                                    </p>
 
-                                                {/* Detailed Remark Card */}
-                                                {viewMode === 'detailed' && (
-                                                    <div className={`w-full mt-3 p-2 rounded-lg text-left ${
-                                                        stage.current 
-                                                            ? 'bg-green-100/50' 
-                                                            : 'bg-white/50'}
-                                                    `}>
-                                                        <p className={`text-[9px] leading-relaxed font-bold ${stage.current ? 'text-green-900' : 'text-gray-600'}`}>
-                                                            {stage.remark}
-                                                        </p>
-                                                    </div>
-                                                )}
-                                            </div>
+                                                                    {/* Action Buttons */}
+                                                                    <div className="flex gap-2 mt-3">
+                                                                        <button onClick={() => handleOpenModal(stage)} className="w-7 h-7 rounded-full bg-white shadow border border-gray-100 flex items-center justify-center text-[10px] hover:bg-gray-50 transition-all">✏️</button>
+                                                                        <button onClick={() => handleDelete(stage.id)} className="w-7 h-7 rounded-full bg-white shadow border border-red-50 flex items-center justify-center text-[10px] hover:bg-red-50 text-red-500 transition-all">🗑️</button>
+                                                                    </div>
+
+                                                                    {/* Detailed Remark Card */}
+                                                                    {viewMode === 'detailed' && (
+                                                                        <div className={`w-full mt-3 p-2 rounded-lg text-left ${
+                                                                            stage.current 
+                                                                                ? 'bg-green-100/50' 
+                                                                                : 'bg-white/50'}
+                                                                        `}>
+                                                                            <p className={`text-[9px] leading-relaxed font-bold ${stage.current ? 'text-green-900' : 'text-gray-600'}`}>
+                                                                                {stage.remark}
+                                                                            </p>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </Draggable>
+                                            ))}
+                                            {provided.placeholder}
                                         </div>
-                                    </div>
-                                ))}
+                                    )}
+                                </Droppable>
                             </div>
-                        </div>
 
-                        {/* Navigation Arrows */}
-                        {stages.length > slidesPerView && (
-                            <>
-                                <button 
-                                    onClick={prevSlide}
-                                    disabled={currentIndex === 0}
-                                    className="absolute left-0 top-1/2 -translate-y-1/2 w-12 h-12 bg-white border border-gray-100 rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-all z-20 disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    <svg className="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                                    </svg>
-                                </button>
-                                <button 
-                                    onClick={nextSlide}
-                                    disabled={currentIndex >= maxIndex}
-                                    className="absolute right-0 top-1/2 -translate-y-1/2 w-12 h-12 bg-white border border-gray-100 rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-all z-20 disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    <svg className="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                    </svg>
-                                </button>
-                            </>
-                        )}
-                    </div>
+                            {/* Navigation Arrows */}
+                            {stages.length > slidesPerView && (
+                                <>
+                                    <button 
+                                        onClick={prevSlide}
+                                        disabled={currentIndex === 0}
+                                        className="absolute left-0 top-1/2 -translate-y-1/2 w-12 h-12 bg-white border border-gray-100 rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-all z-20 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        <svg className="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                        </svg>
+                                    </button>
+                                    <button 
+                                        onClick={nextSlide}
+                                        disabled={currentIndex >= maxIndex}
+                                        className="absolute right-0 top-1/2 -translate-y-1/2 w-12 h-12 bg-white border border-gray-100 rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-all z-20 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        <svg className="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </button>
+                                </>
+                            )}
+                        </div>
+                    </DragDropContext>
 
                     {/* Dot Indicators */}
                     {stages.length > slidesPerView && (
@@ -604,27 +720,61 @@ export default function TrackingPortal() {
                         </button>
                     </div>
 
-                    <div className="space-y-2 mt-6">
-                        <h4 className="text-[9px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-50 pb-2">All Global Stages</h4>
-                        <div className="max-h-[300px] overflow-y-auto pr-2 custom-scrollbar space-y-2">
-                            {globalStages.length === 0 ? (
-                                <p className="text-[10px] text-gray-300 italic py-4 text-center">No global stages defined.</p>
-                            ) : (
-                                globalStages.map((name, i) => (
-                                    <div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-white border border-transparent hover:border-gray-100 transition-all group">
-                                        <span className="text-xs font-black text-gray-800">{name}</span>
-                                        <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button onClick={() => handleEditGlobal(name)} className="text-gray-400 hover:text-[#D4AF37]">
-                                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
-                                            </button>
-                                            <button onClick={() => handleDeleteGlobal(name)} className="text-gray-400 hover:text-red-500">
-                                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                                            </button>
-                                        </div>
+                    <div className="space-y-4 mt-6">
+                        <h4 className="text-[9px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-50 pb-2">All Global Stages (Drag to Reorder)</h4>
+                        
+                        <DragDropContext onDragEnd={handleGlobalDragEnd}>
+                            <Droppable droppableId="global-stages">
+                                {(provided) => (
+                                    <div 
+                                        {...provided.droppableProps}
+                                        ref={provided.innerRef}
+                                        className="max-h-[350px] overflow-y-auto pr-2 custom-scrollbar space-y-2"
+                                    >
+                                        {globalStages.length === 0 ? (
+                                            <p className="text-[10px] text-gray-300 italic py-4 text-center">No global stages defined.</p>
+                                        ) : (
+                                            globalStages.map((name, i) => (
+                                                <Draggable key={name} draggableId={name} index={i}>
+                                                    {(provided, snapshot) => (
+                                                        <div 
+                                                            ref={provided.innerRef}
+                                                            {...provided.draggableProps}
+                                                            className={`flex items-center justify-between p-3 rounded-xl border transition-all group ${
+                                                                snapshot.isDragging 
+                                                                    ? 'bg-white border-[#D4AF37] shadow-xl ring-2 ring-[#D4AF37]/10' 
+                                                                    : 'bg-gray-50 border-transparent hover:bg-white hover:border-gray-100'
+                                                            }`}
+                                                        >
+                                                            <div className="flex items-center gap-3">
+                                                                <div 
+                                                                    {...provided.dragHandleProps}
+                                                                    className="text-gray-300 hover:text-[#D4AF37] cursor-grab active:cursor-grabbing"
+                                                                >
+                                                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 8h16M4 16h16" />
+                                                                    </svg>
+                                                                </div>
+                                                                <span className="text-xs font-black text-gray-800">{name}</span>
+                                                            </div>
+                                                            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                <button onClick={() => handleEditGlobal(name)} className="text-gray-400 hover:text-[#D4AF37]">
+                                                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                                                                </button>
+                                                                <button onClick={() => handleDeleteGlobal(name)} className="text-gray-400 hover:text-red-500">
+                                                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </Draggable>
+                                            ))
+                                        )}
+                                        {provided.placeholder}
                                     </div>
-                                ))
-                            )}
-                        </div>
+                                )}
+                            </Droppable>
+                        </DragDropContext>
                     </div>
                 </div>
             </DashboardModal>

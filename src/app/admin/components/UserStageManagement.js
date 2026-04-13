@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import api from '@/lib/api';
 import Swal from 'sweetalert2';
 import { getFriendlyErrorMessage } from '@/lib/error-utils';
@@ -61,7 +62,8 @@ export default function UserStageManagement({ userId, userName }) {
         try {
             const res = await api.get(`/stage/user/${userId}`);
             if (res.data.success) {
-                setStages(res.data.stage || []);
+                const fetchedStages = res.data.stage || [];
+                setStages(fetchedStages.sort((a, b) => a.sequence - b.sequence));
             }
         } catch (err) {
             console.error('Failed to fetch user stages:', err);
@@ -127,6 +129,35 @@ export default function UserStageManagement({ userId, userName }) {
         }
     };
 
+    const handleDragEnd = async (result) => {
+        if (!result.destination) return;
+
+        const items = Array.from(stages);
+        const [reorderedItem] = items.splice(result.source.index, 1);
+        items.splice(result.destination.index, 0, reorderedItem);
+
+        // Update local state optimistically
+        const updatedStages = items.map((s, idx) => ({ ...s, sequence: idx + 1 }));
+        setStages(updatedStages);
+
+        try {
+            await api.put(`/stage/user/${userId}/reorder`, {
+                stages: updatedStages.map(s => s._id)
+            });
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2000,
+                icon: 'success',
+                title: 'Order updated'
+            });
+        } catch (error) {
+            Swal.fire('Error', 'Failed to save new order', 'error');
+            fetchUserStages(); // Revert to server state
+        }
+    };
+
     const handleDelete = async (stageId) => {
         const result = await Swal.fire({
             title: 'Delete Stage?',
@@ -187,41 +218,71 @@ export default function UserStageManagement({ userId, userName }) {
                         </button>
                     </div>
                 ) : (
-                    <div className="space-y-4">
-                        {stages.sort((a,b) => a.sequence - b.sequence).map((s) => (
-                            <div key={s._id} className="group relative flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100 hover:border-[#D4AF37]/30 transition-all gap-4">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center font-black text-[10px] text-gray-400">
-                                        {s.sequence}
-                                    </div>
-                                    <div>
-                                        <p className="text-xs sm:text-sm font-black text-gray-950 group-hover:text-[#A67C00] transition-colors">{s.name}</p>
-                                        <div className="flex flex-wrap items-center gap-2 mt-1">
-                                            <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-full border ${
-                                                s.status === 'active' ? 'bg-green-50 text-green-600 border-green-100' :
-                                                s.status === 'processed' ? 'bg-blue-50 text-blue-600 border-blue-100' :
-                                                'bg-gray-100 text-gray-400 border-gray-200'
-                                            }`}>
-                                                {s.status}
-                                            </span>
-                                            <span className="text-[8px] font-bold text-gray-400 uppercase tracking-wider">
-                                                {new Date(s.time).toLocaleDateString()} {new Date(s.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                            </span>
-                                        </div>
-                                    </div>
+                    <DragDropContext onDragEnd={handleDragEnd}>
+                        <Droppable droppableId="stages">
+                            {(provided) => (
+                                <div
+                                    {...provided.droppableProps}
+                                    ref={provided.innerRef}
+                                    className="space-y-4"
+                                >
+                                    {[...stages].sort((a, b) => a.sequence - b.sequence).map((s, index) => (
+                                        <Draggable key={s._id} draggableId={s._id} index={index}>
+                                            {(provided, snapshot) => (
+                                                <div
+                                                    ref={provided.innerRef}
+                                                    {...provided.draggableProps}
+                                                    className={`group relative flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 rounded-2xl border transition-all gap-4 ${
+                                                        snapshot.isDragging ? 'shadow-2xl border-[#D4AF37] bg-white ring-2 ring-[#D4AF37]/10' : 'border-gray-100 hover:border-[#D4AF37]/30'
+                                                    }`}
+                                                >
+                                                    <div className="flex items-center gap-4">
+                                                        {/* Drag Handle */}
+                                                        <div
+                                                            {...provided.dragHandleProps}
+                                                            className="text-gray-300 hover:text-[#D4AF37] cursor-grab active:cursor-grabbing p-1"
+                                                        >
+                                                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 8h16M4 16h16" />
+                                                            </svg>
+                                                        </div>
+                                                        <div className="w-8 h-8 rounded-full bg-white border border-gray-200 flex items-center justify-center font-black text-[10px] text-gray-400">
+                                                            {index + 1}
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-xs sm:text-sm font-black text-gray-950 group-hover:text-[#A67C00] transition-colors">{s.name}</p>
+                                                            <div className="flex flex-wrap items-center gap-2 mt-1">
+                                                                <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-full border ${
+                                                                    s.status === 'active' ? 'bg-green-50 text-green-600 border-green-100' :
+                                                                    s.status === 'processed' ? 'bg-blue-50 text-blue-600 border-blue-100' :
+                                                                    'bg-gray-100 text-gray-400 border-gray-200'
+                                                                }`}>
+                                                                    {s.status}
+                                                                </span>
+                                                                <span className="text-[8px] font-bold text-gray-400 uppercase tracking-wider">
+                                                                    {new Date(s.time).toLocaleDateString()} {new Date(s.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="flex items-center gap-2 self-end sm:self-center">
+                                                        <button onClick={() => handleOpenModal(s)} className="p-2 text-gray-400 hover:text-[#D4AF37] hover:bg-white rounded-lg border border-transparent hover:border-gray-200 transition-all">
+                                                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                                                        </button>
+                                                        <button onClick={() => handleDelete(s._id)} className="p-2 text-gray-400 hover:text-red-500 hover:bg-white rounded-lg border border-transparent hover:border-gray-200 transition-all">
+                                                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </Draggable>
+                                    ))}
+                                    {provided.placeholder}
                                 </div>
-                                
-                                <div className="flex items-center gap-2 self-end sm:self-center">
-                                    <button onClick={() => handleOpenModal(s)} className="p-2 text-gray-400 hover:text-[#D4AF37] hover:bg-white rounded-lg border border-transparent hover:border-gray-200 transition-all">
-                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
-                                    </button>
-                                    <button onClick={() => handleDelete(s._id)} className="p-2 text-gray-400 hover:text-red-500 hover:bg-white rounded-lg border border-transparent hover:border-gray-200 transition-all">
-                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                            )}
+                        </Droppable>
+                    </DragDropContext>
                 )}
             </div>
 
@@ -345,6 +406,6 @@ export default function UserStageManagement({ userId, userName }) {
                     <p className="text-[9px] text-gray-400 mt-4 uppercase tracking-wider">Share this QR code with the user to grant stage visibility access</p>
                 </div>
             </DashboardModal>
-        </div>
+        </div >
     );
 }
