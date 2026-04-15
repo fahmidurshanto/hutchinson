@@ -98,17 +98,43 @@ export default function TrackingPortal() {
     const [allUsers, setAllUsers] = useState([]);
     const [currentIndex, setCurrentIndex] = useState(0);
 
-    const [transactionInfo, setTransactionInfo] = useState({
-        id: "HAF-49382",
-        total: "[Confidential]",
-        lastUpdate: new Date().toLocaleString()
-    });
-
     useEffect(() => {
         fetchGlobalStages();
         fetchAllUsers();
-        fetchLiveTracking();
     }, []);
+
+    useEffect(() => {
+        if (selectedUserId) {
+            fetchUserSpecificStages(selectedUserId);
+        } else {
+            fetchLiveTracking();
+        }
+    }, [selectedUserId]);
+
+    const fetchUserSpecificStages = async (id) => {
+        try {
+            const res = await api.get(`/stage/user/${id}`);
+            if (res.data.success) {
+                const fetchedStages = res.data.stage || [];
+                const mappedStages = fetchedStages.sort((a, b) => a.sequence - b.sequence).map((s, index) => ({
+                    id: s._id,
+                    title: s.name || '',
+                    status: s.status || 'PROCESSED',
+                    date: new Date(s.time || new Date()).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }),
+                    time: new Date(s.time || new Date()).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+                    icon: '📦',
+                    remark: s.description || s.remark || '',
+                    remarkLabel: s.remarkLabel || '',
+                    current: s.status === 'active'
+                }));
+                setStages(mappedStages);
+                setCurrentIndex(0);
+            }
+        } catch (err) {
+            console.error('Failed to fetch user stages:', err);
+        }
+    };
+
 
     const fetchLiveTracking = async () => {
         try {
@@ -187,18 +213,23 @@ export default function TrackingPortal() {
         setStages(items);
 
         try {
-            await api.put('/stage/live', { stages: items });
+            if (selectedUserId) {
+                await api.put(`/stage/user/${selectedUserId}/reorder`, { stages: items.map(s => s.id) });
+            } else {
+                await api.put('/stage/live', { stages: items });
+            }
             Swal.fire({
                 toast: true,
                 position: 'top-end',
                 showConfirmButton: false,
                 timer: 2000,
                 icon: 'success',
-                title: 'Live tracking order saved'
+                title: selectedUserId ? 'User tracking order saved' : 'Live tracking order saved'
             });
         } catch (error) {
             Swal.fire('Error', 'Failed to save new order', 'error');
-            fetchLiveTracking(); // Revert to server state
+            if (selectedUserId) fetchUserSpecificStages(selectedUserId);
+            else fetchLiveTracking(); // Revert to server state
         }
     };
 
@@ -364,31 +395,37 @@ export default function TrackingPortal() {
                         </p>
                     </div>
                     <div className="flex flex-wrap items-center gap-4">
+                        <div className="relative group">
+                            <select
+                                value={selectedUserId}
+                                onChange={(e) => {
+                                    setSelectedUserId(e.target.value);
+                                    const user = allUsers.find(u => (u._id || u.id) === e.target.value);
+                                    if (user) {
+                                        setSelectedUserName(user.firstName ? `${user.firstName} ${user.lastName}` : user.name);
+                                    } else {
+                                        setSelectedUserName('');
+                                    }
+                                }}
+                                className="appearance-none bg-white border-2 border-gray-100 px-6 py-3 pr-10 rounded-full text-xs font-bold text-gray-700 outline-none focus:border-[#D4AF37] transition-all shadow-sm cursor-pointer"
+                            >
+                                <option value="">-- Select Partner --</option>
+                                {allUsers.map((u) => (
+                                    <option key={u._id || u.id} value={u._id || u.id}>
+                                        {u.firstName ? `${u.firstName} ${u.lastName}` : u.name}
+                                    </option>
+                                ))}
+                            </select>
+                            <svg className="w-4 h-4 text-gray-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none group-focus-within:text-[#D4AF37] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
                         <button 
                             onClick={() => setIsGlobalModalOpen(true)}
                             className="bg-white text-black border-2 border-black px-6 py-3 rounded-full text-xs font-black uppercase tracking-widest hover:bg-gray-50 transition-all shadow-md hover:scale-105 active:scale-95 flex items-center gap-2"
                         >
-                            ⚙️ Master List
+                            ⚙️ Global Stages
                         </button>
-                        <button 
-                            onClick={() => handleOpenModal()}
-                            className="bg-black text-white px-6 py-3 rounded-full text-xs font-black uppercase tracking-widest hover:bg-gray-800 transition-all shadow-xl hover:scale-105 active:scale-95 flex items-center gap-2"
-                        >
-                            <span>+</span> Add Stage
-                        </button>
-                        <button 
-                            onClick={() => setIsQRModalOpen(true)}
-                            className="flex items-center gap-3 bg-gradient-gold text-black px-5 py-3 rounded-full shadow-lg transition-all hover:brightness-105 active:scale-95"
-                        >
-                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
-                            </svg>
-                            <span className="text-sm font-black uppercase tracking-wider">QR Portal</span>
-                        </button>
-                        <div className="flex items-center gap-3 bg-white px-5 py-3 rounded-full shadow-lg border border-gray-100 transition-all">
-                            <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse ring-4 ring-green-100"></span>
-                            <span className="text-sm font-black text-gray-700 uppercase tracking-wider">System Online</span>
-                        </div>
                     </div>
                 </div>
 
@@ -401,9 +438,24 @@ export default function TrackingPortal() {
                         Live Ascrow Trust Fund Tracking {viewMode === 'detailed' && '& Detailed Activity Log'}
                     </h2>
 
-                    {/* Carousel Container */}
-                    <DragDropContext onDragEnd={handleCarouselDragEnd}>
-                        <div className="relative z-10">
+                    {/* Content Section */}
+                    {!selectedUserId ? (
+                        <div className="flex flex-col items-center justify-center py-20 text-center relative z-10">
+                            <div className="w-24 h-24 bg-gray-50 border-2 border-gray-100 rounded-full flex items-center justify-center mb-6 shadow-inner">
+                                <svg className="w-10 h-10 text-[#D4AF37]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+                                </svg>
+                            </div>
+                            <h3 className="text-xl font-black text-gray-950 uppercase tracking-[0.2em] mb-4">Partner Selection Required</h3>
+                            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest max-w-lg leading-relaxed">
+                                Please choose a partner from the dropdown menu above to load their real-time trust fund tracking stages and detailed activity log.
+                            </p>
+                        </div>
+                    ) : (
+                        <>
+                            {/* Carousel Container */}
+                            <DragDropContext onDragEnd={handleCarouselDragEnd}>
+                                <div className="relative z-10">
                             <div className="overflow-hidden">
                                 <Droppable droppableId="carousel-stages" direction="horizontal">
                                     {(provided) => (
@@ -590,36 +642,10 @@ export default function TrackingPortal() {
                             </div>
                         </div>
 
-                        {/* Transaction Info Box */}
-                        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-xl min-w-full md:min-w-[300px] flex flex-col gap-2 relative overflow-hidden group/info">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-gray-50 -z-0 rounded-bl-full"></div>
-                            <div className="relative z-10 space-y-4">
-                                <div className="flex justify-between items-center border-b border-gray-50 pb-2">
-                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Transaction ID:</span>
-                                    <input 
-                                        className="text-[11px] font-black text-gray-900 uppercase border-none focus:ring-0 p-0 text-right bg-transparent w-32 cursor-pointer"
-                                        value={transactionInfo.id}
-                                        onChange={(e) => setTransactionInfo({...transactionInfo, id: e.target.value})}
-                                    />
-                                </div>
-                                <div className="flex justify-between items-center border-b border-gray-50 pb-2">
-                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Ascrow Total Amount:</span>
-                                    <input 
-                                        className="text-[11px] font-black text-gray-900 uppercase border-none focus:ring-0 p-0 text-right bg-transparent w-32 cursor-pointer"
-                                        value={transactionInfo.total}
-                                        onChange={(e) => setTransactionInfo({...transactionInfo, total: e.target.value})}
-                                    />
-                                </div>
-                                <div className="space-y-1">
-                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-1">Last Stage Update:</span>
-                                    <p className="text-[11px] font-black text-gray-900 uppercase leading-snug">
-                                        {stages.find(s => s.current)?.title || 'No Active Stage'} - 
-                                        <span className="text-[#D4AF37] ml-1">{transactionInfo.lastUpdate}</span>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
+
                     </div>
+                    </>
+                    )}
                 </div>
             </div>
 
@@ -653,7 +679,7 @@ export default function TrackingPortal() {
                             <label className="text-[10px] font-black text-gray-700 uppercase tracking-widest">Stage Title</label>
                             <input required value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-[#D4AF37]/20 outline-none transition-all text-sm font-bold text-black placeholder:text-gray-400" />
                         </div>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 gap-4">
                             <div className="space-y-2">
                                 <label className="text-[10px] font-black text-gray-700 uppercase tracking-widest">Status</label>
                                 <select value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-[#D4AF37]/20 outline-none transition-all text-sm font-bold text-black">
@@ -661,10 +687,6 @@ export default function TrackingPortal() {
                                     <option>ACTIVE</option>
                                     <option>UPCOMING</option>
                                 </select>
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-black text-gray-700 uppercase tracking-widest">Icon (Emoji)</label>
-                                <input value={formData.icon} onChange={e => setFormData({...formData, icon: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-[#D4AF37]/20 outline-none transition-all text-sm font-bold text-black placeholder:text-gray-400" />
                             </div>
                         </div>
                         <div className="grid grid-cols-2 gap-4">
@@ -676,14 +698,6 @@ export default function TrackingPortal() {
                                 <label className="text-[10px] font-black text-gray-700 uppercase tracking-widest">Time</label>
                                 <input placeholder="02:56 PM" value={formData.time} onChange={e => setFormData({...formData, time: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-[#D4AF37]/20 outline-none transition-all text-sm font-bold text-black placeholder:text-gray-400" />
                             </div>
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black text-gray-700 uppercase tracking-widest">Main Remark</label>
-                            <textarea rows={3} value={formData.remark} onChange={e => setFormData({...formData, remark: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-[#D4AF37]/20 outline-none transition-all text-sm font-bold resize-none text-black placeholder:text-gray-400" />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black text-gray-700 uppercase tracking-widest">Remark Label</label>
-                            <input value={formData.remarkLabel} onChange={e => setFormData({...formData, remarkLabel: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-[#D4AF37]/20 outline-none transition-all text-sm font-bold text-black placeholder:text-gray-400" />
                         </div>
                         <div className="flex items-center gap-4 py-2">
                             <input type="checkbox" id="current" checked={formData.current} onChange={e => setFormData({...formData, current: e.target.checked})} className="w-5 h-5 rounded border-gray-100 text-[#D4AF37] focus:ring-[#D4AF37]/20" />
