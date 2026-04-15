@@ -15,27 +15,46 @@ function decodeJwtPayload(token) {
     }
 }
 
+const API_URL = process.env.NODE_ENV === 'development' 
+    ? process.env.LOCAL_API_HOST 
+    : process.env.API_HOST;
+
+async function verifyTokenOnServer(request) {
+    try {
+        const response = await fetch(`${API_URL}/auth/verify`, {
+            headers: {
+                'Cookie': request.headers.get('cookie') || '',
+            },
+        });
+        const data = await response.json();
+        return {
+            isValid: response.ok,
+            user: data?.user || null,
+            setCookie: response.headers.get('set-cookie')
+        };
+    } catch (error) {
+        console.error('Middleware verification failed:', error);
+        return { isValid: false, user: null };
+    }
+}
+
 // This proxy acts to protect your routes based on the refreshToken
-export function proxy(request) {
+export async function proxy(request) {
     const token = request.cookies.get('refreshToken')?.value;
     const accessToken = request.cookies.get('accessToken')?.value;
     const { pathname } = request.nextUrl;
 
     const isPublicFile = pathname.match(/\.[^/]+$/);
-    // matches anything like /logo.png, /image.jpg, /file.css, etc.
-
     if (isPublicFile) {
         return NextResponse.next();
     }
 
-
-    // Define routes that shouldn't be protected by this proxy
     const isPublicRoute =
         pathname.startsWith('/_next') ||
         pathname.startsWith('/api') ||
         pathname.startsWith('/static') ||
-        // Add any other public asset paths here if needed
-        pathname === '/favicon.ico';
+        pathname === '/favicon.ico' ||
+        pathname === '/verify';
 
     if (isPublicRoute) {
         return NextResponse.next();
@@ -43,9 +62,15 @@ export function proxy(request) {
 
     const isLoginRoute = pathname === '/login';
 
-    // 1. If user HAS a token and tries to access /login -> Redirect to dashboard (/)
+    // 1. If user HAS a token and tries to access /login -> Verify and potentially redirect
     if (token && isLoginRoute) {
-        return NextResponse.redirect(new URL('/', request.url));
+        const { isValid, setCookie } = await verifyTokenOnServer(request);
+        if (isValid) {
+            const response = NextResponse.redirect(new URL('/', request.url));
+            if (setCookie) response.headers.set('set-cookie', setCookie);
+            return response;
+        }
+        // If token is invalid, allow them to stay on /login (invalid cookies will be cleared by the backend or ignored)
     }
 
     // 2. If user DOES NOT HAVE a token and tries to access any page EXCEPT /login -> Redirect to /login
@@ -53,18 +78,20 @@ export function proxy(request) {
         return NextResponse.redirect(new URL('/login', request.url));
     }
 
-    // 3. Admin route protection — block non-admin users from /admin/*
+    // 3. Admin route protection
     const isAdminRoute = pathname.startsWith('/admin');
 
-    if (isAdminRoute && accessToken) {
-        const payload = decodeJwtPayload(accessToken);
-        if (!payload || (payload.role !== 'admin' && payload.role !== 'superadmin')) {
+    if (isAdminRoute) {
+        const { isValid, user, setCookie } = await verifyTokenOnServer(request);
+        
+        if (!isValid || (user?.role !== 'admin' && user?.role !== 'superadmin')) {
             return NextResponse.redirect(new URL('/', request.url));
         }
-    }
 
-    // If admin route but no accessToken yet (token might be refreshing),
-    // let it through — the client-side guard in AdminLayout will handle it.
+        const response = NextResponse.next();
+        if (setCookie) response.headers.set('set-cookie', setCookie);
+        return response;
+    }
 
     // Otherwise, let them proceed normally
     return NextResponse.next();
