@@ -32,7 +32,7 @@ export default function DesktopTopNav({ user, tabs, activeTab, setActiveTab, log
                         </>
                     )}
                     {user ? (
-                        <button 
+                        <button
                             onClick={logout}
                             className="px-5 cursor-pointer py-1.5 rounded-full bg-gradient-gold text-gray-900 text-xs font-bold shadow-md hover:shadow-lg hover:scale-105 transition-all mr-2"
                         >
@@ -57,6 +57,7 @@ export default function DesktopTopNav({ user, tabs, activeTab, setActiveTab, log
                         if (tab === 'PERSONAL') href = '/personal';
                         if (tab === 'MEMBERSHIPS') href = '/memberships';
                         if (tab === 'DOCUMENTS') href = '/documents';
+                        if (tab === 'TRACKING') href = '/tracking';
 
                         const isActive = (href === '/' && pathname === '/') || (href !== '/' && pathname.startsWith(href));
 

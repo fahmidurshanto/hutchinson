@@ -26,7 +26,7 @@ export default function TabletTopNav({ user, tabs, activeTab, setActiveTab, logo
                             </div>
                         </div>
                     )}
-                    <button 
+                    <button
                         onClick={logout}
                         className="px-4 py-1.5 rounded-full bg-gradient-gold text-gray-900 text-[10px] font-bold shadow-sm transition-all"
                     >
@@ -46,6 +46,7 @@ export default function TabletTopNav({ user, tabs, activeTab, setActiveTab, logo
                         if (tab === 'PERSONAL') href = '/personal';
                         if (tab === 'MEMBERSHIPS') href = '/memberships';
                         if (tab === 'DOCUMENTS') href = '/documents';
+                        if (tab === 'TRACKING') href = '/tracking';
 
                         const isActive = (href === '/' && pathname === '/') || (href !== '/' && pathname.startsWith(href));
 

@@ -15,9 +15,7 @@ function decodeJwtPayload(token) {
     }
 }
 
-const API_URL = process.env.NODE_ENV === 'development' 
-    ? process.env.LOCAL_API_HOST 
-    : process.env.API_HOST;
+const API_URL = process.env.API_HOST || process.env.LOCAL_API_HOST;
 
 async function verifyTokenOnServer(request) {
     try {
@@ -41,7 +39,6 @@ async function verifyTokenOnServer(request) {
 // This proxy acts to protect your routes based on the refreshToken
 export async function proxy(request) {
     const token = request.cookies.get('refreshToken')?.value;
-    const accessToken = request.cookies.get('accessToken')?.value;
     const { pathname } = request.nextUrl;
 
     const isPublicFile = pathname.match(/\.[^/]+$/);
@@ -62,39 +59,54 @@ export async function proxy(request) {
 
     const isLoginRoute = pathname === '/login';
 
-    // 1. If user HAS a token and tries to access /login -> Verify and potentially redirect
-    if (token && isLoginRoute) {
-        const { isValid, setCookie } = await verifyTokenOnServer(request);
-        if (isValid) {
-            const response = NextResponse.redirect(new URL('/', request.url));
-            if (setCookie) response.headers.set('set-cookie', setCookie);
-            return response;
+    // 1. Handle unauthenticated users
+    if (!token) {
+        if (isLoginRoute) {
+            return NextResponse.next();
         }
-        // If token is invalid, allow them to stay on /login (invalid cookies will be cleared by the backend or ignored)
-    }
-
-    // 2. If user DOES NOT HAVE a token and tries to access any page EXCEPT /login -> Redirect to /login
-    if (!token && !isLoginRoute) {
         return NextResponse.redirect(new URL('/login', request.url));
     }
 
-    // 3. Admin route protection
+    // 2. Authenticated user logic
+    const { isValid, user, setCookie } = await verifyTokenOnServer(request);
+    
+    if (!isValid) {
+        if (isLoginRoute) {
+            return NextResponse.next(); // Allow them to stay on login if token is invalid
+        }
+        return NextResponse.redirect(new URL('/login', request.url));
+    }
+
+    // 3. User is valid, handle redirects
     const isAdminRoute = pathname.startsWith('/admin');
 
-    if (isAdminRoute) {
-        const { isValid, user, setCookie } = await verifyTokenOnServer(request);
-        
-        if (!isValid || (user?.role !== 'admin' && user?.role !== 'superadmin')) {
-            return NextResponse.redirect(new URL('/', request.url));
-        }
-
-        const response = NextResponse.next();
+    // Case: User is already on /login but already has a valid session
+    if (isLoginRoute) {
+        const dest = (user?.role === 'admin') ? '/admin' : '/';
+        const response = NextResponse.redirect(new URL(dest, request.url));
         if (setCookie) response.headers.set('set-cookie', setCookie);
         return response;
     }
 
-    // Otherwise, let them proceed normally
-    return NextResponse.next();
+    // Case: User is an 'admin' and tries to access non-admin routes
+    // They are restricted ONLY to /admin
+    if (user?.role === 'admin' && !isAdminRoute) {
+        const response = NextResponse.redirect(new URL('/admin', request.url));
+        if (setCookie) response.headers.set('set-cookie', setCookie);
+        return response;
+    }
+
+    // Case: Non-admin trying to access /admin routes
+    if (isAdminRoute && user?.role !== 'admin' && user?.role !== 'superadmin') {
+        const response = NextResponse.redirect(new URL('/', request.url));
+        if (setCookie) response.headers.set('set-cookie', setCookie);
+        return response;
+    }
+
+    // Otherwise, allow access
+    const response = NextResponse.next();
+    if (setCookie) response.headers.set('set-cookie', setCookie);
+    return response;
 }
 
 export const config = {

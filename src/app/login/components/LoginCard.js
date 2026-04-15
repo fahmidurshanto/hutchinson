@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import LoginForm from './LoginForm';
 
 export default function LoginCard() {
@@ -18,7 +18,14 @@ export default function LoginCard() {
                         </p>
                     </div>
                     
-                    <LoginForm />
+                    <Suspense fallback={
+                        <div className="flex flex-col items-center justify-center py-12">
+                            <div className="w-8 h-8 border-3 border-[#c6a267]/20 border-t-[#c6a267] rounded-full animate-spin"></div>
+                            <p className="mt-4 text-[13px] text-gray-500 font-medium animate-pulse">Initializing Secure Portal...</p>
+                        </div>
+                    }>
+                        <LoginForm />
+                    </Suspense>
                     
                     <div className="mt-7 flex justify-center items-center text-[12px]">
                         <span className="text-white w-4 h-4 mr-1.5 rounded-full bg-[#957e46] text-[10px] flex justify-center items-center font-bold">?</span>
