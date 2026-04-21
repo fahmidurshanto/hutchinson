@@ -8,7 +8,7 @@ import Swal from 'sweetalert2';
 
 export default function LoginForm() {
     const [showPassword, setShowPassword] = useState(false);
-    const [email, setEmail] = useState('');
+    const [userId, setUserId] = useState('');
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
@@ -24,7 +24,7 @@ export default function LoginForm() {
             const loginUrl = redirectParam 
                 ? `/auth/login?redirect=${encodeURIComponent(redirectParam)}` 
                 : '/auth/login';
-            const response = await api.post(loginUrl, { email, password });
+            const response = await api.post(loginUrl, { userId, password });
             const data = response.data;
             console.log(data);
             if (data.success) {
@@ -85,21 +85,21 @@ export default function LoginForm() {
 
     return (
         <form className="w-full mt-5" onSubmit={handleSubmit}>
-            {/* Username Input */}
+            {/* User ID Input */}
             <div className="w-full mb-4">
                 <div className="relative">
                     <input
-                        id="email"
-                        type="email"
+                        id="userId"
+                        type="text"
                         required
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="your.name@hutchinson.apac"
+                        value={userId}
+                        onChange={(e) => setUserId(e.target.value)}
+                        placeholder="HT-001"
                         className="w-full px-3 py-2.5 border-[1.5px] border-gray-300 rounded-md focus:outline-none focus:border-[#c6a267] focus:ring-1 focus:ring-[#c6a267] transition-colors text-black placeholder-gray-500 bg-white text-[14px]"
                     />
                 </div>
-                <label htmlFor="email" className="block mt-1 text-[13px] font-medium text-[#9a804a]">
-                    Username or Email Address
+                <label htmlFor="userId" className="block mt-1 text-[13px] font-medium text-[#9a804a]">
+                    Unique Partner User ID
                 </label>
             </div>
 

@@ -6,90 +6,15 @@ import Swal from 'sweetalert2';
 import { getFriendlyErrorMessage } from '@/lib/error-utils';
 import DashboardModal from '../../../components/ui/DashboardModal';
 
-const initialStages = [
-    {
-        id: 1,
-        title: "Hutchinson Ascrow trust fund - London",
-        status: "PROCESSED",
-        date: "Past, 01, 2026",
-        time: "02:56 PM",
-        icon: "🛡️",
-        remark: "Initial Funding: £2.5M GBP received. Documentation verified. Funds moved to domestic sterling account.",
-        remarkLabel: "AML check complete and approved."
-    },
-    {
-        id: 2,
-        title: "Fidelity Ascrow Limited - Bristol",
-        status: "PROCESSED",
-        date: "Past, 30, 2026",
-        time: "02:56 PM",
-        icon: "🏦",
-        remark: "Currency Conversion: Conversion from GBP to CHF initiated. Hedging contract executed. Funds transfer to Swiss bank confirmed.",
-        remarkLabel: "Standard conversion rate applied."
-    },
-    {
-        id: 3,
-        title: "Ascrow Swiss Limited",
-        status: "PROCESSED",
-        date: "Past, 30, 2026",
-        time: "03:21 PM",
-        icon: "📦",
-        remark: "CHF Ingestion: Funds arrived in CHF account. Cross-border conversion. Cross-border fees applied. Funds consolidated.",
-        remarkLabel: "Swiss-specific reporting form 109 filed."
-    },
-    {
-        id: 4,
-        title: "Dominica Republic Ascrow Trust",
-        status: "PROCESSED",
-        date: "Past, 01, 2026",
-        time: "03:21 PM",
-        icon: "💰",
-        remark: "Onshore to Offshore Transfer: Funds moved to tax-neutral domicile. Legal structure check completed.",
-        remarkLabel: "Ascrow agreement amendment #1 applied."
-    },
-    {
-        id: 5,
-        title: "Hutchinson (India)",
-        status: "PROCESSED",
-        date: "Past, 01, 2026",
-        time: "02:56 PM",
-        icon: "⚖️",
-        remark: "Sub-Project Allocation: Funds allocated for Bangalore tech center expansion. Compliance with Indian FEMA regulations confirmed.",
-        remarkLabel: "Local director approval received."
-    },
-    {
-        id: 6,
-        title: "Ascrow (UAE) Limited",
-        status: "PROCESSED",
-        date: "Past, 30, 2026",
-        time: "02:56 PM",
-        icon: "🏢",
-        remark: "Final Allocation: Funds moved to UAE Ascrow for real estate JV project in Dubai. Final stage before BVI consolidation.",
-        remarkLabel: "UAE Central Bank clearance obtained."
-    },
-    {
-        id: 7,
-        title: "BVI Ascrow Limited",
-        status: "ACTIVE",
-        label: "LIVE",
-        date: "MAR 30, 2026",
-        time: "02:56 PM",
-        icon: "🏛️",
-        current: true,
-        remark: "Current Balance: 2.15M AED. Pending allocation for Dubai real estate JV. Final KYC verification for new partners in progress.",
-        remarkLabel: "Urgent action needed - Signator update required."
-    }
-];
 
 export default function TrackingPortal() {
     const [viewMode, setViewMode] = useState('detailed'); // 'simple' or 'detailed'
-    const [stages, setStages] = useState(initialStages);
+    const [stages, setStages] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingStage, setEditingStage] = useState(null);
     const [globalStages, setGlobalStages] = useState([]);
     const [isGlobalModalOpen, setIsGlobalModalOpen] = useState(false);
     const [newGlobalName, setNewGlobalName] = useState('');
-    const [editingGlobal, setEditingGlobal] = useState(null);
     const [isQRModalOpen, setIsQRModalOpen] = useState(false);
     const [qrCodeData, setQrCodeData] = useState(null);
     const [selectedUserId, setSelectedUserId] = useState('');
@@ -435,7 +360,7 @@ export default function TrackingPortal() {
 
                     <h2 className="text-xs font-black text-gray-950 uppercase tracking-[0.3em] mb-8 relative z-10 flex items-center gap-3">
                         <span className="w-8 h-[2px] bg-[#D4AF37]"></span>
-                        Live Ascrow Trust Fund Tracking {viewMode === 'detailed' && '& Detailed Activity Log'}
+                        Live Escrow Trust Fund Tracking {viewMode === 'detailed' && '& Detailed Activity Log'}
                     </h2>
 
                     {/* Content Section */}
@@ -650,7 +575,7 @@ export default function TrackingPortal() {
             <DashboardModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
-                title={editingStage ? 'Edit Ascrow Stage' : 'Add New Ascrow Stage'}
+                title={editingStage ? 'Edit Escrow Stage' : 'Add New Escrow Stage'}
                 icon={<span>📑</span>}
                 footer={
                     <div className="flex gap-3">

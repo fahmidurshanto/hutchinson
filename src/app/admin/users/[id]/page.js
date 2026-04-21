@@ -16,8 +16,13 @@ export default function UserDetailPage({ params }) {
     const router = useRouter();
     const { userList, updateUser, deleteUser, user: currentUser } = useAppContext();
     const resolvedParams = use(params);
-    const userId = resolvedParams.id;
-    const user = userList.find(u => String(u._id || u.id) === String(userId));
+    const userIdFromParam = resolvedParams.id;
+
+    console.log("userid:", userIdFromParam)
+
+    const [user, setUser] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     const [schedules, setSchedules] = useState([]);
     const [schedulesLoading, setSchedulesLoading] = useState(true);
@@ -33,7 +38,7 @@ export default function UserDetailPage({ params }) {
                 .replace("image/png", "image/octet-stream");
             let downloadLink = document.createElement("a");
             downloadLink.href = pngUrl;
-            downloadLink.download = `QR_${user.firstName || 'Client'}_${userId.slice(-6)}.png`;
+            downloadLink.download = `QR_${user.firstName || 'Client'}_${userIdFromParam.slice(-6)}.png`;
             document.body.appendChild(downloadLink);
             downloadLink.click();
             document.body.removeChild(downloadLink);
@@ -41,10 +46,35 @@ export default function UserDetailPage({ params }) {
     };
 
     useEffect(() => {
-        if (!userId || !currentUser) return;
+        if (!userIdFromParam) return;
+
+        const fetchUserData = async () => {
+            setIsLoading(true);
+            try {
+                const response = await api.get(`/auth/user/${userIdFromParam}`);
+                if (response.data.success) {
+                    setUser(response.data.user);
+                } else {
+                    setError(response.data.message || 'User not found');
+                }
+            } catch (err) {
+                console.error('Fetch user error:', err);
+                setError(getFriendlyErrorMessage(err));
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchUserData();
+    }, [userIdFromParam]);
+
+    console.log("User:", user)
+
+    useEffect(() => {
+        if (!userIdFromParam || !currentUser) return;
         const fetchSchedules = async () => {
             try {
-                const res = await api.get(`/schedule/user/${userId}`);
+                const res = await api.get(`/schedule/user/${userIdFromParam}`);
                 if (res.data.success) {
                     setSchedules(res.data.data || []);
                 }
@@ -55,26 +85,83 @@ export default function UserDetailPage({ params }) {
             }
         };
         fetchSchedules();
-    }, [userId, currentUser]);
+    }, [userIdFromParam, currentUser]);
 
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [formData, setFormData] = useState({
-        firstName: user?.firstName || user?.name?.split(' ')[0] || '',
-        lastName: user?.lastName || user?.name?.split(' ').slice(1).join(' ') || '',
-        email: user?.email || '',
-        status: user?.status || 'active',
-        Phone: user?.Phone || '',
-        gender: user?.gender || 'male',
-        nric: user?.nric || '',
-        address: user?.address || '',
-        nationality: user?.nationality || '',
-        secondaryPhone: user?.secondaryPhone || '',
-        secondaryEmail: user?.secondaryEmail || '',
+        firstName: '',
+        lastName: '',
+        email: '',
+        status: 'active',
+        userId: '',
+        Phone: '',
+        gender: 'male',
+        nric: '',
+        address: '',
+        nationality: '',
+        secondaryPhone: '',
+        secondaryEmail: '',
         password: ''
     });
 
-    if (!user) {
-        return <NotFound title="User Not Found" message="The individual profile you are seeking is not registered in the Hutchinson database." />;
+    // Update formData when user data is loaded
+    useEffect(() => {
+        if (user) {
+            setFormData({
+                firstName: user.firstName || user.name?.split(' ')[0] || '',
+                lastName: user.lastName || user.name?.split(' ').slice(1).join(' ') || '',
+                email: user.email || '',
+                status: user.status || 'active',
+                userId: user.userId || '',
+                Phone: user.Phone || '',
+                gender: user.gender || 'male',
+                nric: user.nric || '',
+                address: user.address || '',
+                nationality: user.nationality || '',
+                secondaryPhone: user.secondaryPhone || '',
+                secondaryEmail: user.secondaryEmail || '',
+                password: ''
+            });
+        }
+    }, [user]);
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen flex flex-col items-center justify-center gap-6 bg-white overflow-hidden relative">
+                {/* Visual Accent */}
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-gold"></div>
+
+                {/* Lion Watermark */}
+                <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none">
+                    <img src="/lion.png" alt="" className="w-[500px] grayscale" />
+                </div>
+
+                <div className="relative">
+                    {/* Primary Spinner */}
+                    <div className="w-20 h-20 border-4 border-gray-100 border-t-[#D4AF37] rounded-full animate-spin"></div>
+                    {/* Pulse Effect */}
+                    <div className="absolute inset-0 w-20 h-20 border-4 border-[#D4AF37]/20 rounded-full animate-ping"></div>
+                </div>
+
+                <div className="text-center z-10">
+                    <h2 className="text-[10px] sm:text-[12px] font-black text-gray-950 uppercase tracking-[0.5em] mb-2 animate-pulse">
+                        Accessing Vault
+                    </h2>
+                    <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest flex items-center justify-center gap-2">
+                        Retrieving Individual Profile
+                        <span className="flex gap-1">
+                            <span className="w-1 h-1 bg-[#D4AF37] rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                            <span className="w-1 h-1 bg-[#D4AF37] rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                            <span className="w-1 h-1 bg-[#D4AF37] rounded-full animate-bounce"></span>
+                        </span>
+                    </p>
+                </div>
+            </div>
+        );
+    }
+
+    if (error || !user) {
+        return <NotFound title="User Not Found" message={error || "The individual profile you are seeking is not registered in the Hutchinson database."} />;
     }
 
     const handleDelete = () => {
@@ -113,6 +200,7 @@ export default function UserDetailPage({ params }) {
             lastName: user.lastName || user.name?.split(' ').slice(1).join(' ') || '',
             email: user.email,
             status: user.status,
+            userId: user.userId || '',
             Phone: user.Phone || '',
             gender: user.gender || 'male',
             nric: user.nric || '',
@@ -174,6 +262,10 @@ export default function UserDetailPage({ params }) {
                                                 <label className="block text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-gradient-gold mb-1.5 sm:mb-2">Last Name</label>
                                                 <input required type="text" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3.5 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" value={formData.lastName} onChange={(e) => setFormData({ ...formData, lastName: e.target.value })} />
                                             </div>
+                                        </div>
+                                        <div>
+                                            <label className="block text-[8px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-gradient-gold mb-1.5 sm:mb-2">Partner User ID</label>
+                                            <input required type="text" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3.5 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" value={formData.userId} onChange={(e) => setFormData({ ...formData, userId: e.target.value })} />
                                         </div>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                                             <div>
@@ -266,7 +358,7 @@ export default function UserDetailPage({ params }) {
                     </div>
                     <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                         <button
-                            onClick={() => router.push(`/admin/users/${userId}/reports`)}
+                            onClick={() => router.push(`/admin/users/${userIdFromParam}/reports`)}
                             className="flex-1 sm:flex-none px-5 py-3 rounded-xl bg-gradient-gold text-black font-black text-[10px] uppercase tracking-widest hover:scale-105 shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
                         >
                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -278,7 +370,7 @@ export default function UserDetailPage({ params }) {
                             onClick={async () => {
                                 setIsQRModalOpen(true);
                                 try {
-                                    await api.post(`/stage/generateqrcode/${userId}`);
+                                    await api.post(`/stage/generateqrcode/${userIdFromParam}`);
                                 } catch (err) {
                                     logger.error('Failed to notify server of QR generation:', err);
                                 }
@@ -355,7 +447,7 @@ export default function UserDetailPage({ params }) {
                         </div>
                         <div className="space-y-3">
                             <button
-                                onClick={() => router.push(`/admin/users/${userId}/memberships`)}
+                                onClick={() => router.push(`/admin/users/${userIdFromParam}/memberships`)}
                                 className="w-full px-6 py-4 rounded-2xl bg-gradient-gold text-black font-black text-xs uppercase tracking-widest hover:scale-[1.02] shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-3"
                             >
                                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -364,7 +456,7 @@ export default function UserDetailPage({ params }) {
                                 Memberships
                             </button>
                             <button
-                                onClick={() => router.push(`/admin/users/${userId}/services`)}
+                                onClick={() => router.push(`/admin/users/${userIdFromParam}/services`)}
                                 className="w-full px-6 py-4 rounded-2xl bg-white border-2 border-[#D4AF37] text-black font-black text-xs uppercase tracking-widest hover:bg-gray-50 hover:scale-[1.02] shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-3"
                             >
                                 <svg className="w-5 h-5 text-[#A67C00]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -392,6 +484,10 @@ export default function UserDetailPage({ params }) {
                                     <p className="text-sm sm:text-base text-gray-950 font-black">{user.lastName || user.name?.split(' ').slice(1).join(' ')}</p>
                                 </div>
                                 <div>
+                                    <label className="block text-[9px] sm:text-[10px] font-black text-gradient-gold uppercase tracking-widest mb-1.5 sm:mb-2">Partner User ID</label>
+                                    <p className="text-sm sm:text-base text-gray-950 font-black">{user.userId || 'N/A'}</p>
+                                </div>
+                                <div>
                                     <label className="block text-[9px] sm:text-[10px] font-black text-gradient-gold uppercase tracking-widest mb-1.5 sm:mb-2">Email Address</label>
                                     <p className="text-sm sm:text-base text-gray-950 font-black truncate">{user.email}</p>
                                 </div>
@@ -416,6 +512,10 @@ export default function UserDetailPage({ params }) {
                                 <div>
                                     <label className="block text-[9px] sm:text-[10px] font-black text-gradient-gold uppercase tracking-widest mb-1.5 sm:mb-2">Nationality</label>
                                     <p className="text-sm sm:text-base text-gray-950 font-black">{user.nationality || 'N/A'}</p>
+                                </div>
+                                <div>
+                                    <label className="block text-[9px] sm:text-[10px] font-black text-gradient-gold uppercase tracking-widest mb-1.5 sm:mb-2">Gender</label>
+                                    <p className="text-sm sm:text-base text-gray-950 font-black uppercase">{user.gender || 'N/A'}</p>
                                 </div>
                                 <div className="sm:col-span-2">
                                     <label className="block text-[9px] sm:text-[10px] font-black text-gradient-gold uppercase tracking-widest mb-1.5 sm:mb-2">Residential Address</label>
@@ -506,12 +606,12 @@ export default function UserDetailPage({ params }) {
                         </div>
 
                         <UserDocuments
-                            targetUserId={userId}
+                            targetUserId={userIdFromParam}
                             userName={user.firstName ? `${user.firstName} ${user.lastName}` : user.name}
                         />
 
                         <UserStageManagement
-                            userId={userId}
+                            userId={userIdFromParam}
                             userName={user.firstName ? `${user.firstName} ${user.lastName}` : user.name}
                         />
 
@@ -572,7 +672,7 @@ export default function UserDetailPage({ params }) {
                 <div className="flex flex-col items-center justify-center py-8 space-y-6">
                     <div className="p-4 bg-white rounded-3xl shadow-xl border border-gray-100" ref={qrRef}>
                         <QRCodeCanvas
-                            value={`${typeof window !== 'undefined' ? window.location.origin : ''}/verify?id=${userId}`}
+                            value={`${typeof window !== 'undefined' ? window.location.origin : ''}/verify?id=${userIdFromParam}`}
                             size={200}
                             level="H"
                             includeMargin={true}
@@ -593,7 +693,7 @@ export default function UserDetailPage({ params }) {
                                 Scan this code to verify the client's identity and enable stage tracking visibility.
                             </p>
                         </div>
-                        
+
                         <button
                             onClick={downloadQRCode}
                             className="w-full px-6 py-3 bg-black text-white rounded-xl text-[10px] font-black uppercase tracking-[0.2em] shadow-lg hover:bg-gray-800 transition-all flex items-center justify-center gap-2 group"
