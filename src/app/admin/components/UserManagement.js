@@ -154,7 +154,7 @@ export default function UserManagement() {
                                         </div>
                                         <div>
                                             <label className="block text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-gradient-gold mb-1.5 sm:mb-2">Partner User ID</label>
-                                            <input required type="text" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" placeholder="e.g. HT-001" value={formData.userId} onChange={(e) => setFormData({ ...formData, userId: e.target.value })} />
+                                            <input required type="text" className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black" placeholder="[EMAIL_ADDRESS]" value={formData.userId} onChange={(e) => setFormData({ ...formData, userId: e.target.value })} />
                                         </div>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                                             <div>

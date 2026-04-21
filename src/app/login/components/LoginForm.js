@@ -94,7 +94,7 @@ export default function LoginForm() {
                         required
                         value={userId}
                         onChange={(e) => setUserId(e.target.value)}
-                        placeholder="HT-001"
+                        placeholder="[EMAIL_ADDRESS]"
                         className="w-full px-3 py-2.5 border-[1.5px] border-gray-300 rounded-md focus:outline-none focus:border-[#c6a267] focus:ring-1 focus:ring-[#c6a267] transition-colors text-black placeholder-gray-500 bg-white text-[14px]"
                     />
                 </div>
