@@ -156,7 +156,7 @@ export default function DocumentsPage() {
 
                             return (
                                 <div key={dIdx} className="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between hover:bg-gray-50 transition-colors group gap-4">
-                                    <div className="flex items-center gap-3 sm:gap-5">
+                                    <div className="flex items-center gap-3 sm:gap-5 min-w-0 flex-1">
                                         <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center transition-all flex-shrink-0
                                             ${isViewed ? 'bg-gray-100 text-gray-300' : 'bg-gray-50 text-gray-400 group-hover:bg-gradient-gold group-hover:text-black'}`}>
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 sm:w-6 sm:h-6">
@@ -172,7 +172,7 @@ export default function DocumentsPage() {
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center sm:justify-end">
+                                    <div className="flex items-center sm:justify-end flex-shrink-0">
                                         <button
                                             disabled={isViewed}
                                             onClick={() => handleView(doc)}
