@@ -1,14 +1,49 @@
 "use client";
 
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import Swal from 'sweetalert2';
+import api from '@/lib/api';
 
 export default function DocumentsPage() {
-    const { user, documents, addDocument, viewDocument } = useAppContext();
+    const { user, addDocument, viewDocument } = useAppContext();
+    const [documents, setDocuments] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
     const fileInputRef = useRef(null);
 
     const isAdmin = user?.role === 'admin';
+
+    const fetchDocs = useCallback(async () => {
+        const userId = user?._id || user?.id;
+        if (!userId) {
+            setIsLoading(false);
+            return;
+        }
+        setIsLoading(true);
+        try {
+            const response = await api.get(`/document/user/${userId}`);
+            if (response.data.success) {
+                const mapped = response.data.documents.map(doc => ({
+                    id: doc._id,
+                    userId: doc.user,
+                    name: doc.name,
+                    date: new Date(doc.createdAt).toISOString().split('T')[0],
+                    size: doc.size || 'N/A',
+                    category: 'Documents',
+                    hasUserSeen: doc.hasUserSeen || false
+                }));
+                setDocuments(mapped);
+            }
+        } catch (error) {
+            console.error('Fetch docs error:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [user]);
+
+    useEffect(() => {
+        fetchDocs();
+    }, [fetchDocs]);
 
     const handleUploadClick = () => {
         fileInputRef.current?.click();
@@ -25,7 +60,10 @@ export default function DocumentsPage() {
             });
 
             try {
-                await addDocument(file);
+                const response = await addDocument(file);
+                if (response && response.success) {
+                    await fetchDocs();
+                }
                 Swal.fire({
                     icon: 'success',
                     title: 'Asset Secured',
@@ -108,7 +146,12 @@ export default function DocumentsPage() {
                         <h3 className="font-black text-xs uppercase tracking-[0.2em] text-gray-500">All Files & Documents</h3>
                     </div>
                     <div className="divide-y divide-gray-50">
-                        {documents.map((doc, dIdx) => {
+                        {isLoading ? (
+                            <div className="p-12 text-center">
+                                <div className="w-8 h-8 border-4 border-[#D4AF37] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                                <p className="text-gray-400 font-bold uppercase tracking-widest text-xs">Accessing Vault...</p>
+                            </div>
+                        ) : (documents || []).map((doc, dIdx) => {
                             const isViewed = !isAdmin && doc.hasUserSeen;
 
                             return (
@@ -145,7 +188,7 @@ export default function DocumentsPage() {
                             );
                         })}
 
-                        {documents.length === 0 && (
+                        {(!isLoading && (documents || []).length === 0) && (
                             <div className="p-12 text-center">
                                 <p className="text-gray-400 font-bold uppercase tracking-widest text-xs">No documents available in the vault</p>
                             </div>

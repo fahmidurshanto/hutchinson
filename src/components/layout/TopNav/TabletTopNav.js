@@ -57,7 +57,7 @@ export default function TabletTopNav({ user, tabs, activeTab, setActiveTab, logo
                                 className="flex items-stretch"
                                 onClick={() => setActiveTab(tab)}
                             >
-                                <span className={`flex items-center h-full px-4 font-bold text-[10px] tracking-wider whitespace-nowrap border-b-[2px] transition-colors
+                                <span className={`flex items-center h-full px-4 font-bold text-[10px] tracking-wider whitespace-nowrap border-b-2 transition-colors
                                     ${isActive
                                         ? 'bg-[#1e232d] text-white border-[#D4AF37]'
                                         : 'text-[#4a4a4a] border-transparent'
