@@ -32,13 +32,33 @@ export default function MembershipsPage() {
     }, [user]);
 
     const renderTierCard = (tier, idx) => (
-        <div key={idx} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 w-full mb-4 hover:shadow-md hover:border-gray-200 transition-all duration-300 group gap-3">
-            <h3 className="text-xs sm:text-sm font-black text-gray-900 tracking-tight uppercase leading-tight truncate">{tier.name}</h3>
-            <span className={`px-3 sm:px-4 py-1.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-widest border shrink-0 ${tier.status === 'active' ? 'bg-green-50 text-green-600 border-green-100' : 'bg-gray-50 text-gray-400 border-gray-100'}`}>
-                {tier.status}
+        <div key={idx} className="group relative bg-white rounded-2xl border border-gray-100 overflow-hidden flex items-center gap-4 px-5 py-4 w-full mb-3 hover:shadow-lg hover:border-gray-200 transition-all duration-300 shadow-sm">
+            {/* Left accent bar */}
+            <div className={`absolute left-0 top-0 bottom-0 w-[3px] rounded-l-2xl transition-all duration-300 ${tier.status === 'active' ? 'bg-gradient-to-b from-[#D4AF37] to-[#f0d060]' : 'bg-gray-200 group-hover:bg-gray-300'}`} />
+
+            {/* Icon */}
+            <div className={`shrink-0 w-9 h-9 rounded-xl flex items-center justify-center ml-1 ${tier.status === 'active' ? 'bg-[#D4AF37]/10' : 'bg-gray-100'}`}>
+                <svg className={`w-4 h-4 ${tier.status === 'active' ? 'text-[#D4AF37]' : 'text-gray-400'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+                </svg>
+            </div>
+
+            {/* Name + amount */}
+            <div className="flex-1 min-w-0">
+                <h3 className="text-[13px] font-black text-gray-900 tracking-wide uppercase leading-tight truncate">{tier.name}</h3>
+                <div className='flex gap-2 text-[12px] font-medium'>
+                    <span className="text-zinc-600">Amount:</span>
+                    <span className="text-zinc-600">{tier.amount ?? '—'}</span>
+                </div>
+            </div>
+
+            {/* Status badge */}
+            <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.15em] border transition-all duration-200 shrink-0 ${tier.status === 'active' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-gray-50 text-gray-400 border-gray-200'}`}>
+                {tier.status === 'active' ? '● Active' : '○ Inactive'}
             </span>
         </div>
     );
+
 
     const primaryTiers = tiers.filter(t => t.type === 'primary');
     const thirdPartyTiers = tiers.filter(t => t.type === 'third_party');

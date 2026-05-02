@@ -158,6 +158,7 @@ function AddMembershipModal({ available, currentTiers, onClose, onAdd }) {
     const [selectedMembership, setSelectedMembership] = useState('');
     const [customName, setCustomName] = useState('');
     const [customType, setCustomType] = useState('primary');
+    const [amount, setAmount] = useState('');
 
     const unusedTiers = available.filter(avail => !currentTiers.find(curr => curr.name === avail.name));
 
@@ -165,7 +166,7 @@ function AddMembershipModal({ available, currentTiers, onClose, onAdd }) {
         if (mode === 'select') {
             const membership = available.find(m => m.name === selectedMembership);
             if (membership) {
-                onAdd(membership);
+                onAdd({ ...membership, amount: amount ? Number(amount) : 0 });
             }
         } else {
             if (customName.trim()) {
@@ -173,7 +174,8 @@ function AddMembershipModal({ available, currentTiers, onClose, onAdd }) {
                     name: customName.trim(),
                     type: customType,
                     status: 'active',
-                    benefits: []
+                    benefits: [],
+                    amount: amount ? Number(amount) : 0
                 });
             }
         }
@@ -227,6 +229,18 @@ function AddMembershipModal({ available, currentTiers, onClose, onAdd }) {
                                     <option key={t.name} value={t.name}>{t.name} ({t.type === 'primary' ? 'Primary' : 'Marketing Agent'})</option>
                                 ))}
                             </select>
+
+                            <div className="flex flex-col gap-2">
+                                <label className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.2em] text-[#D4AF37]">Amount</label>
+                                <input
+                                    type="number"
+                                    placeholder="e.g. 5000"
+                                    className='w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm font-bold text-gray-900 focus:border-[#D4AF37] outline-none transition-all appearance-none'
+                                    value={amount}
+                                    onChange={e => setAmount(e.target.value)}
+                                    min="0"
+                                />
+                            </div>
                         </div>
                     ) : (
                         <div className="flex flex-col gap-4 animate__animated animate__fadeIn animate__faster">
@@ -250,6 +264,17 @@ function AddMembershipModal({ available, currentTiers, onClose, onAdd }) {
                                     <option value="primary">Primary</option>
                                     <option value="third_party">Marketing Agent</option>
                                 </select>
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <label className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.2em] text-[#D4AF37]">Amount</label>
+                                <input
+                                    type="number"
+                                    placeholder="e.g. 5000"
+                                    className='w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm font-bold text-gray-900 focus:border-[#D4AF37] outline-none transition-all appearance-none'
+                                    value={amount}
+                                    onChange={e => setAmount(e.target.value)}
+                                    min="0"
+                                />
                             </div>
                         </div>
                     )}
@@ -421,40 +446,61 @@ export default function MembershipsPage() {
         });
     };
 
-    const renderTierCard = (tier, globalIdx) => (
-        <div key={globalIdx} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex items-center justify-between px-6 py-5 w-full mb-4 hover:shadow-md hover:border-gray-200 transition-all duration-300 group">
-            <h3 className="text-sm font-black text-gray-900 tracking-tight uppercase leading-tight">{tier.name}</h3>
+    const renderTierCard = (tier, globalIdx) => {
+        console.log("tier", tier)
+        return (
+            <div key={globalIdx} className="group relative bg-white rounded-2xl border border-gray-100 overflow-hidden flex items-center gap-4 px-5 py-4 w-full mb-3 hover:shadow-lg hover:border-gray-200 transition-all duration-300 shadow-sm">
+                {/* Left accent bar */}
+                <div className={`absolute left-0 top-0 bottom-0 w-[3px] rounded-l-2xl transition-all duration-300 ${tier.status === 'active' ? 'bg-gradient-to-b from-[#D4AF37] to-[#f0d060]' : 'bg-gray-200 group-hover:bg-gray-300'}`} />
 
-            {/* Status badge + edit icon */}
-            <div className="flex items-center gap-2 shrink-0">
-                <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${tier.status === 'active' ? 'bg-green-50 text-green-600 border-green-100' : 'bg-gray-50 text-gray-400 border-gray-100'}`}>
-                    {tier.status}
-                </span>
-
-                {/* Edit pencil icon */}
-                <button
-                    onClick={() => setEditTarget({ tier, globalIdx })}
-                    title="Change status"
-                    className="w-7 h-7 rounded-full flex items-center justify-center text-gray-300 hover:text-[#D4AF37] hover:bg-amber-50 border border-transparent hover:border-amber-100 transition-all duration-200"
-                >
-                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536M9 13l-4 1 1-4 9.293-9.293a1 1 0 011.414 0l2.586 2.586a1 1 0 010 1.414L9 13z" />
+                {/* Icon */}
+                <div className={`shrink-0 w-9 h-9 rounded-xl flex items-center justify-center ml-1 ${tier.status === 'active' ? 'bg-[#D4AF37]/10' : 'bg-gray-100'}`}>
+                    <svg className={`w-4 h-4 ${tier.status === 'active' ? 'text-[#D4AF37]' : 'text-gray-400'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
                     </svg>
-                </button>
+                </div>
 
-                {/* Delete trash icon */}
-                <button
-                    onClick={() => handleRemoveMembership(tier.name)}
-                    title="Remove membership"
-                    className="w-7 h-7 ml-1 rounded-full flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 border border-transparent hover:border-red-100 transition-all duration-200"
-                >
-                    <svg className="w-3.5 h-3.5 cursor-pointer text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                </button>
+                {/* Name + amount */}
+                <div className="flex-1 min-w-0">
+                    <h3 className="text-[13px] font-black text-gray-900 tracking-wide uppercase leading-tight truncate">{tier.name}</h3>
+                    <div className='flex gap-2 text-[12px] font-medium'>
+                        <span className="text-zinc-600">Amount:</span>
+                        <span className="text-zinc-600">{tier.amount}</span>
+                    </div>
+
+                </div>
+
+                {/* Status badge + actions */}
+                <div className="flex items-center gap-2 shrink-0">
+                    <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.15em] border transition-all duration-200 ${tier.status === 'active' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-gray-50 text-gray-400 border-gray-200'}`}>
+                        {tier.status === 'active' ? '● Active' : '○ Inactive'}
+                    </span>
+
+                    {/* Edit pencil icon */}
+                    <button
+                        onClick={() => setEditTarget({ tier, globalIdx })}
+                        title="Change status"
+                        className="w-8 h-8 rounded-xl flex items-center justify-center text-gray-300 hover:text-[#D4AF37] hover:bg-amber-50 border border-transparent hover:border-amber-200 transition-all duration-200"
+                    >
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536M9 13l-4 1 1-4 9.293-9.293a1 1 0 011.414 0l2.586 2.586a1 1 0 010 1.414L9 13z" />
+                        </svg>
+                    </button>
+
+                    {/* Delete trash icon */}
+                    <button
+                        onClick={() => handleRemoveMembership(tier.name)}
+                        title="Remove membership"
+                        className="w-8 h-8 rounded-xl flex items-center justify-center text-red-300 hover:text-red-500 hover:bg-red-50 border border-transparent hover:border-red-200 transition-all duration-200"
+                    >
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </button>
+                </div>
             </div>
-        </div>
-    );
+        )
+    }
 
     const primaryTiers = tiers.map((t, i) => ({ t, i })).filter(({ t }) => t.type === 'primary');
     const thirdPartyTiers = tiers.map((t, i) => ({ t, i })).filter(({ t }) => t.type === 'third_party');

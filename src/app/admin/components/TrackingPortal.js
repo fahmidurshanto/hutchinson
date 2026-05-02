@@ -78,6 +78,7 @@ export default function TrackingPortal() {
             if (res.data.success) {
                 setAllUsers(res.data.users || []);
             }
+            console.log("Users:",res.data.users)
         } catch (err) {
             console.error('Failed to fetch users:', err);
         }
