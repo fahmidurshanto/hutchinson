@@ -505,6 +505,8 @@ export default function MembershipsPage() {
     const primaryTiers = tiers.map((t, i) => ({ t, i })).filter(({ t }) => t.type === 'primary');
     const thirdPartyTiers = tiers.map((t, i) => ({ t, i })).filter(({ t }) => t.type === 'third_party');
 
+    const totalAmount = tiers.filter(t => t.status === 'active').reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0);
+
     if (loading) {
         return (
             <div className="w-full h-screen flex items-center justify-center bg-white">
@@ -520,25 +522,45 @@ export default function MembershipsPage() {
     return (
         <div className="w-full h-full flex flex-col items-center relative overflow-visible pb-20">
             {/* Header Section */}
-            <div className="w-full text-center py-8 md:py-14 mb-10 animate__animated animate__fadeIn relative flex flex-col items-center justify-center min-h-[30vh]">
-                <div className="relative z-10 w-full px-4">
-                    <h1 className="text-4xl md:text-6xl font-bold mb-4 tracking-tighter text-gradient-gold bg-clip-text uppercase">
-                        Partnerships
-                    </h1>
-                    <p className="text-gray-500 text-base md:text-xl font-medium max-w-2xl mx-auto">
-                        A dual-categorized overview of your primary entities and strategic third-party alliances.
-                    </p>
+            <div className="w-full py-8 md:py-14 mb-10 animate__animated animate__fadeIn relative flex flex-col items-center justify-center min-h-[30vh]">
+                <div className="relative z-10 w-full px-4 max-w-7xl flex flex-col lg:flex-row items-center justify-between gap-10">
+                    <div className="text-center lg:text-left flex-1">
+                        <h1 className="text-4xl md:text-6xl font-bold mb-4 tracking-tighter text-gradient-gold bg-clip-text uppercase">
+                            Partnerships
+                        </h1>
+                        <p className="text-gray-500 text-base md:text-xl font-medium max-w-2xl mx-auto lg:mx-0">
+                            A dual-categorized overview of your primary entities and strategic third-party alliances.
+                        </p>
 
-                    <div className="flex flex-col md:flex-row items-center justify-center gap-6 mt-8">
-                        <button
-                            onClick={() => setIsAddModalOpen(true)}
-                            className="flex items-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-gold text-black font-black text-xs uppercase tracking-widest shadow-lg hover:shadow-gold-500/30 hover:scale-[1.02] transition-all"
-                        >
-                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                            </svg>
-                            Add Membership
-                        </button>
+                        <div className="flex flex-col md:flex-row items-center justify-center lg:justify-start gap-6 mt-8">
+                            <button
+                                onClick={() => setIsAddModalOpen(true)}
+                                className="flex items-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-gold text-black font-black text-xs uppercase tracking-widest shadow-lg hover:shadow-gold-500/30 hover:scale-[1.02] transition-all"
+                            >
+                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                </svg>
+                                Add Membership
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Grand Total Box */}
+                    <div className="w-full max-w-[340px] bg-white rounded-[2.5rem] border border-amber-100 shadow-2xl shadow-amber-900/5 overflow-hidden animate__animated animate__fadeInRight">
+                        <div className="bg-gradient-to-r from-[#D4AF37] to-[#F2D472] py-3 px-4 text-center">
+                            <span className="text-[11px] font-black uppercase tracking-[0.2em] text-black/80">Grand Total</span>
+                        </div>
+                        <div className="p-8 text-center bg-[#fdfaf1]/50">
+                            <div className="flex items-center justify-center gap-3">
+                                <span className="text-3xl font-black text-[#D4AF37]">$</span>
+                                <span className="text-4xl md:text-5xl font-black text-gray-900 tracking-tight">
+                                    {totalAmount.toLocaleString()}
+                                </span>
+                            </div>
+                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-5">
+                                Across all Primary & Marketing Agent entities
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>

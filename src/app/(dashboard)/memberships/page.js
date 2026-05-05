@@ -63,6 +63,8 @@ export default function MembershipsPage() {
     const primaryTiers = tiers.filter(t => t.type === 'primary');
     const thirdPartyTiers = tiers.filter(t => t.type === 'third_party');
 
+    const totalAmount = tiers.filter(t => t.status === 'active').reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0);
+
     if (loading) {
         return (
             <div className="w-full h-screen flex items-center justify-center bg-white">
@@ -87,14 +89,34 @@ export default function MembershipsPage() {
             </div>
 
             {/* Header Section */}
-            <div className="w-full text-center py-8 md:py-14 animate__animated animate__fadeIn relative flex flex-col items-center justify-center min-h-[15vh] md:min-h-[25vh]">
-                <div className="relative z-10 w-full px-4">
-                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black mb-4 tracking-tight text-gradient-gold bg-clip-text uppercase leading-none">
-                        Strategic Partners
-                    </h1>
-                    <p className="text-[10px] sm:text-xs md:text-base text-gray-400 font-bold uppercase tracking-[0.3em] max-w-2xl mx-auto opacity-70">
-                        Dual-Categorized Entity Overview • Excellence & Trust
-                    </p>
+            <div className="w-full py-8 md:py-14 animate__animated animate__fadeIn relative flex flex-col items-center justify-center min-h-[15vh] md:min-h-[25vh]">
+                <div className="relative z-10 w-full px-4 max-w-7xl flex flex-col lg:flex-row items-center justify-between gap-10">
+                    <div className="text-center lg:text-left flex-1">
+                        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black mb-4 tracking-tight text-gradient-gold bg-clip-text uppercase leading-none">
+                            Strategic Partners
+                        </h1>
+                        <p className="text-[10px] sm:text-xs md:text-base text-gray-400 font-bold uppercase tracking-[0.3em] max-w-2xl mx-auto lg:mx-0 opacity-70">
+                            Dual-Categorized Entity Overview • Excellence & Trust
+                        </p>
+                    </div>
+
+                    {/* Grand Total Box */}
+                    <div className="w-full max-w-[340px] bg-white rounded-[2.5rem] border border-amber-100 shadow-2xl shadow-amber-900/5 overflow-hidden animate__animated animate__fadeInRight">
+                        <div className="bg-gradient-to-r from-[#D4AF37] to-[#F2D472] py-3 px-4 text-center">
+                            <span className="text-[11px] font-black uppercase tracking-[0.2em] text-black/80">Grand Total</span>
+                        </div>
+                        <div className="p-8 text-center bg-[#fdfaf1]/50">
+                            <div className="flex items-center justify-center gap-3">
+                                <span className="text-3xl font-black text-[#D4AF37]">$</span>
+                                <span className="text-4xl md:text-5xl font-black text-gray-900 tracking-tight">
+                                    {totalAmount.toLocaleString()}
+                                </span>
+                            </div>
+                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-5">
+                                Across all Primary & Marketing Agent entities
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
