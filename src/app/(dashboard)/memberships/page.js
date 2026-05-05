@@ -102,8 +102,8 @@ export default function MembershipsPage() {
 
                     {/* Grand Total Box */}
                     <div className="w-full max-w-[340px] bg-white rounded-[2.5rem] border border-amber-100 shadow-2xl shadow-amber-900/5 overflow-hidden animate__animated animate__fadeInRight">
-                        <div className="bg-gradient-to-r from-[#D4AF37] to-[#F2D472] py-3 px-4 text-center">
-                            <span className="text-[11px] font-black uppercase tracking-[0.2em] text-black/80">Grand Total</span>
+                        <div className="bg-gradient-to-r from-[#D4AF37] to-[#F2D472] py-2 px-4 text-center">
+                            <span className="text-3xl py-12 p-10 bold font-black uppercase tracking-tight text-gray-800 leading-tight">Grand Total</span>
                         </div>
                         <div className="p-8 text-center bg-[#fdfaf1]/50">
                             <div className="flex items-center justify-center gap-3">
@@ -120,7 +120,7 @@ export default function MembershipsPage() {
                 </div>
             </div>
 
-            {/* Side-by-Side Content Section */}
+            {/* Side-bySide Content Section */}
             <div className="w-full max-w-7xl px-2 sm:px-4 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 lg:gap-20 animate__animated animate__fadeInUp relative z-10 pb-20">
 
                 {/* Primary Column */}
