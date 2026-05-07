@@ -4,11 +4,13 @@ import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import UserDocuments from '../../admin/components/UserDocuments';
 import { useRouter } from 'next/navigation';
+import api from '@/lib/api';
 
 export default function PersonalPage() {
     const router = useRouter();
     const { user } = useAppContext();
     const [isRequestingUpdate, setIsRequestingUpdate] = useState(false);
+    const [isChangingPassword, setIsChangingPassword] = useState(false);
     const [updateData, setUpdateData] = useState({
         firstName: '',
         lastName: '',
@@ -18,6 +20,12 @@ export default function PersonalPage() {
         nric: '',
         nationality: '',
         address: ''
+    });
+
+    const [passwordData, setPasswordData] = useState({
+        oldPassword: '',
+        newPassword: '',
+        confirmPassword: ''
     });
 
     useEffect(() => {
@@ -58,6 +66,55 @@ export default function PersonalPage() {
             });
             setIsRequestingUpdate(false);
         }, 2000);
+    };
+
+    const handleChangePasswordSubmit = async (e) => {
+        e.preventDefault();
+
+        if (passwordData.newPassword !== passwordData.confirmPassword) {
+            Swal.fire({
+                title: 'Mismatch Warning',
+                text: 'The new password and confirmation do not match our strategic alignment.',
+                icon: 'warning',
+                confirmButtonColor: '#D4AF37'
+            });
+            return;
+        }
+
+        // Dynamic loading state for premium feel
+        Swal.fire({
+            title: 'Encrypting...',
+            text: 'Securing your new credentials with institutional-grade protocols.',
+            allowOutsideClick: false,
+            didOpen: () => { Swal.showLoading(); }
+        });
+
+        try {
+            const response = await api.post('/user/change-password', {
+                oldPassword: passwordData.oldPassword,
+                newPassword: passwordData.newPassword
+            });
+
+            if (response.data.success) {
+                Swal.fire({
+                    title: 'Security Updated',
+                    text: 'Your security credentials have been successfully re-encrypted and updated in our strategic core.',
+                    icon: 'success',
+                    confirmButtonColor: '#D4AF37'
+                });
+                setIsChangingPassword(false);
+                setPasswordData({ oldPassword: '', newPassword: '', confirmPassword: '' });
+            }
+        } catch (error) {
+            console.error('Password change error:', error);
+            const errorMessage = error.response?.data?.message || 'Strategic update failed. Please try again later.';
+            Swal.fire({
+                title: 'Update Failed',
+                text: errorMessage,
+                icon: 'error',
+                confirmButtonColor: '#D4AF37'
+            });
+        }
     };
 
     if (!user) return <div className="p-20 text-center font-bold text-gradient-gold">Loading Profile...</div>;
@@ -132,12 +189,21 @@ export default function PersonalPage() {
                         <div className="bg-white rounded-3xl border border-gray-100 shadow-xl overflow-hidden">
                             <div className="px-6 sm:px-8 py-5 sm:py-6 bg-gray-50/50 border-b border-gray-100 flex items-center justify-between">
                                 <h3 className="text-[10px] sm:text-[11px] font-black text-gray-900 uppercase tracking-widest">Personal Information</h3>
-                                <button
-                                    onClick={() => setIsRequestingUpdate(true)}
-                                    className="text-[9px] sm:text-[10px] font-black text-[#D4AF37] border-b border-[#D4AF37]/30 uppercase tracking-widest hover:text-[#A67C00] transition-colors"
-                                >
-                                    Request Update
-                                </button>
+                                <div className='flex gap-2
+                                '>
+                                    <button
+                                        onClick={() => setIsChangingPassword(true)}
+                                        className="text-[9px] sm:text-[10px] font-black text-[#D4AF37] border-b border-[#D4AF37]/30 uppercase tracking-widest hover:text-[#A67C00] transition-colors"
+                                    >
+                                        Change Password
+                                    </button>
+                                    <button
+                                        onClick={() => setIsRequestingUpdate(true)}
+                                        className="text-[9px] sm:text-[10px] font-black text-[#D4AF37] border-b border-[#D4AF37]/30 uppercase tracking-widest hover:text-[#A67C00] transition-colors"
+                                    >
+                                        Request Update
+                                    </button>
+                                </div>
                             </div>
                             <div className="p-6 sm:p-8 grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
                                 <div>
@@ -215,8 +281,8 @@ export default function PersonalPage() {
 
             {/* Information Update Request Modal - Moved outside to prevent stacking context traps */}
             {isRequestingUpdate && (
-                <div className="fixed inset-0 bg-black/70 backdrop-blur-md z-[100] flex items-center justify-center p-4 animate__animated animate__fadeIn">
-                    <div className="bg-white rounded-[1.5rem] md:rounded-[2rem] shadow-2xl border-2 border-[#D4AF37]/50 w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col animate__animated animate__zoomIn">
+                <div className="fixed inset-0 bg-black/70 backdrop-blur-md z-100 flex items-center justify-center p-4 animate__animated animate__fadeIn">
+                    <div className="bg-white rounded-3xl shadow-2xl border-2 border-[#D4AF37]/50 w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col animate__animated animate__zoomIn">
                         <div className="bg-gradient-gold px-6 sm:px-8 py-4 sm:py-6 flex items-center justify-between border-b border-[#b38b22]/30">
                             <div>
                                 <h2 className="text-black font-black text-sm sm:text-base md:text-lg tracking-widest uppercase">Request Update</h2>
@@ -229,8 +295,8 @@ export default function PersonalPage() {
                             </button>
                         </div>
 
-                        <form onSubmit={handleRequestSubmit} className="flex-1 overflow-y-auto p-5 sm:p-8 md:p-10 space-y-6 sm:space-y-8 md:space-y-10 custom-scrollbar">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 sm:gap-x-12 gap-y-4 sm:gap-y-6 md:gap-y-8">
+                        <form onSubmit={handleRequestSubmit} className="flex-1 overflow-y-auto p-2 sm:p-4 md:p-6 space-y-6 sm:space-y-8 md:space-y-10 custom-scrollbar">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2 sm:gap-x-6 gap-y-1 sm:gap-y-2 md:gap-y-3 mb-0">
                                 <div className="space-y-1 sm:space-y-1.5 md:space-y-2">
                                     <label className="text-[9px] sm:text-[10px] font-black text-[#A67C00] uppercase tracking-widest">First Name</label>
                                     <input
@@ -328,6 +394,79 @@ export default function PersonalPage() {
                                     type="button"
                                     onClick={() => setIsRequestingUpdate(false)}
                                     className="px-6 md:px-12 py-4 sm:py-5 bg-gray-100 text-gray-500 font-black uppercase tracking-widest rounded-xl hover:bg-gray-200 transition-all cursor-pointer text-[10px] sm:text-xs md:text-sm"
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Change Password Modal */}
+            {isChangingPassword && (
+                <div className="fixed inset-0 bg-black/70 backdrop-blur-md z-100 flex items-center justify-center p-4 animate__animated animate__fadeIn">
+                    <div className="bg-white rounded-3xl shadow-2xl border-2 border-[#D4AF37]/50 w-full max-w-2xl overflow-hidden flex flex-col animate__animated animate__zoomIn">
+                        <div className="bg-gradient-gold px-6 sm:px-8 py-4 sm:py-6 flex items-center justify-between border-b border-[#b38b22]/30">
+                            <div>
+                                <h2 className="text-black font-black text-sm sm:text-base md:text-lg tracking-widest uppercase">Change Password</h2>
+                                <p className="text-[8px] sm:text-[9px] md:text-[10px] text-black/60 font-black uppercase tracking-widest mt-0.5 md:mt-1">Institutional security protocol</p>
+                            </div>
+                            <button onClick={() => setIsChangingPassword(false)} className="bg-black/10 hover:bg-black/20 p-2 rounded-full transition-colors group">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 sm:w-5 sm:h-5 text-black group-hover:rotate-90 transition-transform">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleChangePasswordSubmit} className="p-6 sm:p-8 space-y-6">
+                            <div className="space-y-4">
+                                <div className="space-y-1.5">
+                                    <label className="text-[9px] sm:text-[10px] font-black text-[#A67C00] uppercase tracking-widest">Current Password</label>
+                                    <input
+                                        type="password"
+                                        required
+                                        className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black"
+                                        placeholder="••••••••"
+                                        value={passwordData.oldPassword}
+                                        onChange={(e) => setPasswordData({ ...passwordData, oldPassword: e.target.value })}
+                                    />
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label className="text-[9px] sm:text-[10px] font-black text-[#A67C00] uppercase tracking-widest">New Password</label>
+                                    <input
+                                        type="password"
+                                        required
+                                        className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black"
+                                        placeholder="••••••••"
+                                        value={passwordData.newPassword}
+                                        onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                                    />
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label className="text-[9px] sm:text-[10px] font-black text-[#A67C00] uppercase tracking-widest">Confirm New Password</label>
+                                    <input
+                                        type="password"
+                                        required
+                                        className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black"
+                                        placeholder="••••••••"
+                                        value={passwordData.confirmPassword}
+                                        onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="pt-4 flex flex-col sm:flex-row gap-4">
+                                <button
+                                    type="submit"
+                                    className="flex-1 py-4 bg-gradient-gold text-black font-black uppercase tracking-widest rounded-xl shadow-lg hover:brightness-110 active:scale-[0.98] transition-all cursor-pointer text-xs"
+                                >
+                                    Confirm Security Update
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setIsChangingPassword(false)}
+                                    className="px-8 py-4 bg-gray-100 text-gray-500 font-black uppercase tracking-widest rounded-xl hover:bg-gray-200 transition-all cursor-pointer text-xs"
                                 >
                                     Cancel
                                 </button>

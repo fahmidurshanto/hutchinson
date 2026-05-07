@@ -72,10 +72,11 @@ export default function LoginForm() {
             }
         } catch (error) {
             console.log(error);
+            const errorMessage = error.response?.data?.message || 'Connection to corporate servers failed.';
             Swal.fire({
                 icon: 'error',
-                title: 'System Error',
-                text: 'Connection to corporate servers failed.',
+                title: 'Login Error',
+                text: errorMessage,
                 confirmButtonColor: '#D33'
             });
         } finally {
