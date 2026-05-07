@@ -354,8 +354,7 @@ export default function MembershipsPage() {
         const { tier } = editTarget;
         try {
             const response = await api.patch(`/user/memberships/${userId}`, {
-                tierId: tier._id,
-                tierName: tier.name, // keep as fallback
+                tierName: tier.name,
                 status: newStatus
             });
 
@@ -423,7 +422,7 @@ export default function MembershipsPage() {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
-                    const response = await api.delete(`/user/memberships/${userId}/${tier._id || encodeURIComponent(tier.name.toLowerCase().replace(/\s+/g, '_'))}`);
+                    const response = await api.delete(`/user/memberships/${userId}/${encodeURIComponent(tier.name.toLowerCase().replace(/\s+/g, '_'))}`);
                     if (response.data.success) {
                         setTiers(response.data.data);
                         Swal.fire({

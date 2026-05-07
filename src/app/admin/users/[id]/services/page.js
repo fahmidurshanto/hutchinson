@@ -175,7 +175,7 @@ export default function ServicesPage() {
 
     const handleDeleteService = async () => {
         try {
-            const response = await api.delete(`/user/user-services/${userId}/${deleteTarget._id || deleteTarget.name}`);
+            const response = await api.delete(`/user/user-services/${userId}/${encodeURIComponent(deleteTarget.name)}`);
 
             if (response.data.success) {
                 setServices(response.data.data);
@@ -191,8 +191,7 @@ export default function ServicesPage() {
     const handleToggleStatus = async (service) => {
         try {
             const response = await api.patch(`/user/user-services/${userId}`, {
-                serviceId: service._id,
-                serviceName: service.name // keep as fallback
+                serviceName: service.name
             });
 
             if (response.data.success) {
