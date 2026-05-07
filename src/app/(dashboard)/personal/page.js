@@ -78,16 +78,28 @@ export default function PersonalPage() {
             didOpen: () => { Swal.showLoading(); }
         });
 
-        // Simulate API call to send request to admin
-        setTimeout(() => {
+        try {
+            const response = await api.post('/profile-updates', updateData);
+            
+            if (response.data.success) {
+                Swal.fire({
+                    title: 'Request Transmitted',
+                    text: 'Your profile update request has been successfully transmitted to the Strategic Administrator. You will be notified once the changes are verified and applied.',
+                    icon: 'success',
+                    confirmButtonColor: '#D4AF37'
+                });
+                setIsRequestingUpdate(false);
+            }
+        } catch (error) {
+            console.error('Profile update request error:', error);
+            const errorMessage = error.response?.data?.message || 'Strategic update failed. Please try again later.';
             Swal.fire({
-                title: 'Request Transmitted',
-                text: 'Your profile update request has been successfully transmitted to the Strategic Administrator. You will be notified once the changes are verified and applied.',
-                icon: 'success',
+                title: 'Transmission Failed',
+                text: errorMessage,
+                icon: 'error',
                 confirmButtonColor: '#D4AF37'
             });
-            setIsRequestingUpdate(false);
-        }, 2000);
+        }
     };
 
     const handleChangePasswordSubmit = async (e) => {
