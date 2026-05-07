@@ -28,6 +28,28 @@ export default function PersonalPage() {
         confirmPassword: ''
     });
 
+    const [showPassword, setShowPassword] = useState({
+        old: false,
+        new: false,
+        confirm: false
+    });
+
+    const [errors, setErrors] = useState({});
+
+    // SVG Icons
+    const EyeIcon = () => (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.644C3.399 8.049 7.311 4.5 12 4.5c4.689 0 8.601 3.549 9.964 7.178.07.186.07.39 0 .576-1.363 3.63-5.275 7.178-12 7.178-4.689 0-8.601-3.549-9.964-7.178z" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+    );
+
+    const EyeOffIcon = () => (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
+        </svg>
+    );
+
     useEffect(() => {
         if (user) {
             setUpdateData({
@@ -70,14 +92,18 @@ export default function PersonalPage() {
 
     const handleChangePasswordSubmit = async (e) => {
         e.preventDefault();
+        setErrors({});
 
+        let newErrors = {};
+        if (!passwordData.oldPassword) newErrors.oldPassword = 'Current password is required';
+        if (!passwordData.newPassword) newErrors.newPassword = 'New password is required';
+        if (!passwordData.confirmPassword) newErrors.confirmPassword = 'Confirmation is required';
         if (passwordData.newPassword !== passwordData.confirmPassword) {
-            Swal.fire({
-                title: 'Mismatch Warning',
-                text: 'The new password and confirmation do not match our strategic alignment.',
-                icon: 'warning',
-                confirmButtonColor: '#D4AF37'
-            });
+            newErrors.confirmPassword = 'Passwords do not match';
+        }
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
             return;
         }
 
@@ -423,36 +449,66 @@ export default function PersonalPage() {
                             <div className="space-y-4">
                                 <div className="space-y-1.5">
                                     <label className="text-[9px] sm:text-[10px] font-black text-[#A67C00] uppercase tracking-widest">Current Password</label>
-                                    <input
-                                        type="password"
-                                        required
-                                        className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black"
-                                        placeholder="••••••••"
-                                        value={passwordData.oldPassword}
-                                        onChange={(e) => setPasswordData({ ...passwordData, oldPassword: e.target.value })}
-                                    />
+                                    <div className="relative">
+                                        <input
+                                            type={showPassword.old ? "text" : "password"}
+                                            required
+                                            className={`w-full bg-gray-50 border-2 ${errors.oldPassword ? 'border-red-400' : 'border-gray-100'} rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black pr-12`}
+                                            placeholder="••••••••"
+                                            value={passwordData.oldPassword}
+                                            onChange={(e) => setPasswordData({ ...passwordData, oldPassword: e.target.value })}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowPassword({ ...showPassword, old: !showPassword.old })}
+                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#D4AF37] transition-colors"
+                                        >
+                                            {showPassword.old ? <EyeOffIcon /> : <EyeIcon />}
+                                        </button>
+                                    </div>
+                                    {errors.oldPassword && <p className="text-[10px] text-red-500 font-bold uppercase tracking-tight ml-1 animate__animated animate__headShake">{errors.oldPassword}</p>}
                                 </div>
                                 <div className="space-y-1.5">
                                     <label className="text-[9px] sm:text-[10px] font-black text-[#A67C00] uppercase tracking-widest">New Password</label>
-                                    <input
-                                        type="password"
-                                        required
-                                        className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black"
-                                        placeholder="••••••••"
-                                        value={passwordData.newPassword}
-                                        onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-                                    />
+                                    <div className="relative">
+                                        <input
+                                            type={showPassword.new ? "text" : "password"}
+                                            required
+                                            className={`w-full bg-gray-50 border-2 ${errors.newPassword ? 'border-red-400' : 'border-gray-100'} rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black pr-12`}
+                                            placeholder="••••••••"
+                                            value={passwordData.newPassword}
+                                            onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowPassword({ ...showPassword, new: !showPassword.new })}
+                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#D4AF37] transition-colors"
+                                        >
+                                            {showPassword.new ? <EyeOffIcon /> : <EyeIcon />}
+                                        </button>
+                                    </div>
+                                    {errors.newPassword && <p className="text-[10px] text-red-500 font-bold uppercase tracking-tight ml-1 animate__animated animate__headShake">{errors.newPassword}</p>}
                                 </div>
                                 <div className="space-y-1.5">
                                     <label className="text-[9px] sm:text-[10px] font-black text-[#A67C00] uppercase tracking-widest">Confirm New Password</label>
-                                    <input
-                                        type="password"
-                                        required
-                                        className="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black"
-                                        placeholder="••••••••"
-                                        value={passwordData.confirmPassword}
-                                        onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-                                    />
+                                    <div className="relative">
+                                        <input
+                                            type={showPassword.confirm ? "text" : "password"}
+                                            required
+                                            className={`w-full bg-gray-50 border-2 ${errors.confirmPassword ? 'border-red-400' : 'border-gray-100'} rounded-xl px-4 py-3 text-sm focus:border-[#D4AF37] outline-none transition-all font-bold text-black pr-12`}
+                                            placeholder="••••••••"
+                                            value={passwordData.confirmPassword}
+                                            onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowPassword({ ...showPassword, confirm: !showPassword.confirm })}
+                                            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#D4AF37] transition-colors"
+                                        >
+                                            {showPassword.confirm ? <EyeOffIcon /> : <EyeIcon />}
+                                        </button>
+                                    </div>
+                                    {errors.confirmPassword && <p className="text-[10px] text-red-500 font-bold uppercase tracking-tight ml-1 animate__animated animate__headShake">{errors.confirmPassword}</p>}
                                 </div>
                             </div>
 
