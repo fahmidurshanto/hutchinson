@@ -175,9 +175,7 @@ export default function ServicesPage() {
 
     const handleDeleteService = async () => {
         try {
-            const response = await api.delete(`/user/user-services/${userId}`, {
-                data: { serviceName: deleteTarget.name }
-            });
+            const response = await api.delete(`/user/user-services/${userId}/${deleteTarget._id || deleteTarget.name}`);
 
             if (response.data.success) {
                 setServices(response.data.data);
@@ -190,10 +188,11 @@ export default function ServicesPage() {
         }
     };
 
-    const handleToggleStatus = async (serviceName) => {
+    const handleToggleStatus = async (service) => {
         try {
             const response = await api.patch(`/user/user-services/${userId}`, {
-                serviceName
+                serviceId: service._id,
+                serviceName: service.name // keep as fallback
             });
 
             if (response.data.success) {
@@ -268,7 +267,7 @@ export default function ServicesPage() {
                                 {/* Status badge + edit icon */}
                                 <div className="flex items-center gap-2">
                                     <button
-                                        onClick={() => handleToggleStatus(service.name)}
+                                        onClick={() => handleToggleStatus(service)}
                                         title={`Change status to ${service.status === 'Valid' ? 'Invalid' : 'Valid'}`}
                                         className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 border shadow-sm transition-all active:scale-95 hover:scale-[1.02] cursor-pointer group/toggle
                                         ${service.status === 'Valid'

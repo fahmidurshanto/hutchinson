@@ -354,7 +354,8 @@ export default function MembershipsPage() {
         const { tier } = editTarget;
         try {
             const response = await api.patch(`/user/memberships/${userId}`, {
-                tierName: tier.name,
+                tierId: tier._id,
+                tierName: tier.name, // keep as fallback
                 status: newStatus
             });
 
@@ -409,10 +410,10 @@ export default function MembershipsPage() {
         }
     };
 
-    const handleRemoveMembership = async (tierName) => {
+    const handleRemoveMembership = async (tier) => {
         Swal.fire({
             title: 'Remove Partnership?',
-            text: `Are you sure you want to completely remove ${tierName}?`,
+            text: `Are you sure you want to completely remove ${tier.name}?`,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
@@ -422,8 +423,7 @@ export default function MembershipsPage() {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
-                    const formattedTierName = tierName.toLowerCase().replace(/\s+/g, '_');
-                    const response = await api.delete(`/user/memberships/${userId}/${encodeURIComponent(formattedTierName)}`);
+                    const response = await api.delete(`/user/memberships/${userId}/${tier._id || encodeURIComponent(tier.name.toLowerCase().replace(/\s+/g, '_'))}`);
                     if (response.data.success) {
                         setTiers(response.data.data);
                         Swal.fire({
@@ -489,7 +489,7 @@ export default function MembershipsPage() {
 
                     {/* Delete trash icon */}
                     <button
-                        onClick={() => handleRemoveMembership(tier.name)}
+                        onClick={() => handleRemoveMembership(tier)}
                         title="Remove membership"
                         className="w-8 h-8 rounded-xl flex items-center justify-center text-red-300 hover:text-red-500 hover:bg-red-50 border border-transparent hover:border-red-200 transition-all duration-200"
                     >
