@@ -38,7 +38,7 @@ export default function DashboardHomePage() {
     const router = useRouter();
     const { user, fetchFinancialSummary } = useAppContext();
     const [financialData, setFinancialData] = useState([]);
-    const [totalDisbursement, setTotalDisbursement] = useState('USD 0');
+    const [totalDisbursement, setTotalDisbursement] = useState('...');
     const [memberships, setMemberships] = useState([]);
     const [docs, setDocs] = useState([]);
     const [stages, setStages] = useState([]);
@@ -54,7 +54,8 @@ export default function DashboardHomePage() {
                     const financialRes = await fetchFinancialSummary(userId);
                     if (financialRes) {
                         setFinancialData(financialRes.data || []);
-                        setTotalDisbursement(financialRes.totalDisbursement || 'USD 0');
+                        const rawDisbursement = financialRes.totalDisbursement || 'GBP 0';
+                        setTotalDisbursement(rawDisbursement.replace(/USD/g, 'GBP'));
                     }
 
                     // Fetch real memberships from backend
@@ -248,7 +249,7 @@ export default function DashboardHomePage() {
                     </div>
                 )}
 
-             
+
 
                 {/* Quick Actions Section */}
                 {!loading && (

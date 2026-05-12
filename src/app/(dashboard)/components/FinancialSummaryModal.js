@@ -11,7 +11,7 @@ const FinancialIcon = (
 export default function FinancialSummaryModal({ isOpen, onClose }) {
     const { user, fetchFinancialSummary } = useAppContext();
     const [financialData, setFinancialData] = useState([]);
-    const [totalDisbursement, setTotalDisbursement] = useState('USD 0');
+    const [totalDisbursement, setTotalDisbursement] = useState('...');
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -19,8 +19,13 @@ export default function FinancialSummaryModal({ isOpen, onClose }) {
             setLoading(true);
             fetchFinancialSummary(user._id)
                 .then(res => {
-                    setFinancialData(res.data);
-                    setTotalDisbursement(res.totalDisbursement);
+                    const formattedData = (res.data || []).map(item => ({
+                        ...item,
+                        value: typeof item.value === 'string' ? item.value.replace(/USD/g, 'GBP') : item.value
+                    }));
+                    setFinancialData(formattedData);
+                    const rawDisbursement = res.totalDisbursement || 'GBP 0';
+                    setTotalDisbursement(rawDisbursement.replace(/USD/g, 'GBP'));
                 })
                 .catch(err => console.error(err))
                 .finally(() => setLoading(false));
