@@ -18,7 +18,6 @@ export default function UserDetailPage({ params }) {
     const resolvedParams = use(params);
     const userIdFromParam = resolvedParams.id;
 
-    console.log("userid:", userIdFromParam)
 
     const [user, setUser] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -58,7 +57,6 @@ export default function UserDetailPage({ params }) {
                     setError(response.data.message || 'User not found');
                 }
             } catch (err) {
-                console.error('Fetch user error:', err);
                 setError(getFriendlyErrorMessage(err));
             } finally {
                 setIsLoading(false);
@@ -68,7 +66,6 @@ export default function UserDetailPage({ params }) {
         fetchUserData();
     }, [userIdFromParam]);
 
-    console.log("User:", user)
 
     useEffect(() => {
         if (!userIdFromParam || !currentUser) return;

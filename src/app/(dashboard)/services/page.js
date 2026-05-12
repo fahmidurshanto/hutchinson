@@ -22,7 +22,6 @@ export default function ServicesPage() {
                     setServices(response.data.data);
                 }
             } catch (error) {
-                console.error('Error fetching services:', error);
                 if (error.response?.status === 404) {
                     setIsNotFound(true);
                 }

@@ -126,7 +126,6 @@ export default function ServicesPage() {
                     setServices(response.data.data);
                 }
             } catch (error) {
-                console.error('Error fetching services:', error);
                 if (error.response?.status === 404) {
                     setIsNotFound(true);
                 }
@@ -166,7 +165,6 @@ export default function ServicesPage() {
                 setServices(response.data.data);
             }
         } catch (error) {
-            console.error('[Add Service Error]', error);
             alert(error.response?.data?.message || 'Failed to add service');
         } finally {
             setIsAdding(false);
@@ -183,7 +181,6 @@ export default function ServicesPage() {
                 setServices(response.data.data);
             }
         } catch (error) {
-            console.error('[Delete Service Error]', error);
             alert(error.response?.data?.message || 'Failed to delete service');
         } finally {
             setDeleteTarget(null);
@@ -200,7 +197,6 @@ export default function ServicesPage() {
                 setServices(response.data.data);
             }
         } catch (error) {
-            console.error('[Toggle Status Error]', error);
             alert(error.response?.data?.message || 'Failed to update status');
         }
     };

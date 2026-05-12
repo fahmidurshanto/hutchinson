@@ -59,7 +59,6 @@ export default function ReportsPage() {
                     }
                 })
                 .catch(err => {
-                    console.error('Error fetching reports:', err);
                     if (err.response?.status === 404) {
                         setIsNotFound(true);
                     }

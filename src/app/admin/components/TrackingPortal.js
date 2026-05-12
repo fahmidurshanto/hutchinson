@@ -56,7 +56,6 @@ export default function TrackingPortal() {
                 setCurrentIndex(0);
             }
         } catch (err) {
-            console.error('Failed to fetch user stages:', err);
         }
     };
 
@@ -68,7 +67,6 @@ export default function TrackingPortal() {
                 setStages(res.data.data || []);
             }
         } catch (err) {
-            console.error('Failed to fetch live tracking:', err);
         }
     };
 
@@ -78,9 +76,7 @@ export default function TrackingPortal() {
             if (res.data.success) {
                 setAllUsers(res.data.users || []);
             }
-            console.log("Users:",res.data.users)
         } catch (err) {
-            console.error('Failed to fetch users:', err);
         }
     };
 
@@ -91,7 +87,6 @@ export default function TrackingPortal() {
                 setGlobalStages(res.data.data || []);
             }
         } catch (err) {
-            console.error('Failed to fetch global stages:', err);
         }
     };
 

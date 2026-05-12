@@ -18,7 +18,7 @@ export default function ServiceAnalysisModal({ isOpen, onClose }) {
             setLoading(true);
             fetchServiceStatus(user._id)
                 .then(res => setServiceData(res.data))
-                .catch(err => console.error(err))
+                .catch(err => {})
                 .finally(() => setLoading(false));
         }
     }, [isOpen, user?._id]);

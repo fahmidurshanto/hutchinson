@@ -66,7 +66,6 @@ export default function UserStageManagement({ userId, userName }) {
                 setStages(fetchedStages.sort((a, b) => a.sequence - b.sequence));
             }
         } catch (err) {
-            console.error('Failed to fetch user stages:', err);
         } finally {
             setLoading(false);
         }
@@ -79,7 +78,6 @@ export default function UserStageManagement({ userId, userName }) {
                 setGlobalStages(res.data.data || []);
             }
         } catch (err) {
-            console.error('Failed to fetch global stages:', err);
         }
     };
 

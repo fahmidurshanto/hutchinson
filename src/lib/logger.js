@@ -13,8 +13,6 @@ const logger = {
         if (isDev) console.warn(...args);
     },
     error: (...args) => {
-        // Even in production, we might want to log critical errors, 
-        // but for now, we follow the user's request for a clean console.
         if (isDev) console.error(...args);
     },
     info: (...args) => {

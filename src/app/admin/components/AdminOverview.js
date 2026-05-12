@@ -19,7 +19,6 @@ export default function AdminOverview() {
                     setSchedules(res.data.data);
                 }
             } catch (err) {
-                console.error("Failed to fetch schedules for Overview", err);
             }
         };
         fetchSchedules();

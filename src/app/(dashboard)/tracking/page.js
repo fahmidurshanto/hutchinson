@@ -29,7 +29,6 @@ export default function TrackingPage() {
                         }
                     }
                 } catch (err) {
-                    console.error('Data fetch error:', err);
                 } finally {
                     setLoading(false);
                 }

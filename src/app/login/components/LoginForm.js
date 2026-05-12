@@ -26,7 +26,6 @@ export default function LoginForm() {
                 : '/auth/login';
             const response = await api.post(loginUrl, { userId, password });
             const data = response.data;
-            console.log(data);
             if (data.success) {
                 // The backend sets HTTP-only cookies (accessToken, refreshToken)
                 // BUT it does NOT return the user object in the login response.
@@ -71,7 +70,6 @@ export default function LoginForm() {
                 });
             }
         } catch (error) {
-            console.log(error);
             const errorMessage = error.response?.data?.message || 'Connection to corporate servers failed.';
             Swal.fire({
                 icon: 'error',

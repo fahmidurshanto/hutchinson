@@ -16,7 +16,6 @@ export default function UserDocuments({ targetUserId, userName }) {
         setIsLoading(true);
         try {
             const response = await api.get(`/document/user/${targetUserId}`);
-            console.log(response.data);
             if (response.data.success) {
                 const mapped = response.data.documents.map(doc => ({
                     id: doc._id,
@@ -30,7 +29,6 @@ export default function UserDocuments({ targetUserId, userName }) {
                 setDocs(mapped);
             }
         } catch (error) {
-            console.error('Fetch docs error:', error);
         } finally {
             setIsLoading(false);
         }

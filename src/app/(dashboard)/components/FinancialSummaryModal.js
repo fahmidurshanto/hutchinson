@@ -27,7 +27,7 @@ export default function FinancialSummaryModal({ isOpen, onClose }) {
                     const rawDisbursement = res.totalDisbursement || 'GBP 0';
                     setTotalDisbursement(rawDisbursement.replace(/USD/g, 'GBP'));
                 })
-                .catch(err => console.error(err))
+                .catch(err => {})
                 .finally(() => setLoading(false));
         }
     }, [isOpen, user?._id]);

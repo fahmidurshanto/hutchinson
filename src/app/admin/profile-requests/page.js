@@ -27,7 +27,6 @@ export default function ProfileRequestsPage() {
                 setRequests(response.data.data);
             }
         } catch (error) {
-            console.error('Error fetching profile requests:', error);
             Swal.fire({
                 title: 'Error',
                 text: 'Failed to fetch profile update requests.',
@@ -80,7 +79,6 @@ export default function ProfileRequestsPage() {
                     fetchRequests();
                 }
             } catch (error) {
-                console.error('Error approving request:', error);
                 Swal.fire({
                     title: 'Failed',
                     text: error.response?.data?.message || 'Approval failed.',
@@ -117,7 +115,6 @@ export default function ProfileRequestsPage() {
                     fetchRequests();
                 }
             } catch (error) {
-                console.error('Error rejecting request:', error);
                 Swal.fire({
                     title: 'Failed',
                     text: error.response?.data?.message || 'Rejection failed.',

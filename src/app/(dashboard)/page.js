@@ -52,7 +52,6 @@ export default function DashboardHomePage() {
                 try {
                     // Fetch financial data
                     const financialRes = await fetchFinancialSummary(userId);
-                    console.log("financialRes", financialRes);
                     if (financialRes) {
                         setFinancialData(financialRes.data || []);
                         const rawDisbursement = financialRes.totalDisbursement || 'GBP 0';
@@ -92,10 +91,8 @@ export default function DashboardHomePage() {
                             setDocs(mapped);
                         }
                     } catch (err) {
-                        console.error('Data fetch error:', err);
                     }
                 } catch (error) {
-                    console.error('Error loading user data:', error);
                 } finally {
                     setLoading(false);
                 }
@@ -107,10 +104,6 @@ export default function DashboardHomePage() {
         loadUserData();
     }, [user?.id, user?._id]);
 
-    console.log("user", user);
-    console.log("financialData", financialData);
-    console.log("memberships", memberships);
-    console.log("stages", stages);
 
     // Filter documents belonging to current user
     const userDocs = docs;

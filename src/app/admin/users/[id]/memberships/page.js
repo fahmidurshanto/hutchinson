@@ -447,7 +447,6 @@ export default function MembershipsPage() {
     };
 
     const renderTierCard = (tier, globalIdx) => {
-        console.log("tier", tier)
         return (
             <div key={globalIdx} className="group relative bg-white rounded-2xl border border-gray-100 overflow-hidden flex items-center gap-4 px-5 py-4 w-full mb-3 hover:shadow-lg hover:border-gray-200 transition-all duration-300 shadow-sm">
                 {/* Left accent bar */}

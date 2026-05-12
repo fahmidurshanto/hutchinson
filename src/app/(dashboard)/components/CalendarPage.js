@@ -67,7 +67,6 @@ export default function CalendarPage({ isAdmin = false }) {
                 setUpcomingSchedules(upcoming);
             }
         } catch (error) {
-            console.error("Failed to fetch schedules", error);
         }
     };
 
@@ -132,7 +131,6 @@ export default function CalendarPage({ isAdmin = false }) {
                 });
             }
         } catch (error) {
-            console.error('Schedule save error:', error);
             Swal.fire({ title: 'Error', text: 'Failed to save schedule. Please try again.', icon: 'error', confirmButtonColor: '#D4AF37' });
         }
     };
@@ -176,7 +174,6 @@ export default function CalendarPage({ isAdmin = false }) {
                         }
                     });
                 } catch (error) {
-                    console.error("Failed to delete schedule", error);
                     Swal.fire('Error', 'Failed to delete schedule.', 'error');
                 }
             }

@@ -72,7 +72,6 @@ export default function AdminUserReportsPage({ params }) {
                 }
             }
         } catch (error) {
-            console.error("Failed to fetch reports:", error);
             if (error.response?.status === 404) {
                 setIsNotFound(true);
             }
@@ -140,7 +139,6 @@ export default function AdminUserReportsPage({ params }) {
             }
         } catch (error) {
             Swal.fire('Error', 'Failed to save investment amount.', 'error');
-            console.error(error);
         } finally {
             setIsSaving(false);
         }

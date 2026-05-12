@@ -114,7 +114,6 @@ export function AppProvider({ children }) {
             }
             throw new Error(data.message || 'Upload failed');
         } catch (error) {
-            console.error('Upload error:', error);
             throw error;
         }
     };
@@ -129,7 +128,6 @@ export function AppProvider({ children }) {
             }
             throw new Error(data.message || 'Deletion failed');
         } catch (error) {
-            console.error('Delete error:', error);
             throw error;
         }
     };
@@ -160,10 +158,8 @@ export function AppProvider({ children }) {
                         error.message = data.message;
                     }
                 } catch (e) {
-                    console.error('Error parsing blob error message:', e);
                 }
             }
-            console.error('View error:', error.message);
             throw error;
         }
     };
@@ -234,7 +230,6 @@ export function AppProvider({ children }) {
             if (data.success) return data;
             throw new Error(data.message || 'Password change failed');
         } catch (error) {
-            console.error('Password change error:', error);
             throw error;
         }
     };
@@ -251,7 +246,6 @@ export function AppProvider({ children }) {
             }
             throw new Error(data.message || 'Could not fetch users');
         } catch (error) {
-            console.error('Fetch users error:', error);
             throw error;
         } finally {
             setIsLoadingUsers(false);
@@ -273,7 +267,6 @@ export function AppProvider({ children }) {
             }
             throw new Error(data.message || 'Update failed');
         } catch (error) {
-            console.error('Update user error:', error);
             throw error;
         }
     };
@@ -289,7 +282,6 @@ export function AppProvider({ children }) {
             }
             throw new Error(data.message || 'Delete failed');
         } catch (error) {
-            console.error('Delete user error:', error);
             throw error;
         }
     };
@@ -300,7 +292,6 @@ export function AppProvider({ children }) {
             const response = await api.get(`/user/financial-summary/${userId}`);
             return response.data;
         } catch (error) {
-            console.error('Financial summary error:', error);
             throw error;
         }
     };
@@ -310,7 +301,6 @@ export function AppProvider({ children }) {
             const response = await api.get(`/user/entities/${userId}`);
             return response.data;
         } catch (error) {
-            console.error('Entities error:', error);
             throw error;
         }
     };
@@ -320,7 +310,6 @@ export function AppProvider({ children }) {
             const response = await api.get(`/user/services/${userId}`);
             return response.data;
         } catch (error) {
-            console.error('Service status error:', error);
             throw error;
         }
     };
@@ -330,7 +319,6 @@ export function AppProvider({ children }) {
             const response = await api.get(`/user/investment-reports/${userId}`);
             return response.data;
         } catch (error) {
-            console.error('Investment reports error:', error);
             throw error;
         }
     };

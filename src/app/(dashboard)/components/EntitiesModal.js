@@ -22,7 +22,7 @@ export default function EntitiesModal({ isOpen, onClose }) {
                     setPrimaryEntities(res.primary);
                     setThirdPartyEntities(res.thirdParty);
                 })
-                .catch(err => console.error(err))
+                .catch(err => {})
                 .finally(() => setLoading(false));
         }
     }, [isOpen, user?._id]);

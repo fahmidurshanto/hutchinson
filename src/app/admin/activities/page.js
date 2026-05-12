@@ -62,7 +62,6 @@ export default function ActivitiesPage() {
                     setActivitiesData(categorized);
                 }
             } catch (error) {
-                console.error("Failed to fetch all schedules", error);
             } finally {
                 setIsLoading(false);
             }
