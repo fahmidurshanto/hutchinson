@@ -35,15 +35,15 @@ export function AppProvider({ children }) {
             (error) => {
                 if (error.response?.status === 401) {
                     setCurrentUser(null);
-                    
+
                     const currentPath = window.location.pathname + window.location.search;
                     if (currentPath !== '/login') {
-                        const loginUrl = (currentPath && currentPath !== '/') 
-                            ? `/login?redirect=${encodeURIComponent(currentPath)}` 
+                        const loginUrl = (currentPath && currentPath !== '/')
+                            ? `/login?redirect=${encodeURIComponent(currentPath)}`
                             : '/login';
                         router.push(loginUrl);
                     }
-                    
+
                     // Return a rejected promise with a silent flag to stop caller execution
                     return Promise.reject({ ...error, silent: true });
                 }

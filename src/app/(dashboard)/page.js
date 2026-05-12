@@ -173,7 +173,7 @@ export default function DashboardHomePage() {
                             <div className="space-y-1">
                                 <div className="flex justify-between text-xs">
                                     <span className="text-gray-400">Phone:</span>
-                                    <span className="text-gray-700 font-medium">{user?.Phone || 'N/A'}</span>
+                                    <span className="text-gray-700 font-medium">{user?.phone || 'N/A'}</span>
                                 </div>
                                 <div className="flex justify-between text-xs">
                                     <span className="text-gray-400">Nationality:</span>
