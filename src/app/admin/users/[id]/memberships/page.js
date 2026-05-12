@@ -505,7 +505,7 @@ export default function MembershipsPage() {
     const primaryTiers = tiers.map((t, i) => ({ t, i })).filter(({ t }) => t.type === 'primary');
     const thirdPartyTiers = tiers.map((t, i) => ({ t, i })).filter(({ t }) => t.type === 'third_party');
 
-    const totalAmount = tiers.filter(t => t.status === 'active').reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0);
+    const totalAmount = tiers.reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0);
 
     if (loading) {
         return (
