@@ -63,7 +63,7 @@ export default function MembershipsPage() {
     const primaryTiers = tiers.filter(t => t.type === 'primary');
     const thirdPartyTiers = tiers.filter(t => t.type === 'third_party');
 
-    const totalAmount = tiers.filter(t => t.status === 'active').reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0);
+    const totalAmount = tiers.reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0);
 
     if (loading) {
         return (
@@ -113,7 +113,7 @@ export default function MembershipsPage() {
                                 </span>
                             </div>
                             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-5">
-                                Across all Primary & Marketing Agent entities
+                                Cumulative Value • All Active & Inactive Entities
                             </p>
                         </div>
                     </div>
