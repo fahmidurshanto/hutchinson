@@ -52,6 +52,7 @@ export default function DashboardHomePage() {
                 try {
                     // Fetch financial data
                     const financialRes = await fetchFinancialSummary(userId);
+                    console.log("financialRes", financialRes);
                     if (financialRes) {
                         setFinancialData(financialRes.data || []);
                         const rawDisbursement = financialRes.totalDisbursement || 'GBP 0';
@@ -106,6 +107,11 @@ export default function DashboardHomePage() {
         loadUserData();
     }, [user?.id, user?._id]);
 
+    console.log("user", user);
+    console.log("financialData", financialData);
+    console.log("memberships", memberships);
+    console.log("stages", stages);
+
     // Filter documents belonging to current user
     const userDocs = docs;
 
@@ -118,6 +124,7 @@ export default function DashboardHomePage() {
 
     // Compute real membership counts
     const totalMemberships = memberships.length;
+    const totalMembershipAmount = memberships.reduce((sum, m) => sum + (Number(m.amount) || 0), 0);
     const activePrimary = memberships.filter(m => m.type === 'primary' && m.status === 'active').length;
     const activeThirdParty = memberships.filter(m => m.type === 'third_party' && m.status === 'active').length;
     const totalActive = activePrimary + activeThirdParty;
@@ -208,9 +215,14 @@ export default function DashboardHomePage() {
                                 <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Memberships</span>
                             </div>
                             <h3 className="text-2xl font-black text-gray-900 mb-1">
-                                {totalMemberships}
+                                GBP {totalMembershipAmount.toLocaleString()}
                             </h3>
-                            <p className="text-sm text-gray-600 mb-3">Total Memberships</p>
+                            <div className="flex justify-between items-center gap-2 mb-4">
+                                <span className="text-sm text-gray-600">Total Memberships:</span>
+                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-gray-100 text-gray-900 border border-gray-200">
+                                    {totalMemberships}
+                                </span>
+                            </div>
                             <div className="space-y-1">
                                 <div className="flex justify-between text-xs">
                                     <span className="text-gray-400">Primary:</span>
