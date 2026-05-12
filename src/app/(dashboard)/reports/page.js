@@ -21,7 +21,7 @@ const CustomTooltip = ({ active, payload, label }) => {
             <div className="bg-white/90 backdrop-blur-sm p-3 border-2 border-[#D4AF37] rounded-lg shadow-xl">
                 <p className="font-bold text-gray-800">{label}</p>
                 <p className="text-[#D4AF37] font-bold">
-                    ${payload[0].value.toLocaleString()}
+                    £{payload[0].value.toLocaleString()}
                 </p>
             </div>
         );
@@ -182,8 +182,8 @@ export default function ReportsPage() {
                                 </h2>
                                 <p className="text-[10px] md:text-xs text-gray-400 mt-1 uppercase tracking-[0.2em] font-black opacity-70">
                                     {viewMode === 'monthly'
-                                        ? 'Metric: Monthly Disbursement ($)'
-                                        : 'Metric: Annual Total Disbursement ($)'
+                                        ? 'Metric: Monthly Disbursement (£)'
+                                        : 'Metric: Annual Total Disbursement (£)'
                                     }
                                 </p>
                             </div>
@@ -196,7 +196,7 @@ export default function ReportsPage() {
                                     <div key={d.label} className="bg-gray-50 border border-gray-100 rounded-2xl p-4 text-center hover:border-[#D4AF37]/40 transition-all">
                                         <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">{d.label}</p>
                                         <p className="text-sm font-black text-[#D4AF37] tracking-tight">
-                                            ${d.amount.toLocaleString()}
+                                            £{d.amount.toLocaleString()}
                                         </p>
                                     </div>
                                 ))}
@@ -233,7 +233,7 @@ export default function ReportsPage() {
                                             axisLine={false}
                                             tickLine={false}
                                             tick={{ fill: '#9ca3af', fontSize: 10, fontWeight: 700 }}
-                                            tickFormatter={(value) => `$${value / 1000}k`}
+                                            tickFormatter={(value) => `£${value / 1000}k`}
                                             width={40}
                                         />
                                         <Tooltip content={<CustomTooltip />} cursor={{ fill: '#f9fafb' }} />

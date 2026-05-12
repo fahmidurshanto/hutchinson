@@ -107,8 +107,8 @@ export default function MembershipsPage() {
                         </div>
                         <div className="p-8 text-center bg-[#fdfaf1]/50">
                             <div className="flex items-center justify-center gap-3">
-                                <span className="text-3xl font-black text-[#D4AF37]">$</span>
-                                <span className="text-4xl md:text-5xl font-black text-gray-900 tracking-tight">
+                                <span className="text-4xl md:text-5xl font-black text-[#D4AF37]">£</span>
+                                <span className="text-4xl md:text-4xl font-black text-gray-900 tracking-tight">
                                     {totalAmount.toLocaleString()}
                                 </span>
                             </div>

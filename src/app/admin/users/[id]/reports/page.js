@@ -24,7 +24,7 @@ const CustomTooltip = ({ active, payload, label }) => {
             <div className="bg-white/90 backdrop-blur-sm p-3 border-2 border-[#D4AF37] rounded-lg shadow-xl">
                 <p className="font-bold text-gray-800">{label}</p>
                 <p className="text-[#D4AF37] font-bold">
-                    ${payload[0].value.toLocaleString()}
+                    £{payload[0].value.toLocaleString()}
                 </p>
             </div>
         );
@@ -130,7 +130,7 @@ export default function AdminUserReportsPage({ params }) {
                 
                 Swal.fire({
                     title: 'Saved!',
-                    text: `${monthStr} ${selectedYear} amount has been updated to $${Number(editAmount).toLocaleString()}.`,
+                    text: `${monthStr} ${selectedYear} amount has been updated to £${Number(editAmount).toLocaleString()}.`,
                     icon: 'success',
                     timer: 1500,
                     showConfirmButton: false
@@ -316,7 +316,7 @@ export default function AdminUserReportsPage({ params }) {
                                     <div key={d.label} className="bg-gray-50 border border-gray-100 rounded-2xl p-4 text-center hover:border-[#D4AF37]/40 transition-all">
                                         <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">{d.label}</p>
                                         <p className="text-sm font-black text-[#D4AF37] tracking-tight">
-                                            ${d.amount.toLocaleString()}
+                                            £{d.amount.toLocaleString()}
                                         </p>
                                     </div>
                                 ))}
@@ -352,7 +352,7 @@ export default function AdminUserReportsPage({ params }) {
                                             axisLine={false} 
                                             tickLine={false} 
                                             tick={{ fill: '#9ca3af', fontSize: 12, fontWeight: 600 }}
-                                            tickFormatter={(value) => `$${value/1000}k`}
+                                            tickFormatter={(value) => `£${value/1000}k`}
                                         />
                                         <Tooltip content={<CustomTooltip />} cursor={{ fill: '#f9fafb' }} />
                                         <Bar 
@@ -406,7 +406,7 @@ export default function AdminUserReportsPage({ params }) {
                                     {editingMonth === data.label ? (
                                         <div className="flex flex-col gap-2">
                                             <div className="relative">
-                                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold">$</span>
+                                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold">£</span>
                                                 <input 
                                                     type="number"
                                                     value={editAmount}
@@ -439,7 +439,7 @@ export default function AdminUserReportsPage({ params }) {
                                         </div>
                                     ) : (
                                         <div className="flex items-end gap-1">
-                                            <span className="text-xs text-gray-500 font-bold mb-1">$</span>
+                                            <span className="text-xs text-gray-500 font-bold mb-1">£</span>
                                             <span className={`text-2xl font-black tracking-tight ${data.amount > 0 ? 'text-[#D4AF37]' : 'text-gray-300'}`}>
                                                 {data.amount.toLocaleString()}
                                             </span>
@@ -490,7 +490,7 @@ export default function AdminUserReportsPage({ params }) {
                                                     <span className="text-base font-black text-gray-900">{d.label}</span>
                                                 </td>
                                                 <td className="py-4 px-4 text-right">
-                                                    <span className="text-base font-black text-[#D4AF37]">${d.amount.toLocaleString()}</span>
+                                                    <span className="text-base font-black text-[#D4AF37]">£{d.amount.toLocaleString()}</span>
                                                 </td>
                                                 <td className="py-4 px-4 text-right">
                                                     <span className="text-sm font-bold text-gray-500">{monthsWithData} / 12</span>
