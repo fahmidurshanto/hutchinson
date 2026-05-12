@@ -131,15 +131,6 @@ export default function DashboardHomePage() {
 
     return (
         <div className="w-full h-full flex flex-col items-center relative overflow-visible">
-            {/* Global Watermark - hidden on mobile/tablet to avoid overflow and prioritize performance */}
-            <div className="hidden xl:block absolute left-0 top-1/2 -translate-x-[35%] -translate-y-1/2 w-[1400px] h-[1400px] opacity-[0.25] pointer-events-none z-0">
-                <img
-                    src="/lion.png"
-                    alt=""
-                    className="w-full h-full object-contain filter drop-shadow-[0_0_30px_rgba(212,175,55,0.3)] saturate-[2] brightness-[1.1] sepia-[0.5]"
-                />
-            </div>
-
             <div className="w-full max-w-7xl mx-auto px-6 py-8 relative z-10">
                 {/* Welcome Header */}
                 <div className="mb-8 md:mb-12 text-center animate__animated animate__fadeIn">

@@ -131,11 +131,6 @@ export default function UserDetailPage({ params }) {
                 {/* Visual Accent */}
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-gold"></div>
 
-                {/* Lion Watermark */}
-                <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none">
-                    <img src="/lion.png" alt="" className="w-[500px] grayscale" />
-                </div>
-
                 <div className="relative">
                     {/* Primary Spinner */}
                     <div className="w-20 h-20 border-4 border-gray-100 border-t-[#D4AF37] rounded-full animate-spin"></div>
