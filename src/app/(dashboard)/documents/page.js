@@ -45,9 +45,7 @@ export default function DocumentsPage() {
         fetchDocs();
     }, [fetchDocs]);
 
-    const handleUploadClick = () => {
-        fileInputRef.current?.click();
-    };
+
 
     const handleFileChange = async (e) => {
         const file = e.target.files?.[0];
@@ -115,15 +113,7 @@ export default function DocumentsPage() {
                         Strategic Document Repository • Encrypted
                     </p>
 
-                    <button
-                        onClick={handleUploadClick}
-                        className="px-8 py-3.5 bg-gradient-gold rounded-full text-black font-black text-[10px] sm:text-xs uppercase tracking-widest shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center gap-2 mx-auto cursor-pointer"
-                    >
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                        </svg>
-                        Upload Document
-                    </button>
+
                 </div>
             </div>
 
