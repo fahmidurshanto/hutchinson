@@ -9,6 +9,7 @@ export default function UserDocuments({ targetUserId, userName }) {
     const { user, addDocument, deleteDocument, viewDocument } = useAppContext();
     const [docs, setDocs] = React.useState([]);
     const [isLoading, setIsLoading] = React.useState(true);
+    const [isOwner, setIsOwner] = React.useState(false);
     const fileInputRef = useRef(null);
 
     const fetchDocs = React.useCallback(async () => {
@@ -16,7 +17,9 @@ export default function UserDocuments({ targetUserId, userName }) {
         setIsLoading(true);
         try {
             const response = await api.get(`/document/user/${targetUserId}`);
+            // console.log("response.data::", response.data.documents);
             if (response.data.success) {
+                setIsOwner(response.data.isOwner);
                 const mapped = response.data.documents.map(doc => ({
                     id: doc._id,
                     userId: doc.user,
@@ -24,7 +27,9 @@ export default function UserDocuments({ targetUserId, userName }) {
                     date: new Date(doc.createdAt).toISOString().split('T')[0],
                     size: doc.size || 'N/A',
                     category: 'Documents',
-                    hasUserSeen: doc.hasUserSeen || false
+                    hasUserSeen: doc.hasUserSeen || false,
+                    hasExpired: doc.hasExpired || false,
+                    viewExpiry: doc.viewExpiry || null
                 }));
                 setDocs(mapped);
             }
@@ -117,7 +122,46 @@ export default function UserDocuments({ targetUserId, userName }) {
         });
     };
 
+    const handleEditExpiry = async (docId) => {
+        Swal.fire({
+            title: 'Set View Expiry',
+            text: 'Enter the number of days for this document to be viewable:',
+            input: 'number',
+            inputAttributes: {
+                min: 1,
+                step: 1
+            },
+            showCancelButton: true,
+            confirmButtonText: 'Set Expiry',
+            confirmButtonColor: '#D4AF37',
+            cancelButtonColor: '#d33',
+        }).then(async (result) => {
+            if (result.isConfirmed && result.value) {
+                try {
+                    await api.put(`/document/expiry/${docId}`, { days: Number(result.value) });
+                    await fetchDocs();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'Document view expiry updated successfully.',
+                        confirmButtonColor: '#D4AF37',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                } catch (error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Update Failed',
+                        text: error.response?.data?.message || error.message,
+                        confirmButtonColor: '#D33'
+                    });
+                }
+            }
+        });
+    };
+
     const categories = [...new Set(userSpecificDocs.map(d => d.category))];
+
 
     return (
         <div className="bg-white rounded-3xl border border-gray-100 shadow-xl overflow-hidden animate__animated animate__fadeIn">
@@ -174,9 +218,24 @@ export default function UserDocuments({ targetUserId, userName }) {
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-2">
+
+                                                {!isOwner && (
+                                                    <button
+                                                        onClick={() => handleEditExpiry(doc.id)}
+                                                        className="px-3 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-lg border transition-all bg-white text-[#D4AF37] border-gray-100 hover:border-[#D4AF37]"
+                                                    >
+                                                        Set Expiry
+                                                    </button>
+                                                )}
+
                                                 <button
                                                     onClick={() => handleView(doc)}
-                                                    className="px-3 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-lg border transition-all bg-white text-black border-gray-100 hover:border-[#D4AF37]"
+                                                    disabled={isOwner && (doc.viewExpiry !== null ? doc.hasExpired : doc.hasUserSeen)}
+                                                    className={`px-3 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-lg border transition-all ${
+                                                        isOwner && (doc.viewExpiry !== null ? doc.hasExpired : doc.hasUserSeen)
+                                                            ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
+                                                            : "bg-white text-black border-gray-100 hover:border-[#D4AF37]"
+                                                        }`}
                                                 >
                                                     View
                                                 </button>
