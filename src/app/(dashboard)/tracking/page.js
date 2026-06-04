@@ -122,16 +122,17 @@ export default function TrackingPage() {
                                             )}
                                         </div>
 
-                                        {/* {stage.description && (
-                                            <p className="mt-4 text-[10px] text-gray-500 font-medium leading-relaxed line-clamp-3">
+                                        {stage.description && (
+                                            <p className="mt-4 text-xs
+ font-extrabold text-gray-900 leading-relaxed line-clamp-3">
                                                 {stage.description}
                                             </p>
                                         )}
 
-                                        {(stage.remark || stage.remarkLabel) && (
+                                        {/* {(stage.remark || stage.remarkLabel) && (
                                             <div className="mt-4 bg-gray-50 p-3 rounded-xl border border-gray-100 text-left w-full transition-all hover:shadow-sm">
-                                                <p className="text-[9px] font-black text-[#D4AF37] uppercase mb-1">{stage.remarkLabel || 'Update'}:</p>
-                                                <p className="text-[10px] font-bold text-gray-600 leading-relaxed italic">"{stage.remark || 'No remarks provided'}"</p>
+                                                <p className=" font-black text-[#D4AF37] uppercase mb-1">{stage.remarkLabel || 'Update'}:</p>
+                                                <p className="text-2xl font-bold text-gray-600 leading-relaxed italic">"{stage.remark || 'No remarks provided'}"</p>
                                             </div>
                                         )} */}
                                     </div>
