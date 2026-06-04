@@ -152,7 +152,7 @@ export default function UserStageManagement({ userId, userName }) {
                 remark: stage.remark || '',
                 remarkLabel: stage.remarkLabel || '',
                 status: stage.status || 'upcoming',
-                time: stage.time ? new Date(stage.time).toISOString().slice(0, 16) : new Date().toISOString().slice(0, 16)
+                time: stage.time ? new Date(stage.time).toISOString().slice(0, 16) : ''
             });
         } else {
             setEditingStage(null);
@@ -270,12 +270,11 @@ export default function UserStageManagement({ userId, userName }) {
                     <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                         <div className="flex-1">
                             <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest block mb-1">Stage Highlight</label>
-                            <input
-                                type="text"
+                            <textarea
                                 placeholder="Add a highlight or summary of the stage progress..."
                                 value={tempHighlight}
                                 onChange={(e) => setTempHighlight(e.target.value)}
-                                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-xs font-bold text-black focus:outline-none focus:border-[#D4AF37] transition-all"
+                                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-xs font-bold text-black focus:outline-none focus:border-[#D4AF37] transition-all resize-y min-h-[100px]"
                                 autoFocus
                             />
                         </div>
@@ -304,7 +303,7 @@ export default function UserStageManagement({ userId, userName }) {
                         <div className="flex-1">
                             <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest block mb-1">Stage Highlight</label>
                             {stageHighlight ? (
-                                <p className="text-sm font-bold text-gray-800">{stageHighlight}</p>
+                                <p className="text-sm font-bold text-gray-800 whitespace-pre-wrap">{stageHighlight}</p>
                             ) : (
                                 <p className="text-sm font-bold text-gray-400 italic">No highlights added yet.</p>
                             )}
@@ -392,9 +391,11 @@ export default function UserStageManagement({ userId, userName }) {
                                                                 }`}>
                                                                     {s.status}
                                                                 </span>
-                                                                <span className="text-[8px] font-bold text-gray-400 uppercase tracking-wider">
-                                                                    {new Date(s.time).toLocaleDateString()} {new Date(s.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                                </span>
+                                                                {s.time && (
+                                                                    <span className="text-[8px] font-bold text-gray-400 uppercase tracking-wider">
+                                                                        {new Date(s.time).toLocaleDateString()} {new Date(s.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                                    </span>
+                                                                )}
                                                             </div>
                                                         </div>
                                                     </div>

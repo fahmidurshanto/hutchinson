@@ -150,7 +150,7 @@ export default function TrackingPage() {
                                 <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></span>
                                 Highlight
                             </h3>
-                            <p className="text-sm font-bold text-gray-600 leading-relaxed max-w-3xl">
+                            <p className="text-sm font-bold text-gray-600 leading-relaxed max-w-3xl whitespace-pre-wrap">
                                 {stageHighlight}
                             </p>
                         </div>
