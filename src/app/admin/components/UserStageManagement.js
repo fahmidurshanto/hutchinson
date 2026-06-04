@@ -15,6 +15,10 @@ export default function UserStageManagement({ userId, userName }) {
     const [isQRModalOpen, setIsQRModalOpen] = useState(false);
     const [qrCodeData, setQrCodeData] = useState(null);
     const [generatingQR, setGeneratingQR] = useState(false);
+    const [stageHighlight, setStageHighlight] = useState('');
+    const [savingHighlight, setSavingHighlight] = useState(false);
+    const [isEditingHighlight, setIsEditingHighlight] = useState(false);
+    const [tempHighlight, setTempHighlight] = useState('');
 
     const [formData, setFormData] = useState({
         stage: '',
@@ -51,6 +55,62 @@ export default function UserStageManagement({ userId, userName }) {
         document.body.removeChild(link);
     };
 
+    const handleSaveHighlight = async () => {
+        setSavingHighlight(true);
+        try {
+            const res = await api.put(`/stage/user/${userId}/highlight`, { stageHighlight: tempHighlight });
+            if (res.data.success) {
+                setStageHighlight(tempHighlight);
+                setIsEditingHighlight(false);
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    icon: 'success',
+                    title: 'Stage highlight updated successfully'
+                });
+            }
+        } catch (error) {
+            Swal.fire('Error', getFriendlyErrorMessage(error), 'error');
+        } finally {
+            setSavingHighlight(false);
+        }
+    };
+
+    const handleDeleteHighlight = async () => {
+        const result = await Swal.fire({
+            title: 'Delete Stage Highlight?',
+            text: 'Are you sure you want to delete this stage highlight?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33'
+        });
+
+        if (result.isConfirmed) {
+            setSavingHighlight(true);
+            try {
+                const res = await api.put(`/stage/user/${userId}/highlight`, { stageHighlight: '' });
+                if (res.data.success) {
+                    setStageHighlight('');
+                    setTempHighlight('');
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 2000,
+                        icon: 'success',
+                        title: 'Stage highlight deleted successfully'
+                    });
+                }
+            } catch (error) {
+                Swal.fire('Error', getFriendlyErrorMessage(error), 'error');
+            } finally {
+                setSavingHighlight(false);
+            }
+        }
+    };
+
     useEffect(() => {
         if (userId) {
             fetchUserStages();
@@ -64,6 +124,7 @@ export default function UserStageManagement({ userId, userName }) {
             if (res.data.success) {
                 const fetchedStages = res.data.stage || [];
                 setStages(fetchedStages.sort((a, b) => a.sequence - b.sequence));
+                setStageHighlight(res.data.stageHighlight || '');
             }
         } catch (err) {
         } finally {
@@ -201,6 +262,80 @@ export default function UserStageManagement({ userId, userName }) {
                         + Assign Stage
                     </button>
                 </div>
+            </div>
+
+            {/* Stage Highlight Section */}
+            <div className="px-6 sm:px-8 py-4 border-b border-gray-100 bg-white">
+                {isEditingHighlight ? (
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                        <div className="flex-1">
+                            <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest block mb-1">Stage Highlight</label>
+                            <input
+                                type="text"
+                                placeholder="Add a highlight or summary of the stage progress..."
+                                value={tempHighlight}
+                                onChange={(e) => setTempHighlight(e.target.value)}
+                                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-xs font-bold text-black focus:outline-none focus:border-[#D4AF37] transition-all"
+                                autoFocus
+                            />
+                        </div>
+                        <div className="flex gap-2 sm:self-end">
+                            <button
+                                onClick={handleSaveHighlight}
+                                disabled={savingHighlight}
+                                className="px-5 py-2.5 bg-black text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-800 transition-all shadow-md disabled:opacity-50 flex items-center justify-center gap-1.5 h-[38px]"
+                            >
+                                {savingHighlight ? 'Saving...' : 'Save'}
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setIsEditingHighlight(false);
+                                    setTempHighlight(stageHighlight);
+                                }}
+                                disabled={savingHighlight}
+                                className="px-5 py-2.5 bg-gray-100 text-gray-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-200 transition-all flex items-center justify-center gap-1.5 h-[38px]"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="flex items-center justify-between gap-4">
+                        <div className="flex-1">
+                            <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest block mb-1">Stage Highlight</label>
+                            {stageHighlight ? (
+                                <p className="text-sm font-bold text-gray-800">{stageHighlight}</p>
+                            ) : (
+                                <p className="text-sm font-bold text-gray-400 italic">No highlights added yet.</p>
+                            )}
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => {
+                                    setTempHighlight(stageHighlight);
+                                    setIsEditingHighlight(true);
+                                }}
+                                className="p-2 text-gray-400 hover:text-[#D4AF37] hover:bg-gray-50 rounded-lg border border-transparent hover:border-gray-200 transition-all"
+                                title="Edit Stage Highlight"
+                            >
+                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                </svg>
+                            </button>
+                            {stageHighlight && (
+                                <button
+                                    onClick={handleDeleteHighlight}
+                                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-gray-50 rounded-lg border border-transparent hover:border-gray-200 transition-all"
+                                    title="Delete Stage Highlight"
+                                >
+                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                )}
             </div>
 
             <div className="p-6 sm:p-8">

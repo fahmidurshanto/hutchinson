@@ -9,6 +9,7 @@ export default function TrackingPage() {
     const { user } = useAppContext();
     const [stages, setStages] = useState([]);
     const [stageVisibility, setStageVisibility] = useState(false);
+    const [stageHighlight, setStageHighlight] = useState('');
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -20,11 +21,12 @@ export default function TrackingPage() {
                     if (meRes.data.success) {
                         const isVisible = meRes.data.user.stageVisibility || false;
                         setStageVisibility(isVisible);
-                        
+
                         if (isVisible) {
                             const stageRes = await api.get(`/stage/user/${userId}`);
                             if (stageRes.data.success) {
                                 setStages(stageRes.data.stage || []);
+                                setStageHighlight(stageRes.data.stageHighlight || '');
                             }
                         }
                     }
@@ -135,8 +137,23 @@ export default function TrackingPage() {
                                     </div>
                                 </div>
                             ))}
+
+
+
                         </div>
                     </div>
+
+                    {stageHighlight && (
+                        <div className="mt-8 pt-8 border-t border-gray-100 animate__animated animate__fadeIn">
+                            <h3 className="text-[10px] font-black text-gray-950 uppercase tracking-[0.3em] mb-3 flex items-center gap-2">
+                                <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></span>
+                                Highlight
+                            </h3>
+                            <p className="text-sm font-bold text-gray-600 leading-relaxed max-w-3xl">
+                                {stageHighlight}
+                            </p>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
