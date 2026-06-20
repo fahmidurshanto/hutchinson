@@ -193,7 +193,7 @@ export default function PersonalPage() {
                                 </div>
                             </div>
                         </div>
-
+{/* 
                         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-100 shadow-xl">
                             <h3 className="text-[10px] sm:text-[11px] font-black text-gray-900 uppercase tracking-[0.2em] mb-4 sm:mb-6 border-b border-gray-50 pb-2">Quick Overview</h3>
                             <div className="space-y-4">
@@ -210,7 +210,7 @@ export default function PersonalPage() {
                                     </span>
                                 </div>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
 
                     {/* Right Column - Detailed Info & Activity */}

@@ -420,6 +420,7 @@ export default function UserDetailPage({ params }) {
                             </div>
                         </div>
 
+                        {/* overview section */}
                         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-100 shadow-xl">
                             <h3 className="text-[10px] sm:text-xs font-black text-gray-950 uppercase tracking-[0.2em] mb-4 sm:mb-6">Quick Overview</h3>
                             <div className="space-y-3 sm:space-y-4">
